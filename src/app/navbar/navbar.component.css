@@ -1,0 +1,21 @@
+.fill-remaining-space {
+flex: 1 1 auto;
+}
+a.toolbar{
+  color: white
+}
+a.toolbar:hover{
+  color: brown;
+}
+a.toolbar:visited{
+  color:white;
+}
+a.toolbar:active{
+  text-weight: bold;
+  color:antiquewhite;
+}
+a.toolbar:after{
+  text-weight: bold;
+  color:antiquewhite;
+}
+

@@ -1,0 +1,52 @@
+/* You can add global styles to this file, and also import other style files */
+a{text-decoration: none;}
+a:focus{text-decoration: none;}
+a:hover{text-decoration: none;}
+.outerCard{
+  background-color: #607D8B !important; border-radius: 7px; text-align: left; margin: 10px;
+}
+.innerCard{
+background-color:antiquewhite !important; padding: 10px;
+}
+
+.innerCardOverride{
+  background-color:white !important; padding: 10px;
+}
+
+.FormTitleStyle{
+  margin-top: 15px;
+  margin-left: 15px;
+  font-weight: bold;
+  display:inline-block;
+  font-size:120%;
+}
+.cardTitle{
+  color:beige;
+}
+.snackBar{
+  background-color: #283440 !important;
+  border-radius: 7px;
+}
+
+.warnBar{
+  background-color: darkred !important;
+  border-radius: 7px;
+}
+
+.mat-tab-label{
+  background: antiquewhite;
+}
+
+.mat-tab-label:focus{
+  background: white !important;
+}
+
+.mat-tab-label-active{
+  opacity:1 !important;
+}
+.mat-radio-focused{
+  background-color: antiquewhite;
+}
+.mat-button-toggle:hover{
+  background-color: antiquewhite;
+}
