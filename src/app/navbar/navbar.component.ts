@@ -13,7 +13,7 @@ interface navLink{
   styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent implements OnInit {
-  private auth: boolean;
+  auth: boolean;
   private user: string;
   private isAdmin: boolean;
 

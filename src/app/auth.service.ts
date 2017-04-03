@@ -3,13 +3,14 @@ import {Subject} from "rxjs/Subject";
 import {RestService} from "./rest.service";
 import {Router} from "@angular/router";
 import {MessageService} from "./message.service";
+import {Observable} from "rxjs";
 
 @Injectable()
 export class AuthService {
   private authStream = new Subject<boolean>();
   public user = '';
   public userType = '';
-  auth$ = this.authStream.asObservable();
+  auth$:Observable<boolean> = this.authStream.asObservable();
   originBeforeLogin = '/';
 
   constructor(private restService: RestService, private router: Router, private messageService:MessageService) {

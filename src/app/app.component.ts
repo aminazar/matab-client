@@ -9,8 +9,8 @@ import {MdSnackBar} from "@angular/material";
 })
 export class AppComponent implements OnInit {
   title = 'app works!';
-  private showError = false;
-  private error: string;
+  showError = false;
+  error: string;
 
   constructor(private messageService: MessageService, public snackBar: MdSnackBar) {
   }
