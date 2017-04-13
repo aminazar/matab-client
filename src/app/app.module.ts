@@ -16,6 +16,11 @@ import {FlexLayoutModule} from "@angular/flex-layout";
 import {FocusDirective} from './focus.directive';
 import {MessageService} from "./message.service";
 
+import { DoctorComponent } from './users/doctor/doctor.component';
+import { SecretaryComponent } from './users/secretary/secretary.component';
+
+import { SocketService } from './socket.service';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -23,6 +28,8 @@ import {MessageService} from "./message.service";
     NavbarComponent,
     HomeComponent,
     FocusDirective,
+    DoctorComponent,
+    SecretaryComponent,
   ],
   imports: [
     BrowserModule,
@@ -34,9 +41,11 @@ import {MessageService} from "./message.service";
     RouterModule.forRoot([
       {path: '', component: HomeComponent, pathMatch: 'full'},
       {path: 'login', component: LoginComponent},
+      {path: 'secretary', component: SecretaryComponent},
+      {path: 'doctor', component: DoctorComponent},
     ]),
   ],
-  providers: [AuthService, RestService, LoggedInGuard, MessageService],
+  providers: [AuthService, RestService, LoggedInGuard, MessageService, SocketService],
   bootstrap: [AppComponent]
 })
 export class AppModule {
