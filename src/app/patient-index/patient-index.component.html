@@ -4,17 +4,14 @@
   <br>
   <md-card-content>
     <md-input-container>
-      <label style="font-weight: bold">First Name :</label>
       <input mdInput focus placeholder="First Name" [(ngModel)]="firstName" (change)="onChange()">
     </md-input-container>
     <br>
     <md-input-container>
-      <label style="font-weight: bold">Last Name :</label>
       <input mdInput placeholder="Last Name" [(ngModel)]="lastName" (change)="onChange()">
     </md-input-container>
     <br>
     <md-input-container>
-      <label style="font-weight: bold">ID Number :</label>
       <input mdInput placeholder="National Code" [(ngModel)]="nationalCode" (change)="onChange()" (keydown)="ifEnterLogin($event)">
     </md-input-container>
   </md-card-content>

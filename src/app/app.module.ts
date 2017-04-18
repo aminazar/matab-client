@@ -1,3 +1,4 @@
+///<reference path="login/logged-in.guard.ts"/>
 import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -36,6 +37,7 @@ import {PatientIndexComponent} from './patient-index/patient-index.component';
     RouterModule.forRoot([
       {path: '', component: HomeComponent, pathMatch: 'full'},
       {path: 'login', component: LoginComponent},
+      // {path: 'patient', component: PatientIndexComponent, canActivate: [LoggedInGuard]},
       {path: 'patient', component: PatientIndexComponent},
     ]),
   ],
