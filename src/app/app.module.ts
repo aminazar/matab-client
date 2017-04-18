@@ -1,3 +1,4 @@
+///<reference path="login/logged-in.guard.ts"/>
 import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -15,6 +16,7 @@ import 'hammerjs';
 import {FlexLayoutModule} from "@angular/flex-layout";
 import {FocusDirective} from './focus.directive';
 import {MessageService} from "./message.service";
+import {PatientIndexComponent} from './patient-index/patient-index.component';
 
 @NgModule({
   declarations: [
@@ -23,6 +25,7 @@ import {MessageService} from "./message.service";
     NavbarComponent,
     HomeComponent,
     FocusDirective,
+    PatientIndexComponent,
   ],
   imports: [
     BrowserModule,
@@ -34,6 +37,8 @@ import {MessageService} from "./message.service";
     RouterModule.forRoot([
       {path: '', component: HomeComponent, pathMatch: 'full'},
       {path: 'login', component: LoginComponent},
+      // {path: 'patient', component: PatientIndexComponent, canActivate: [LoggedInGuard]},
+      {path: 'patient', component: PatientIndexComponent},
     ]),
   ],
   providers: [AuthService, RestService, LoggedInGuard, MessageService],
