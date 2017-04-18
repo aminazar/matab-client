@@ -18,6 +18,8 @@ export class AuthService {
       .subscribe(
         res => {
           this.afterLogin(res);
+          //   let url = this.originBeforeLogin;
+          // this.router.navigate([url !== null ? url : '/']);
           this.messageService.message(`You are already logged in as ${this.user}.`)
         },
         err => {

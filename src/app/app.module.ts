@@ -17,8 +17,6 @@ import {FlexLayoutModule} from "@angular/flex-layout";
 import {FocusDirective} from './focus.directive';
 import {MessageService} from "./message.service";
 import {PatientIndexComponent} from './patient-index/patient-index.component';
-import {FileSelectDirective, FileDropDirective} from 'ng2-file-upload/ng2-file-upload';
-import {UploaderComponent} from './uploader/uploader.component';
 
 @NgModule({
   declarations: [
@@ -28,9 +26,6 @@ import {UploaderComponent} from './uploader/uploader.component';
     HomeComponent,
     FocusDirective,
     PatientIndexComponent,
-    FileSelectDirective,
-    FileDropDirective,
-    UploaderComponent,
   ],
   imports: [
     BrowserModule,
@@ -43,7 +38,6 @@ import {UploaderComponent} from './uploader/uploader.component';
       {path: '', component: HomeComponent, pathMatch: 'full'},
       {path: 'login', component: LoginComponent},
       {path: 'patient', component: PatientIndexComponent, canActivate: [LoggedInGuard]},
-      {path: 'upload', component: UploaderComponent, canActivate: [LoggedInGuard]}
     ]),
   ],
   providers: [AuthService, RestService, LoggedInGuard, MessageService],
