@@ -37,8 +37,7 @@ import {PatientIndexComponent} from './patient-index/patient-index.component';
     RouterModule.forRoot([
       {path: '', component: HomeComponent, pathMatch: 'full'},
       {path: 'login', component: LoginComponent},
-      // {path: 'patient', component: PatientIndexComponent, canActivate: [LoggedInGuard]},
-      {path: 'patient', component: PatientIndexComponent},
+      {path: 'patient', component: PatientIndexComponent, canActivate: [LoggedInGuard]},
     ]),
   ],
   providers: [AuthService, RestService, LoggedInGuard, MessageService],
