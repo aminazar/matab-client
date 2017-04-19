@@ -5,4 +5,9 @@
   <span *ngIf="auth"><a  class="toolbar" (click)="logout()">{{user}} <i class="fa fa-sign-out"></i> Logout</a></span>
 </md-toolbar>
 <nav *ngIf="auth" md-tab-nav-bar>
+  <a md-tab-link *ngIf="isDoctor" [routerLink]="['doctor']" routerLinkActive #doctorLink="routerLinkActive" [active]="doctorLink.isActive">Current Session</a>
+  <a md-tab-link *ngIf="!isDoctor" [routerLink]="['patient']" routerLinkActive #patientLink="routerLinkActive" [active]="patientLink.isActive">Patient<span *ngIf="!pid">s</span><span *ngIf="pid">: <i class="fa fa-user"></i> {{firstname}} {{surname}} - {{idNumber}}</span></a>
+  <a md-tab-link *ngIf="!isDoctor" [routerLink]="['scans']" routerLinkActive #scansLink="routerLinkActive" [active]="scansLink.isActive">Scans</a>
+  <a md-tab-link *ngIf="!isDoctor" [routerLink]="['visit']" routerLinkActive #visitLink="routerLinkActive" [active]="visitLink.isActive">Send to Doctor</a>
+  <span class="fill-remaining-space"></span>
 </nav>

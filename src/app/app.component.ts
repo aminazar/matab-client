@@ -2,6 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {MessageService} from "./message.service";
 import {LoggedInGuard} from "./login/logged-in.guard";  //add some code
 import {MdSnackBar, MdSnackBarConfig} from "@angular/material";
+import {AuthService} from "./auth.service";
+import {PatientService} from "./patient.service";
 
 @Component({
   selector: 'app-root',
@@ -13,7 +15,7 @@ export class AppComponent implements OnInit {
   showError = false;
   error: string;
 
-  constructor(private loggedInGuard: LoggedInGuard,private messageService: MessageService, public snackBar: MdSnackBar) {       //add some code
+  constructor(private patientService:PatientService,private authService:AuthService,private loggedInGuard: LoggedInGuard,private messageService: MessageService, public snackBar: MdSnackBar) {       //add some code
   }
 
   ngOnInit(): void {

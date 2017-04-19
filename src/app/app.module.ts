@@ -16,7 +16,12 @@ import 'hammerjs';
 import {FlexLayoutModule} from "@angular/flex-layout";
 import {FocusDirective} from './focus.directive';
 import {MessageService} from "./message.service";
-import {PatientIndexComponent} from './patient-index/patient-index.component';
+import {PatientIndexComponent} from './patient/patient-index.component';
+import {FileSelectDirective, FileDropDirective} from 'ng2-file-upload/ng2-file-upload';
+import {UploaderComponent} from './uploader/uploader.component';
+import {PatientComponent} from './patient/patient.component';
+import {PatientService} from "./patient.service";
+import { PatientViewComponent } from './patient/patient-view.component';
 
 @NgModule({
   declarations: [
@@ -26,6 +31,11 @@ import {PatientIndexComponent} from './patient-index/patient-index.component';
     HomeComponent,
     FocusDirective,
     PatientIndexComponent,
+    FileSelectDirective,
+    FileDropDirective,
+    UploaderComponent,
+    PatientComponent,
+    PatientViewComponent,
   ],
   imports: [
     BrowserModule,
@@ -37,10 +47,11 @@ import {PatientIndexComponent} from './patient-index/patient-index.component';
     RouterModule.forRoot([
       {path: '', component: HomeComponent, pathMatch: 'full'},
       {path: 'login', component: LoginComponent},
-      {path: 'patient', component: PatientIndexComponent, canActivate: [LoggedInGuard]},
+      {path: 'patient', component: PatientComponent, canActivate: [LoggedInGuard]},
+      {path: 'scans', component: UploaderComponent, canActivate: [LoggedInGuard]},
     ]),
   ],
-  providers: [AuthService, RestService, LoggedInGuard, MessageService],
+  providers: [AuthService, RestService, LoggedInGuard, MessageService,PatientService],
   bootstrap: [AppComponent]
 })
 export class AppModule {

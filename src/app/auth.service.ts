@@ -1,13 +1,12 @@
 import {Injectable,isDevMode} from '@angular/core';
-import {Subject} from "rxjs/Subject";
 import {RestService} from "./rest.service";
 import {Router} from "@angular/router";
 import {MessageService} from "./message.service";
-import {Observable} from "rxjs";
+import {Observable, ReplaySubject} from "rxjs";
 
 @Injectable()
 export class AuthService {
-  private authStream = new Subject<boolean>();
+  private authStream = new ReplaySubject<boolean>();
   public user = '';
   public userType = '';
   auth$:Observable<boolean> = this.authStream.asObservable();
@@ -18,8 +17,6 @@ export class AuthService {
       .subscribe(
         res => {
           this.afterLogin(res);
-          //   let url = this.originBeforeLogin;
-          // this.router.navigate([url !== null ? url : '/']);
           this.messageService.message(`You are already logged in as ${this.user}.`)
         },
         err => {
