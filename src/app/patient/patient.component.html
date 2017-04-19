@@ -1,0 +1,21 @@
+<md-card class="outerCard">
+  <md-card-title class="cardTitle">Patients</md-card-title>
+  <md-card class="innerCard">
+    <md-card-title>Search</md-card-title>
+    <md-card>
+      <md-input-container>
+        <input mdInput type="text" class="pnc" placeholder="Patient name/id" [mdAutocomplete]="auto" [formControl]="patientModelCtrl" #autoNameCode (focus)="showPatientsList($event)"/>
+        <md-autocomplete #auto="mdAutocomplete">
+          <md-option *ngFor="let nameCode of filteredNameCode | async" [value]="nameCode">
+            {{nameCode}}
+          </md-option>
+        </md-autocomplete>
+      </md-input-container>
+      <app-patient-view *ngIf="isFiltered" [patientData]="filteredPatient"></app-patient-view>
+    </md-card>
+  </md-card>
+  <md-card class="innerCard">
+    <md-card-title>New Patient</md-card-title>
+    <app-patient-index></app-patient-index>
+  </md-card>
+</md-card>

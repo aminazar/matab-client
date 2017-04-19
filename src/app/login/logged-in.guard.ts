@@ -12,9 +12,9 @@ export class LoggedInGuard implements CanActivate {
 
   constructor(private authService: AuthService, private router: Router) {
     this.authService.auth$.subscribe(
-    (val: boolean) => {
-      this.isLoggedIn = val;
-    });
+      (val: boolean) => {
+        this.isLoggedIn = val;
+      });
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
