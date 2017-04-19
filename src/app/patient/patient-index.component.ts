@@ -51,6 +51,10 @@ export class PatientIndexComponent implements OnInit {
         },
         (error) => {
           this.messageService.error(error);
+          this.fname.nativeElement.value = '';
+          this.sname.nativeElement.value = '';
+          this.idnumber.nativeElement.value = '';
+          this.addIsDisabledFlag = true;
           this.messageService.message(`Invalid data`);
           if(isDevMode())
             console.log(error);
