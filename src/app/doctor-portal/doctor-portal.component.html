@@ -1,3 +1,16 @@
-<p>
-  doctor-portal works!
-</p>
+<md-card class="outerCard">
+  <md-card-title class="cardTitle">Electronic Medical Record</md-card-title>
+  <md-card class="innerCard">
+    <md-card-title>{{firstname}} {{surname}}</md-card-title>
+    <md-tab-group [(selectedIndex)]="selectedIndex" (selectChange)="tabChanged()">
+      <md-tab *ngFor="let doc of documents">
+        <template md-tab-label>
+          {{doc.description}}
+        </template>
+        <md-card>
+
+        </md-card>
+      </md-tab>
+    </md-tab-group>
+  </md-card>
+</md-card>
