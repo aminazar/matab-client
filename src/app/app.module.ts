@@ -22,6 +22,8 @@ import {UploaderComponent} from './uploader/uploader.component';
 import {PatientComponent} from './patient/patient.component';
 import {PatientService} from "./patient.service";
 import { PatientViewComponent } from './patient/patient-view.component';
+import { VisitComponent } from './visit/visit.component';
+import { DoctorPortalComponent } from './doctor-portal/doctor-portal.component';
 
 @NgModule({
   declarations: [
@@ -36,6 +38,8 @@ import { PatientViewComponent } from './patient/patient-view.component';
     UploaderComponent,
     PatientComponent,
     PatientViewComponent,
+    VisitComponent,
+    DoctorPortalComponent,
   ],
   imports: [
     BrowserModule,
@@ -49,6 +53,8 @@ import { PatientViewComponent } from './patient/patient-view.component';
       {path: 'login', component: LoginComponent},
       {path: 'patient', component: PatientComponent, canActivate: [LoggedInGuard]},
       {path: 'scans', component: UploaderComponent, canActivate: [LoggedInGuard]},
+      {path: 'visit', component: VisitComponent, canActivate:[LoggedInGuard]},
+      {path: 'doctorPortal', component: DoctorPortalComponent, canActivate:[LoggedInGuard]},
     ]),
   ],
   providers: [AuthService, RestService, LoggedInGuard, MessageService,PatientService],
