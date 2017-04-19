@@ -64,4 +64,7 @@ export class PatientComponent implements OnInit {
       $event.target.select();
     }
   }
+  func(d){
+    console.log(d);
+  }
 }

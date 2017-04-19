@@ -1,25 +1,16 @@
 <md-card>
-  <md-card-title>Patient Information</md-card-title>
-  <br>
-  <br>
   <md-card-content>
     <md-input-container>
-      <input mdInput focus placeholder="First Name" [(ngModel)]="firstName" (change)="onChange()">
+      <input mdInput focus placeholder="First Name" (change)="isReadyToAddPatient()" (keyup)="isReadyToAddPatient()" #fname>
     </md-input-container>
     <br>
     <md-input-container>
-      <input mdInput placeholder="Last Name" [(ngModel)]="lastName" (change)="onChange()">
+      <input mdInput placeholder="Sur Name" (change)="isReadyToAddPatient()" (keyup)="isReadyToAddPatient()" #sname>
     </md-input-container>
     <br>
     <md-input-container>
-      <input mdInput placeholder="National Code" [(ngModel)]="nationalCode" (change)="onChange()" (keydown)="ifEnterLogin($event)">
+      <input mdInput placeholder="ID Number" (change)="isReadyToAddPatient()" (keyup)="isReadyToAddPatient()" #idnumber>
     </md-input-container>
   </md-card-content>
-  <br>
-  <br>
-  <md-card-actions>
-    <button md-mini-fab [disabled]="!compeletePatientInfo" (click)="addNewPatientIndex()" color="primary" title="Add Patient">
-      <md-icon fontSet="fa" fontIcon="fa-arrow-right"></md-icon>
-    </button>
-  </md-card-actions>
+    <button md-raised-button (click)="addNewPatientIndex()" [(disabled)]="addIsDisabledFlag">Add</button>
 </md-card>
