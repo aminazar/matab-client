@@ -15,7 +15,7 @@ export class PatientService implements OnInit{
   public firstname:string;
   public surname:string;
   public idNumber:string;
-  private pidStream = new ReplaySubject<number>();
+  private pidStream = new ReplaySubject<number>(1);
   public pid$:Observable<number> = this.pidStream.asObservable();
   constructor() {}
 

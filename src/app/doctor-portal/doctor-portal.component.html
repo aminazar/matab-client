@@ -8,7 +8,12 @@
           {{doc.description}}
         </template>
         <md-card>
-
+        <h4 *ngIf="doc.display_name">By {{doc.display_name}}</h4>
+          <pdf-viewer [src]="'/documents/'+doc.local_addr.split('/').splice(-2,2).join('/')"
+                      [show-all]="true"
+                      [original-size]="true"
+                      style="display: block;"
+          ></pdf-viewer>
         </md-card>
       </md-tab>
     </md-tab-group>

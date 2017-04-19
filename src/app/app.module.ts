@@ -24,6 +24,7 @@ import {PatientService} from "./patient.service";
 import { PatientViewComponent } from './patient/patient-view.component';
 import { VisitComponent } from './visit/visit.component';
 import { DoctorPortalComponent } from './doctor-portal/doctor-portal.component';
+import {PdfViewerComponent} from "ng2-pdf-viewer";
 
 @NgModule({
   declarations: [
@@ -40,6 +41,7 @@ import { DoctorPortalComponent } from './doctor-portal/doctor-portal.component';
     PatientViewComponent,
     VisitComponent,
     DoctorPortalComponent,
+    PdfViewerComponent,
   ],
   imports: [
     BrowserModule,
