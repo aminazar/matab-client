@@ -25,6 +25,7 @@ import { VisitComponent } from './visit/visit.component';
 import { DoctorPortalComponent } from './doctor-portal/doctor-portal.component';
 import {FileUploadModule} from "ng2-file-upload";
 import { JalaliDateInputComponent } from './jalali-date-input/jalali-date-input.component';
+import { PatientInfoComponent } from './doctor-portal/patient-info.component';
 
 @NgModule({
   declarations: [
@@ -40,6 +41,7 @@ import { JalaliDateInputComponent } from './jalali-date-input/jalali-date-input.
     VisitComponent,
     DoctorPortalComponent,
     JalaliDateInputComponent,
+    PatientInfoComponent,
   ],
   imports: [
     FileUploadModule,

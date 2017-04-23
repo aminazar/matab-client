@@ -3,7 +3,8 @@
     <button type="button" class="btn btn-lg"
             (click)="refresh()"><i class="fa fa-refresh"></i></button>
   <md-card *ngIf="surname" class="innerCard">
-    <md-card-title>{{firstname}} {{surname}}</md-card-title>
+      <md-card-title style="font-size: large">{{firstname}} {{surname}}   <span *ngIf="isVip" style="padding: 5px;background-color: darkred;color:white;text-weight:bold;border-radius: 5px;font-size:75%">VIP</span></md-card-title>
+      <app-patient-info [contactDetails]="cd" [dob]="dob"></app-patient-info>
       <button type="button" class="btn btn-lg"
               (click)="endVisit()"><i class="fa fa-remove"></i></button>
     <md-tab-group [(selectedIndex)]="selectedIndex" (selectChange)="tabChanged()"><md-tab *ngFor="let doc of documents">

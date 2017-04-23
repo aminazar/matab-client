@@ -18,6 +18,10 @@ export class DoctorPortalComponent implements OnInit {
   vid: any;
   pid: number;
   selectedIndex:number;
+  referredBy;
+  dob;
+  cd;
+  isVip: boolean = false;
 
   constructor(private restService:RestService,private patientService:PatientService, private sanitizer: DomSanitizer) { }
 
@@ -41,6 +45,10 @@ export class DoctorPortalComponent implements OnInit {
           doc.source = this.sanitizer.bypassSecurityTrustResourceUrl(url.origin.replace('4200','3000') + `/ViewerJS/#/documents/${doc.local_addr.split('/').splice(-2,2).join('/')}`);
           console.log(doc.source)
         });
+        this.dob = data.patient.dob.year+ '-' + data.patient.dob.month + '-' +data.patient.dob.day;
+        this.referredBy = data.patient.contact_details.referredBy ? data.patient.contact_details.referredBy : '*';
+        this.cd = data.patient.contact_details;
+        this.isVip = data.patient.contact_details.vip;
       },
       err => {console.log(err);this.notFound = true;}
     )
