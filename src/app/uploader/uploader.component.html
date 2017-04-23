@@ -1,16 +1,31 @@
 <md-card *ngIf="enabled" class="outerCard">
   <md-card-title class="cardTitle">Scanned Documents</md-card-title>
   <md-card class="innerCard">
-    <md-card-title>Available Documents</md-card-title>
+    <md-card-title>Available Documents</md-card-title><button type="button" class="btn btn-lg"
+                                                                    (click)="refresh()"><i class="fa fa-refresh"></i></button>
     <md-card>
-    test
+
+      <table class="table">
+        <tr>
+          <th>Name</th>
+          <th>Size</th>
+          <th>Saved At</th>
+          <th>Actions</th>
+        </tr>
+        <tr *ngFor="let item of documents">
+          <td>{{item.description}}</td>
+          <td>{{item.size/1024/1024 | number:'.2'}} MB</td>
+          <td>{{item.saved_at}}</td>
+          <td><button type="button" class="btn btn-danger btn-xs"
+                      (click)="remove(item.did)" [disabled]="dis[did]"><i class="fa fa-remove"></i></button></td>
+        </tr>
+      </table>
     </md-card>
   </md-card>
   <md-card class="innerCard">
     <md-card-title>Upload Queue</md-card-title>
     <md-card>
       <p>Queue length: {{ uploader?.queue?.length }}</p>
-
       <table class="table">
         <thead>
         <tr>

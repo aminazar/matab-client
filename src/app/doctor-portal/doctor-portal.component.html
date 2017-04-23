@@ -1,0 +1,18 @@
+<md-card class="outerCard">
+  <md-card-title class="cardTitle">Electronic Medical Record</md-card-title>
+  <md-card class="innerCard">
+    <md-card-title style="font-size: large">{{firstname}} {{surname}}   <span *ngIf="isVip" style="padding: 5px;background-color: darkred;color:white;text-weight:bold;border-radius: 5px;font-size:75%">VIP</span></md-card-title>
+    <app-patient-info [contactDetails]="cd" [dob]="dob"></app-patient-info>
+    <md-tab-group [(selectedIndex)]="selectedIndex" (selectChange)="tabChanged()"><md-tab *ngFor="let doc of documents">
+        <template md-tab-label>
+          {{doc.description}}
+        </template>
+        <md-card>
+        <h4 *ngIf="doc.vid">Comments by {{doc.display_name}}</h4>
+          <iframe [src]="doc.source" width='566' height='800' allowfullscreen webkitallowfullscreen></iframe>
+        </md-card>
+      </md-tab>
+    </md-tab-group>
+  </md-card>
+</md-card>
+

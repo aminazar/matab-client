@@ -6,7 +6,7 @@ import {Observable, ReplaySubject} from "rxjs";
 
 @Injectable()
 export class AuthService {
-  private authStream = new ReplaySubject<boolean>();
+  private authStream = new ReplaySubject<boolean>(1);
   public user = '';
   public userType = '';
   auth$:Observable<boolean> = this.authStream.asObservable();

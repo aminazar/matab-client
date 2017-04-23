@@ -37,7 +37,7 @@ export class NavbarComponent implements OnInit {
       this.pid = pid;
       this.firstname = this.patientService.firstname;
       this.surname = this.patientService.surname;
-      this.idNumber = this.patientService.idNumber;
+      this.idNumber = this.patientService.id_number;
     })
   }
 

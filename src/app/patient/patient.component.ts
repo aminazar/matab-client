@@ -13,10 +13,10 @@ import {Observable} from "rxjs";
 export class PatientComponent implements OnInit {
   patients:any[] = [];
   patientModelCtrl:FormControl = new FormControl();
-  private filteredNameCode:Observable<any>;
-  private patientsNameCode: Array<any> = [];
-  private filteredPatient: any;
-  private isFiltered: boolean;
+  filteredNameCode:Observable<any>;
+  patientsNameCode: Array<any> = [];
+  filteredPatient: any;
+  isFiltered: boolean;
   constructor(private restService:RestService, private messageService:MessageService,private patientService:PatientService) { }
 
   ngOnInit() {
@@ -35,8 +35,11 @@ export class PatientComponent implements OnInit {
       (data) => {
         if (data.length === 1) {
           this.filteredPatient = this.patients[this.patientsNameCode.findIndex(r=>r===data[0])];
-          this.patientService.newPatient(this.filteredPatient);
-          this.isFiltered = true;
+          this.restService.get(`patient-full-data/${this.filteredPatient.pid}`).subscribe(
+            data => {
+              this.patientService.newPatient(data[0]);
+              this.isFiltered = true;
+            })
         }
         else{
           this.isFiltered = false;
@@ -64,7 +67,8 @@ export class PatientComponent implements OnInit {
       $event.target.select();
     }
   }
-  func(d){
-    console.log(d);
+  addNewPatient(data){
+    this.patients.push(data);
+    this.refreshPatientsDropDown();
   }
 }

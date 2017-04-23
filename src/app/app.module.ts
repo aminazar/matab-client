@@ -17,11 +17,15 @@ import {FlexLayoutModule} from "@angular/flex-layout";
 import {FocusDirective} from './focus.directive';
 import {MessageService} from "./message.service";
 import {PatientIndexComponent} from './patient/patient-index.component';
-import {FileSelectDirective, FileDropDirective} from 'ng2-file-upload/ng2-file-upload';
 import {UploaderComponent} from './uploader/uploader.component';
 import {PatientComponent} from './patient/patient.component';
 import {PatientService} from "./patient.service";
 import { PatientViewComponent } from './patient/patient-view.component';
+import { VisitComponent } from './visit/visit.component';
+import { DoctorPortalComponent } from './doctor-portal/doctor-portal.component';
+import {FileUploadModule} from "ng2-file-upload";
+import { JalaliDateInputComponent } from './jalali-date-input/jalali-date-input.component';
+import { PatientInfoComponent } from './doctor-portal/patient-info.component';
 
 @NgModule({
   declarations: [
@@ -31,13 +35,16 @@ import { PatientViewComponent } from './patient/patient-view.component';
     HomeComponent,
     FocusDirective,
     PatientIndexComponent,
-    FileSelectDirective,
-    FileDropDirective,
     UploaderComponent,
     PatientComponent,
     PatientViewComponent,
+    VisitComponent,
+    DoctorPortalComponent,
+    JalaliDateInputComponent,
+    PatientInfoComponent,
   ],
   imports: [
+    FileUploadModule,
     BrowserModule,
     FormsModule,
     HttpModule,
@@ -49,6 +56,8 @@ import { PatientViewComponent } from './patient/patient-view.component';
       {path: 'login', component: LoginComponent},
       {path: 'patient', component: PatientComponent, canActivate: [LoggedInGuard]},
       {path: 'scans', component: UploaderComponent, canActivate: [LoggedInGuard]},
+      {path: 'visit', component: VisitComponent, canActivate:[LoggedInGuard]},
+      {path: 'doctorPortal', component: DoctorPortalComponent, canActivate:[LoggedInGuard]},
     ]),
   ],
   providers: [AuthService, RestService, LoggedInGuard, MessageService,PatientService],

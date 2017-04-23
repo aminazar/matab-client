@@ -1,0 +1,14 @@
+<span *ngIf="isInput">
+<md-input-container>
+    <input mdInput placeholder="Day" type="number" min='1' max='31' [(ngModel)]="day" (ngModelChange)="calcDate()" #dayEl>
+</md-input-container>/
+<md-input-container>
+    <input mdInput placeholder="Month" type="number" min='1' max='12' [(ngModel)]="month" (ngModelChange)="calcDate()" #monthEl>
+</md-input-container>/
+<md-input-container>
+    <input mdInput placeholder="Year" type="number" min='1290' max='1420' [(ngModel)]="year" #yearEl (ngModelChange)="calcDate()">
+</md-input-container>
+</span>
+<span *ngIf="!isInput">
+    {{inDate.year}}/{{inDate.month}}/{{inDate.day}}
+</span>

@@ -1,0 +1,40 @@
+<md-card *ngIf="enabled" class="outerCard">
+  <md-card-title class="cardTitle">Visits</md-card-title>
+  <md-card class="innerCard">
+    <md-card-title>{{canGo?'Choose Doctor':'Already Sent'}}</md-card-title>
+    <md-card>
+      <p *ngIf="!canGo"><strong>{{currentVisit[0].firstname}} {{currentVisit[0].surname}}</strong> is being visited by <strong>{{currentVisit[0].display_name}}</strong> since <strong>{{currentVisit[0].start_time|date:'shortTime'}}</strong>.</p>
+      <p *ngIf="allBusy" style="color:darkred">All doctors are busy with current appointments!</p>
+      <span *ngIf="canGo&&!allBusy">
+      <md-select placeholder="Doctor" [(ngModel)]="doctor" (ngModelChange)="checkState()">
+        <md-option *ngFor="let doctor of doctors" [value]="doctor.uid">{{ doctor.display_name }}</md-option>
+      </md-select>
+      <md-input-container>
+        <input mdInput autocomplete="off" type="number" min="1" max="4" placeholder="Notebook Number" [(ngModel)]="notebookNumber" (ngModelChange)="checkState()">
+      </md-input-container>
+      <md-input-container>
+        <input mdInput autocomplete="off" type="number" min="1" max="25" placeholder="Page Number" [(ngModel)]="pageNumber" (ngModelChange)="checkState()">
+      </md-input-container>
+      <button md-mini-fab (click)="send()" [disabled]="!sendEnabled" color="primary"><i class="fa fa-send"></i></button>
+      </span>
+    </md-card>
+  </md-card>
+    <md-card class="innerCard">
+      <md-card-title>Current Visits</md-card-title><button type="button" class="btn btn-lg"
+                                                                (click)="refresh()"><i class="fa fa-refresh"></i></button>
+      <md-card>
+        <table class="table">
+          <tr>
+            <th>Doctor</th>
+            <th>Patient</th>
+            <th>Started At</th>
+          </tr>
+          <tr *ngFor="let item of visits">
+            <td>{{item.display_name}}</td>
+            <td>{{item.firstname}} {{item.surname}}</td>
+            <td>{{item.start_time|date:'shortTime'}}</td>
+          </tr>
+        </table>
+      </md-card>
+    </md-card>
+</md-card>

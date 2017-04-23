@@ -10,28 +10,50 @@ import {PatientService} from "../patient.service";
   styleUrls: ['./patient-index.component.css']
 })
 export class PatientIndexComponent implements OnInit {
-  @ViewChild('fname') fname;
-  @ViewChild('sname') sname;
-  @ViewChild('idnumber') idnumber;
   @Output() newAddedPatient = new EventEmitter<any>();
 
-  private addIsDisabledFlag = true;
+  addIsDisabledFlag = true;
   private patientInfo = {
         firstname : '',
         surname : '',
         id_number : ''
       };
-
+  cd = {
+    referredBy:"",
+    surgeon:"",
+    surgeryHospital:"",
+    surgeryDate:{year:null,month:null,day:null},
+    angiographer:"",
+    angioDate:{year:null,month:null,day:null},
+    vip: false,
+  };
+  dob={year:null,month:null,day:null};
+  private pid: number;
+  @Input()
+  set patientData(data:any){
+    this.pid = data.pid;
+    this.patientInfo.firstname = data.firstname;
+    this.patientInfo.firstname = data.surname;
+    this.patientInfo.id_number= data.id_number;
+    this.dob = data.dob;
+    this.cd = data.contact_details;
+  }
+  get patientData():any{
+    return {
+      firstname: this.patientInfo.firstname,
+      surname: this.patientInfo.firstname,
+      id_number: this.patientInfo.id_number,
+      dob: this.dob,
+      contact_details: this.cd,
+    }
+  }
   constructor(private restService: RestService,private messageService : MessageService,private patientService:PatientService) { }
 
   ngOnInit() {
   }
 
   addNewPatientIndex(){
-    this.patientInfo.firstname = this.fname.nativeElement.value;
-    this.patientInfo.surname = this.sname.nativeElement.value;
-    this.patientInfo.id_number = this.idnumber.nativeElement.value;
-    this.restService.insert('patient',this.patientInfo).subscribe(
+    this.restService.insert('patient',this.patientData).subscribe(
         (data) => {
           //Adding new patient to patient table
           let newData ={
@@ -39,30 +61,46 @@ export class PatientIndexComponent implements OnInit {
             firstname : this.patientInfo.firstname,
             surname : this.patientInfo.surname,
             id_number : this.patientInfo.id_number
-          }
+          };
           let name = this.patientInfo.firstname +' '+ this.patientInfo.surname;
-          this.fname.nativeElement.value = '';
-          this.sname.nativeElement.value = '';
-          this.idnumber.nativeElement.value = '';
-          this.addIsDisabledFlag = true;
+          this.blankForm();
           this.patientService.newPatient(newData);
           this.newAddedPatient.emit(newData);
           this.messageService.message(`'${name}' is added to units as a new patient`);
         },
         (error) => {
           this.messageService.error(error);
-          this.fname.nativeElement.value = '';
-          this.sname.nativeElement.value = '';
-          this.idnumber.nativeElement.value = '';
-          this.addIsDisabledFlag = true;
+          this.blankForm();
           this.messageService.message(`Invalid data`);
           if(isDevMode())
             console.log(error);
         }
     );
   }
+
+  updatePatient() {
+
+  }
+
+  private blankForm() {
+    this.patientInfo.firstname = '';
+    this.patientInfo.surname = '';
+    this.patientInfo.id_number = '';
+    this.cd = {
+      referredBy: "",
+      surgeon: "",
+      surgeryHospital: "",
+      surgeryDate: {year: null, month: null, day: null},
+      angiographer: "",
+      angioDate: {year: null, month: null, day: null},
+      vip: false,
+    };
+    this.dob = {year: null, month: null, day: null};
+    this.addIsDisabledFlag = true;
+  }
+
   isReadyToAddPatient(){
-    if(this.fname.nativeElement.value!=='' && this.sname.nativeElement.value!=='' && this.idnumber.nativeElement.value!=='')
+    if(this.patientData.firstname !== '' && this.patientData.surname !== '' && this.patientData.id_number !=='')
       this.addIsDisabledFlag = false;
     else
       this.addIsDisabledFlag = true;
