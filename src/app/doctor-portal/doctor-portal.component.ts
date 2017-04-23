@@ -28,14 +28,13 @@ export class DoctorPortalComponent implements OnInit {
   private refresh() {
     this.restService.get('my-visit').subscribe(
       data => {
-        console.log(data);
         this.firstname = data.patient.firstname;
         this.surname = data.patient.surname;
         this.startTime = data.start_time;
         this.paperId = data.paper_id;
         this.vid = data.vid;
         this.pid = data.pid;
-
+        this.patientService.newPatient(data.patient);
         this.documents = data.documents;
         this.documents.forEach(doc=>{
           let url = new URL(window.location.href);
@@ -44,6 +43,15 @@ export class DoctorPortalComponent implements OnInit {
         });
       },
       err => {console.log(err);this.notFound = true;}
+    )
+  }
+
+  endVisit() {
+    this.restService.get('end-visit/' + this.pid).subscribe(
+      () => {
+        this.refresh();
+      },
+      err => {console.log(err);}
     )
   }
 

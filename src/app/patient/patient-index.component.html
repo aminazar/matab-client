@@ -3,13 +3,13 @@
     <fieldset>
       <legend>Identity</legend>
     <md-input-container>
-      <input mdInput focus placeholder="First Name" [(ngModel)]="patientInfo.firstname" (keyup)="isReadyToAddPatient()">
+      <input mdInput focus placeholder="First Name" [(ngModel)]="firstname" (keyup)="isReadyToAddPatient()">
     </md-input-container>
     <md-input-container>
-      <input mdInput placeholder="Surname" [(ngModel)]="patientInfo.surname" (keyup)="isReadyToAddPatient()">
+      <input mdInput placeholder="Surname" [(ngModel)]="surname" (keyup)="isReadyToAddPatient()">
     </md-input-container>
     <md-input-container>
-      <input mdInput placeholder="ID Number" [(ngModel)]="patientInfo.id_number" (keyup)="isReadyToAddPatient()">
+      <input mdInput placeholder="ID Number" [(ngModel)]="id_number" (keyup)="isReadyToAddPatient()">
     </md-input-container>
       <label>Date of Birth:</label>
       <app-jalali-date-input [(inDate)]="dob" [isInput]="true"></app-jalali-date-input>
@@ -44,5 +44,6 @@
 
     </fieldset>
   </md-card-content>
-    <button md-raised-button (click)="addNewPatientIndex()" [(disabled)]="addIsDisabledFlag">{{this.pid?'Update':'Add'}}</button>
+    <button md-raised-button color="primary" (click)="addNewPatientIndex()" [(disabled)]="addIsDisabledFlag&&!pid">{{pid?'Update':'Add'}}</button>
+    <button *ngIf="pid" md-raised-button (click)="cancelUpdate()">Cancel</button>
 </md-card>

@@ -17,14 +17,15 @@ export class PatientComponent implements OnInit {
   patientsNameCode: Array<any> = [];
   filteredPatient: any;
   isFiltered: boolean;
+  toUpdate = false;
   constructor(private restService:RestService, private messageService:MessageService,private patientService:PatientService) { }
 
   ngOnInit() {
     this.restService.get('patient').subscribe(
       data => {
-        console.log(data);
         data.forEach(row=>this.patients.push(row));
         this.refreshPatientsDropDown();
+        this.getPatientServiceLastUpdate();
       });
 
     this.filteredNameCode = this.patientModelCtrl.valueChanges
@@ -38,7 +39,9 @@ export class PatientComponent implements OnInit {
           this.restService.get(`patient-full-data/${this.filteredPatient.pid}`).subscribe(
             data => {
               this.patientService.newPatient(data[0]);
+              this.filteredPatient=data[0];
               this.isFiltered = true;
+              this.toUpdate = false;
             })
         }
         else{
@@ -49,6 +52,28 @@ export class PatientComponent implements OnInit {
         console.log(err.message);
       }
     );
+  }
+
+  private getPatientServiceLastUpdate() {
+    this.patientService.pid$.subscribe(pid => {
+      if(!this.isFiltered) {
+        let ind = this.patients.findIndex(r => r.pid == pid);
+        this.patients[ind].firstname = this.patientService.firstname;
+        this.patients[ind].surname = this.patientService.surname;
+        this.patients[ind].id_number = this.patientService.id_number;
+        this.patientsNameCode[ind] = `${this.patients[ind].firstname} ${this.patients[ind].surname} - ${this.patients[ind].id_number}`;
+        this.patientModelCtrl.setValue(this.patientsNameCode[ind]);
+        this.patientModelCtrl.markAsTouched();
+      }
+  });
+  }
+
+  toUpdateChange(flag) {
+    this.toUpdate = !flag;
+    if(flag) {
+      this.isFiltered=false;
+      this.getPatientServiceLastUpdate();
+    }
   }
 
   private refreshPatientsDropDown() {

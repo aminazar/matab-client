@@ -1,7 +1,11 @@
 <md-card class="outerCard">
   <md-card-title class="cardTitle">Electronic Medical Record</md-card-title>
-  <md-card class="innerCard">
+    <button type="button" class="btn btn-lg"
+            (click)="refresh()"><i class="fa fa-refresh"></i></button>
+  <md-card *ngIf="surname" class="innerCard">
     <md-card-title>{{firstname}} {{surname}}</md-card-title>
+      <button type="button" class="btn btn-lg"
+              (click)="endVisit()"><i class="fa fa-remove"></i></button>
     <md-tab-group [(selectedIndex)]="selectedIndex" (selectChange)="tabChanged()"><md-tab *ngFor="let doc of documents">
         <template md-tab-label>
           {{doc.description}}

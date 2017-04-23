@@ -1,6 +1,6 @@
-<md-card *ngIf="enabled" class="outerCard">
+<md-card class="outerCard">
   <md-card-title class="cardTitle">Visits</md-card-title>
-  <md-card class="innerCard">
+  <md-card *ngIf="enabled" class="innerCard">
     <md-card-title>{{canGo?'Choose Doctor':'Already Sent'}}</md-card-title>
     <md-card>
       <p *ngIf="!canGo"><strong>{{currentVisit[0].firstname}} {{currentVisit[0].surname}}</strong> is being visited by <strong>{{currentVisit[0].display_name}}</strong> since <strong>{{currentVisit[0].start_time|date:'shortTime'}}</strong>.</p>
@@ -10,10 +10,10 @@
         <md-option *ngFor="let doctor of doctors" [value]="doctor.uid">{{ doctor.display_name }}</md-option>
       </md-select>
       <md-input-container>
-        <input mdInput autocomplete="off" type="number" min="1" max="4" placeholder="Notebook Number" [(ngModel)]="notebookNumber" (ngModelChange)="checkState()">
+        <input mdInput autocomplete="off" type="number" min="1" max="4" placeholder="Notebook Number" [(ngModel)]="notebookNumber" (ngModelChange)="checkState()" [disabled]="paperDisabled">
       </md-input-container>
       <md-input-container>
-        <input mdInput autocomplete="off" type="number" min="1" max="25" placeholder="Page Number" [(ngModel)]="pageNumber" (ngModelChange)="checkState()">
+        <input mdInput autocomplete="off" type="number" min="1" max="25" placeholder="Page Number" [(ngModel)]="pageNumber" (ngModelChange)="checkState()" [disabled]="paperDisabled">
       </md-input-container>
       <button md-mini-fab (click)="send()" [disabled]="!sendEnabled" color="primary"><i class="fa fa-send"></i></button>
       </span>
@@ -28,11 +28,14 @@
             <th>Doctor</th>
             <th>Patient</th>
             <th>Started At</th>
+            <th *ngIf="!isDoctor">Actions</th>
           </tr>
           <tr *ngFor="let item of visits">
             <td>{{item.display_name}}</td>
             <td>{{item.firstname}} {{item.surname}}</td>
             <td>{{item.start_time|date:'shortTime'}}</td>
+            <td *ngIf="!isDoctor"><button type="button" class="btn btn-danger btn-xs"
+                        (click)="endVisit(item.did,item.pid)"><i class="fa fa-remove"></i></button></td>
           </tr>
         </table>
       </md-card>
