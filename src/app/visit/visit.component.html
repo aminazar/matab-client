@@ -28,12 +28,14 @@
             <th>Doctor</th>
             <th>Patient</th>
             <th>Started At</th>
+            <th>Duration</th>
             <th *ngIf="!isDoctor">Actions</th>
           </tr>
           <tr *ngFor="let item of visits">
             <td>{{item.display_name}}</td>
             <td>{{item.firstname}} {{item.surname}}</td>
             <td>{{item.start_time|date:'shortTime'}}</td>
+            <td>{{item.duration}}</td>
             <td *ngIf="!isDoctor"><button type="button" class="btn btn-danger btn-xs"
                         (click)="endVisit(item.did,item.pid)"><i class="fa fa-remove"></i></button></td>
           </tr>

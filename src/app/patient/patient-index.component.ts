@@ -26,7 +26,7 @@ export class PatientIndexComponent implements OnInit {
     vip: false,
   };
   dob={year:null,month:null,day:null};
-  private pid: number;
+  pid: number;
   @Input()
   set patientData(data:any){
     if(data) {

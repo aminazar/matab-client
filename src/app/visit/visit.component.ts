@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {RestService} from "../rest.service";
 import {PatientService} from "../patient.service";
 import {AuthService} from "../auth.service";
+import * as moment from "moment";
 
 @Component({
   selector: 'app-visit',
@@ -47,7 +48,7 @@ export class VisitComponent implements OnInit {
     })
   }
 
-  private endVisit(uid, pid) {
+  endVisit(uid, pid) {
     this.restService.update('end-visit/' + pid, uid, {}).subscribe(
       () => {
         this.visits.splice(this.visits.findIndex(r => r.pid === pid && r.did === uid), 1);
@@ -59,11 +60,12 @@ export class VisitComponent implements OnInit {
     )
   }
 
-  private refresh() {
+  refresh() {
     this.restService.get('active-visits').subscribe(
       data => {
         this.visits = [];
         data.forEach(r => this.visits.push(r));
+        setInterval(()=>this.visits.forEach(r=>r.duration = moment.duration(moment().diff(r.start_time)).humanize()),1000);
         this.getPatientId();
         this.restService.get('doctors').subscribe(
           drs => {
@@ -75,11 +77,11 @@ export class VisitComponent implements OnInit {
     );
   }
 
-  private checkState() {
+  checkState() {
     this.sendEnabled = this.doctor !== null && this.pageNumber !== null && this.notebookNumber !== null;
   }
 
-  private send() {
+  send() {
     this.restService.insert('visit', {
       did: this.doctor,
       page_number: this.pageNumber,
