@@ -8,17 +8,17 @@ import {PatientService} from "../patient.service";
   styleUrls: ['./visit.component.css']
 })
 export class VisitComponent implements OnInit {
-  private visits = [];
-  private pid: number;
-  private enabled: boolean;
-  private currentVisit=[];
-  private canGo: boolean;
-  private doctors = [];
-  private doctor=null;
-  private pageNumber:number=null;
-  private notebookNumber:number=null;
-  private sendEnabled = false;
-  private allBusy = false;
+  visits = [];
+  pid: number;
+  enabled: boolean;
+  currentVisit=[];
+  canGo: boolean;
+  doctors = [];
+  doctor=null;
+  pageNumber:number=null;
+  notebookNumber:number=null;
+  sendEnabled = false;
+  allBusy = false;
 
   constructor(private restService: RestService, private patientService: PatientService) {
   }

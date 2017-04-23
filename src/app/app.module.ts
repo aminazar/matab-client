@@ -17,14 +17,14 @@ import {FlexLayoutModule} from "@angular/flex-layout";
 import {FocusDirective} from './focus.directive';
 import {MessageService} from "./message.service";
 import {PatientIndexComponent} from './patient/patient-index.component';
-import {FileSelectDirective, FileDropDirective} from 'ng2-file-upload/ng2-file-upload';
 import {UploaderComponent} from './uploader/uploader.component';
 import {PatientComponent} from './patient/patient.component';
 import {PatientService} from "./patient.service";
 import { PatientViewComponent } from './patient/patient-view.component';
 import { VisitComponent } from './visit/visit.component';
 import { DoctorPortalComponent } from './doctor-portal/doctor-portal.component';
-import {PdfViewerComponent} from "ng2-pdf-viewer";
+import {FileUploadModule} from "ng2-file-upload";
+import { JalaliDateInputComponent } from './jalali-date-input/jalali-date-input.component';
 
 @NgModule({
   declarations: [
@@ -34,16 +34,15 @@ import {PdfViewerComponent} from "ng2-pdf-viewer";
     HomeComponent,
     FocusDirective,
     PatientIndexComponent,
-    FileSelectDirective,
-    FileDropDirective,
     UploaderComponent,
     PatientComponent,
     PatientViewComponent,
     VisitComponent,
     DoctorPortalComponent,
-    PdfViewerComponent,
+    JalaliDateInputComponent,
   ],
   imports: [
+    FileUploadModule,
     BrowserModule,
     FormsModule,
     HttpModule,

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {RestService} from "../rest.service";
 import {PatientService} from "../patient.service";
+import {DomSanitizer} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-doctor-portal',
@@ -8,16 +9,17 @@ import {PatientService} from "../patient.service";
   styleUrls: ['./doctor-portal.component.css']
 })
 export class DoctorPortalComponent implements OnInit {
-  private firstname = "";
-  private surname: "";
-  private documents: "";
-  private notFound: boolean = true;
-  private paperId: any;
-  private startTime: any;
-  private vid: any;
-  private pid: number;
+  firstname = "";
+  surname: "";
+  documents=[];
+  notFound: boolean = true;
+  paperId: any;
+  startTime: any;
+  vid: any;
+  pid: number;
+  selectedIndex:number;
 
-  constructor(private restService:RestService,private patientService:PatientService) { }
+  constructor(private restService:RestService,private patientService:PatientService, private sanitizer: DomSanitizer) { }
 
   ngOnInit() {
     this.refresh();
@@ -33,10 +35,18 @@ export class DoctorPortalComponent implements OnInit {
         this.paperId = data.paper_id;
         this.vid = data.vid;
         this.pid = data.pid;
+
         this.documents = data.documents;
+        this.documents.forEach(doc=>{
+          let url = new URL(window.location.href);
+          doc.source = this.sanitizer.bypassSecurityTrustResourceUrl(url.origin.replace('4200','3000') + `/ViewerJS/#/documents/${doc.local_addr.split('/').splice(-2,2).join('/')}`);
+          console.log(doc.source)
+        });
       },
       err => {console.log(err);this.notFound = true;}
     )
   }
+
+  tabChanged(){}
 
 }

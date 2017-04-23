@@ -14,6 +14,7 @@ export class AppComponent implements OnInit {
   title = 'app works!';
   showError = false;
   error: string;
+  d = {year:1396,day:2,month:2};
 
   constructor(private patientService:PatientService,private authService:AuthService,private loggedInGuard: LoggedInGuard,private messageService: MessageService, public snackBar: MdSnackBar) {       //add some code
   }

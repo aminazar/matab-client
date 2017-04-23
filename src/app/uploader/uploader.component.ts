@@ -11,10 +11,10 @@ let URL = '/api/scans/';
 export class UploaderComponent implements OnInit{
   public uploader:FileUploader;
   public hasBaseDropZoneOver:boolean = true;
-  private enabled: boolean=false;
-  private pid: any;
-  private documents = [];
-  private dis = {};
+  enabled: boolean=false;
+  pid: any;
+  documents = [];
+  dis = {};
   constructor(private restService:RestService, private patientService:PatientService){}
   ngOnInit(): void {
     this.patientService.pid$.subscribe(pid=>{

@@ -2,18 +2,13 @@
   <md-card-title class="cardTitle">Electronic Medical Record</md-card-title>
   <md-card class="innerCard">
     <md-card-title>{{firstname}} {{surname}}</md-card-title>
-    <md-tab-group [(selectedIndex)]="selectedIndex" (selectChange)="tabChanged()">
-      <md-tab *ngFor="let doc of documents">
+    <md-tab-group [(selectedIndex)]="selectedIndex" (selectChange)="tabChanged()"><md-tab *ngFor="let doc of documents">
         <template md-tab-label>
           {{doc.description}}
         </template>
         <md-card>
-        <h4 *ngIf="doc.display_name">By {{doc.display_name}}</h4>
-          <pdf-viewer [src]="'/documents/'+doc.local_addr.split('/').splice(-2,2).join('/')"
-                      [show-all]="true"
-                      [original-size]="true"
-                      style="display: block;"
-          ></pdf-viewer>
+        <h4 *ngIf="doc.vid">Comments by {{doc.display_name}}</h4>
+          <iframe [src]="doc.source" width='566' height='800' allowfullscreen webkitallowfullscreen></iframe>
         </md-card>
       </md-tab>
     </md-tab-group>
