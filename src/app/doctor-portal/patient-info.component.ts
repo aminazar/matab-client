@@ -37,8 +37,7 @@ export class PatientInfoComponent implements OnInit {
       this.angiographer = this.contactDetails.angiographer ? this.contactDetails.angiographer : null;
       this.angioDate = this.contactDetails.angioDate ? this.contactDetails.angioDate.year + '/' + this.contactDetails.angioDate.month + '/' + this.contactDetails.angioDate.day : '-';
       this.referredBy = this.contactDetails.referredBy ? this.contactDetails.referredBy : '-';
-      // this.dob= this.contactDetails.dob.year +'/' + this.contactDetails.dob.month + '/' + this.contactDetails.dob.day;
-      if(!this.dob) this.dob="";
+      if(!this.dob) this.dob="-";
     }
   }
 
