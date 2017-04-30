@@ -25,12 +25,23 @@ export class PatientComponent implements OnInit {
       data => {
         data.forEach(row=>this.patients.push(row));
         this.refreshPatientsDropDown();
-        this.getPatientServiceLastUpdate();
       });
 
     this.filteredNameCode = this.patientModelCtrl.valueChanges
       .startWith(null)
       .map((nameCode) => this.filterPatients(nameCode));
+
+    this.patientService.pid$.subscribe(pid => {
+      if(!this.isFiltered) {
+        let ind = this.patients.findIndex(r => r.pid == pid);
+        this.patients[ind].firstname = this.patientService.firstname;
+        this.patients[ind].surname = this.patientService.surname;
+        this.patients[ind].id_number = this.patientService.id_number;
+        this.patientsNameCode[ind] = `${this.patients[ind].firstname} ${this.patients[ind].surname} - ${this.patients[ind].id_number}`;
+        this.patientModelCtrl.setValue(this.patientsNameCode[ind]);
+        this.patientModelCtrl.markAsTouched();
+      }
+    });
 
     this.filteredNameCode.subscribe(
       (data) => {
@@ -54,25 +65,14 @@ export class PatientComponent implements OnInit {
     );
   }
 
-  private getPatientServiceLastUpdate() {
-    this.patientService.pid$.subscribe(pid => {
-      if(!this.isFiltered) {
-        let ind = this.patients.findIndex(r => r.pid == pid);
-        this.patients[ind].firstname = this.patientService.firstname;
-        this.patients[ind].surname = this.patientService.surname;
-        this.patients[ind].id_number = this.patientService.id_number;
-        this.patientsNameCode[ind] = `${this.patients[ind].firstname} ${this.patients[ind].surname} - ${this.patients[ind].id_number}`;
-        this.patientModelCtrl.setValue(this.patientsNameCode[ind]);
-        this.patientModelCtrl.markAsTouched();
-      }
-  });
-  }
-
-  toUpdateChange(flag) {
-    this.toUpdate = !flag;
-    if(flag) {
+  toUpdateChange(data) {
+    this.toUpdate = data !== false;
+    if(!this.toUpdate)
+      this.isFiltered = true;
+    if(this.toUpdate) {
       this.isFiltered=false;
-      this.getPatientServiceLastUpdate();
+      if(data!==true)
+        this.patientService.newPatient(data);
     }
   }
 
@@ -95,5 +95,7 @@ export class PatientComponent implements OnInit {
   addNewPatient(data){
     this.patients.push(data);
     this.refreshPatientsDropDown();
+    this.isFiltered=false;
+    this.patientService.newPatient(data);
   }
 }

@@ -14,6 +14,6 @@ export class PatientViewComponent implements OnInit {
   }
 
   enableUpdate(){
-    this.updateAsked.emit(false);
+    this.updateAsked.emit(true);
   }
 }

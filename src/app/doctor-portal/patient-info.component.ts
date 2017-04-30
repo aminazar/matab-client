@@ -32,8 +32,10 @@ export class PatientInfoComponent implements OnInit {
       this.contactDetails= this.patientService.contact_details;
       this.dob = [this.patientService.dob.year, this.patientService.dob.month,this.patientService.dob.day].join('/');
       this.age = this.patientService.dob.gd ? this.calcAge(moment().diff(moment(this.patientService.dob.gd))) : null;
-      this.referredBy = this.patientService.contact_details.referredBy ? this.patientService.contact_details.referredBy : '*';
-      this.isVip = this.patientService.contact_details.vip;
+      if(this.patientService.contact_details) {
+        this.referredBy = this.patientService.contact_details.referredBy ? this.patientService.contact_details.referredBy : '-';
+        this.isVip = this.patientService.contact_details.vip;
+      }
       this.refreshDetails();
     });
   }
@@ -57,6 +59,6 @@ export class PatientInfoComponent implements OnInit {
   }
 
   enableUpdate(){
-    this.updateAsked.emit(false);
+    this.updateAsked.emit(true);
   }
 }
