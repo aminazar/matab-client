@@ -1,0 +1,28 @@
+<md-card>
+  <md-card-title>Patient Information</md-card-title>
+  <br>
+  <br>
+  <md-card-content>
+    <md-input-container>
+      <label style="font-weight: bold">First Name :</label>
+      <input mdInput focus placeholder="First Name" [(ngModel)]="firstName" (change)="onChange()">
+    </md-input-container>
+    <br>
+    <md-input-container>
+      <label style="font-weight: bold">Last Name :</label>
+      <input mdInput placeholder="Last Name" [(ngModel)]="lastName" (change)="onChange()">
+    </md-input-container>
+    <br>
+    <md-input-container>
+      <label style="font-weight: bold">ID Number :</label>
+      <input mdInput placeholder="National Code" [(ngModel)]="nationalCode" (change)="onChange()" (keydown)="ifEnterLogin($event)">
+    </md-input-container>
+  </md-card-content>
+  <br>
+  <br>
+  <md-card-actions>
+    <button md-mini-fab [disabled]="!compeletePatientInfo" (click)="addNewPatientIndex()" color="primary" title="Add Patient">
+      <md-icon fontSet="fa" fontIcon="fa-arrow-right"></md-icon>
+    </button>
+  </md-card-actions>
+</md-card>
