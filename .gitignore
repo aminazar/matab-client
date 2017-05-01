@@ -34,3 +34,4 @@ testem.log
 Thumbs.db
 
 /src/app/*.js
+/.idea/workspace.xml
