@@ -1,4 +1,4 @@
-import {Component, OnInit, Input} from '@angular/core';
+import {Component, OnInit, Input, EventEmitter, Output} from '@angular/core';
 
 @Component({
   selector: 'app-patient-view',
@@ -7,9 +7,13 @@ import {Component, OnInit, Input} from '@angular/core';
 })
 export class PatientViewComponent implements OnInit {
   @Input() patientData:any;
+  @Output() updateAsked = new EventEmitter<any>();
   constructor() { }
 
   ngOnInit() {
   }
 
+  enableUpdate(){
+    this.updateAsked.emit(false);
+  }
 }

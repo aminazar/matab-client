@@ -50,3 +50,7 @@ background-color:antiquewhite !important; padding: 10px;
 .mat-button-toggle:hover{
   background-color: antiquewhite;
 }
+.btn-lg-o {
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+}

@@ -11,6 +11,7 @@ export class AuthService {
   public userType = '';
   auth$:Observable<boolean> = this.authStream.asObservable();
   originBeforeLogin = '/';
+  public display_name='';
 
   constructor(private restService: RestService, private router: Router, private messageService:MessageService) {
     this.restService.call('validUser')
@@ -47,6 +48,7 @@ export class AuthService {
     let data = res.json();
     this.user = data.user;
     this.userType = data.userType;
+    this.display_name = data.display_name;
     this.authStream.next(true);
   }
 

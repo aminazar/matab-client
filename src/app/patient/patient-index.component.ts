@@ -13,11 +13,9 @@ export class PatientIndexComponent implements OnInit {
   @Output() newAddedPatient = new EventEmitter<any>();
 
   addIsDisabledFlag = true;
-  private patientInfo = {
-        firstname : '',
-        surname : '',
-        id_number : ''
-      };
+  firstname = "";
+  surname = "";
+  id_number = "";
   cd = {
     referredBy:"",
     surgeon:"",
@@ -28,21 +26,26 @@ export class PatientIndexComponent implements OnInit {
     vip: false,
   };
   dob={year:null,month:null,day:null};
-  private pid: number;
+  pid: number;
   @Input()
   set patientData(data:any){
-    this.pid = data.pid;
-    this.patientInfo.firstname = data.firstname;
-    this.patientInfo.firstname = data.surname;
-    this.patientInfo.id_number= data.id_number;
-    this.dob = data.dob;
-    this.cd = data.contact_details;
+    if(data) {
+      this.pid = data.pid;
+      this.firstname = data.firstname;
+      this.surname = data.surname;
+      this.id_number = data.id_number;
+      this.dob = data.dob;
+      if (data.contact_details)
+        for (let key in data.contact_details)
+          this.cd[key] = data.contact_details[key];
+    }
   }
   get patientData():any{
     return {
-      firstname: this.patientInfo.firstname,
-      surname: this.patientInfo.firstname,
-      id_number: this.patientInfo.id_number,
+      pid: this.pid,
+      firstname: this.firstname,
+      surname: this.surname,
+      id_number: this.id_number,
       dob: this.dob,
       contact_details: this.cd,
     }
@@ -53,39 +56,56 @@ export class PatientIndexComponent implements OnInit {
   }
 
   addNewPatientIndex(){
-    this.restService.insert('patient',this.patientData).subscribe(
-        (data) => {
-          //Adding new patient to patient table
-          let newData ={
-            pid : data,
-            firstname : this.patientInfo.firstname,
-            surname : this.patientInfo.surname,
-            id_number : this.patientInfo.id_number
-          };
-          let name = this.patientInfo.firstname +' '+ this.patientInfo.surname;
-          this.blankForm();
-          this.patientService.newPatient(newData);
-          this.newAddedPatient.emit(newData);
-          this.messageService.message(`'${name}' is added to units as a new patient`);
-        },
-        (error) => {
-          this.messageService.error(error);
-          this.blankForm();
-          this.messageService.message(`Invalid data`);
-          if(isDevMode())
-            console.log(error);
-        }
-    );
+    this.addIsDisabledFlag = true;
+    if(this.pid)
+      this.updatePatient();
+    else
+      this.restService.insert('patient',this.patientData).subscribe(
+          (data) => {
+            //Adding new patient to patient table
+            this.pid = data;
+            let name = this.firstname +' '+ this.surname;
+            this.blankForm();
+            this.patientService.newPatient(this.patientData);
+            this.newAddedPatient.emit(this.patientData);
+            this.messageService.message(`'${name}' is added as a new patient.`);
+          },
+          (error) => {
+            this.messageService.error(error);
+            this.blankForm();
+            this.messageService.message(`Invalid data`);
+            if(isDevMode())
+              console.log(error);
+          }
+      );
   }
 
   updatePatient() {
+    this.restService.update('patient', this.pid, this.patientData).subscribe(
+      () =>{
+        this.blankForm();
+        let name = this.firstname +' '+ this.surname;
+        this.patientService.newPatient(this.patientData);
+        this.newAddedPatient.emit(true);
+        this.messageService.message(`${name}'s record is updated.`);
+      },
+      (error) => {
+        this.messageService.error(error);
+        this.messageService.message(`Invalid data`);
+        if(isDevMode())
+          console.log(error);
+      }
+    )
+  }
 
+  cancelUpdate() {
+    this.newAddedPatient.emit(true);
   }
 
   private blankForm() {
-    this.patientInfo.firstname = '';
-    this.patientInfo.surname = '';
-    this.patientInfo.id_number = '';
+    this.firstname = '';
+    this.surname = '';
+    this.id_number = '';
     this.cd = {
       referredBy: "",
       surgeon: "",

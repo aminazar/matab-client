@@ -10,7 +10,7 @@ export class PatientService{
   public contact_details:any={};
   private pidStream = new ReplaySubject<number>(1);
   public pid$:Observable<number> = this.pidStream.asObservable();
-  public dob = {year: null, month: null, day: null};
+  public dob = {year: null, month: null, day: null,gd:null};
   constructor() {}
 
   newPatient(data:any) {

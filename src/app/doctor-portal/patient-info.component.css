@@ -6,3 +6,15 @@
 .right-col{
     text-align: left;
 }
+
+table.info{
+    width: 250px;
+    display:inline-table;
+}
+
+.info th{
+    background-color: gainsboro;
+}
+.info td{
+    background-color: ghostwhite;
+}

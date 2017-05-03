@@ -1,7 +1,9 @@
 <md-card>
- <md-card-title style="font-size: small; font-weight: bold">Surgery and Angiography Information</md-card-title>
-  <md-card style="font-size: small;">
-    <table class="table" style="width: 250px">
+  <md-card-title (click)="enableUpdate()">{{firstname}} {{surname}} - {{age}}<span *ngIf="isVip" style="padding: 5px;background-color: darkred;color:white;text-weight:bold;border-radius: 5px;font-size:75%">VIP</span></md-card-title>
+    <table class="table info">
+      <tr>
+        <th colspan="2">Personal Info</th>
+      </tr>
       <tr>
         <td class="left-col">Birthday : </td>
         <td class="right-col">{{dob}}</td>
@@ -9,6 +11,11 @@
       <tr>
         <td class="left-col">Referred by : </td>
         <td class="right-col">{{referredBy}}</td>
+      </tr>
+    </table>
+    <table class="table info">
+      <tr>
+        <th colspan="2">Surgery</th>
       </tr>
       <tr>
         <td class="left-col">Surgery Date : </td>
@@ -22,6 +29,11 @@
         <td class="left-col">Hospital :</td>
         <td class="right-col">{{hospital}}</td>
       </tr>
+    </table>
+    <table class="table info">
+      <tr>
+        <th colspan="2">Angiography</th>
+      </tr>
       <tr>
         <td class="left-col">Angiography Date :</td>
         <td class="right-col">{{angioDate}}</td>
@@ -32,4 +44,15 @@
       </tr>
     </table>
   </md-card>
-</md-card>
+
+
+
+<!--Surgery Date : {{surgeryDate}}-->
+<!--<br>-->
+<!--Surgeon : {{surgeon}}-->
+<!--<br>-->
+<!--Hospital : {{hospital}}-->
+<!--<br>-->
+<!--Angiography Date : {{angioDate}}-->
+<!--<br>-->
+<!--Angiographer : {{angiographer}}-->

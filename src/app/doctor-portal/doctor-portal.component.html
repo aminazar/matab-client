@@ -1,8 +1,15 @@
 <md-card class="outerCard">
   <md-card-title class="cardTitle">Electronic Medical Record</md-card-title>
-  <md-card class="innerCard">
-    <md-card-title style="font-size: large">{{firstname}} {{surname}}   <span *ngIf="isVip" style="padding: 5px;background-color: darkred;color:white;text-weight:bold;border-radius: 5px;font-size:75%">VIP</span></md-card-title>
-    <app-patient-info [contactDetails]="cd" [dob]="dob"></app-patient-info>
+
+    <button type="button" class="btn btn-lg btn-lg-o"
+            (click)="refresh()"><i class="fa fa-refresh"></i></button>
+    <button  *ngIf="!notFound" style="right: 24px;position: absolute;" type="button" class="btn btn-lg btn-lg-o"
+            (click)="endVisit()"><i class="fa fa-remove"></i></button>
+  <md-card *ngIf="!notFound" class="innerCard">
+      <app-patient-info></app-patient-info>
+  </md-card>
+</md-card>
+<md-card  *ngIf="!notFound" class="outerCard">
     <md-tab-group [(selectedIndex)]="selectedIndex" (selectChange)="tabChanged()"><md-tab *ngFor="let doc of documents">
         <template md-tab-label>
           {{doc.description}}
@@ -13,6 +20,4 @@
         </md-card>
       </md-tab>
     </md-tab-group>
-  </md-card>
 </md-card>
-

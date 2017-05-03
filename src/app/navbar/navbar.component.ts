@@ -22,6 +22,7 @@ export class NavbarComponent implements OnInit {
   private firstname: string;
   private surname: string;
   private idNumber: string;
+  private display_name: string;
 
   constructor(private authService: AuthService, private router:Router, private patientService:PatientService) {
   }
@@ -32,6 +33,7 @@ export class NavbarComponent implements OnInit {
       this.user = this.authService.user;
       this.isAdmin = auth && this.authService.userType  === 'admin';
       this.isDoctor = auth && this.authService.userType === 'doctor';
+      this.display_name = this.authService.display_name;
     });
     this.patientService.pid$.subscribe(pid => {
       this.pid = pid;

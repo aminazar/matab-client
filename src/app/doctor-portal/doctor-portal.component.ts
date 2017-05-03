@@ -22,6 +22,7 @@ export class DoctorPortalComponent implements OnInit {
   dob;
   cd;
   isVip: boolean = false;
+  age: any;
 
   constructor(private restService:RestService,private patientService:PatientService, private sanitizer: DomSanitizer) { }
 
@@ -29,21 +30,22 @@ export class DoctorPortalComponent implements OnInit {
     this.refresh();
   }
 
-  private refresh() {
+  refresh() {
     this.restService.get('my-visit').subscribe(
       data => {
-        console.log('+++',data);
+        this.notFound = false;
         this.firstname = data.patient.firstname;
         this.surname = data.patient.surname;
         this.startTime = data.start_time;
         this.paperId = data.paper_id;
         this.vid = data.vid;
         this.pid = data.pid;
-
+        this.patientService.newPatient(data.patient);
         this.documents = data.documents;
         this.documents.forEach(doc=>{
           let url = new URL(window.location.href);
-          doc.source = this.sanitizer.bypassSecurityTrustResourceUrl(url.origin.replace('4200','3000') + `/ViewerJS/#/documents/${doc.local_addr.split('/').splice(-2,2).join('/')}`);
+          doc.fileName = `${this.firstname} ${this.surname} - ` + (doc.vid ? `Comments by ${doc.display_name} at `: '') + doc.description;
+          doc.source = this.sanitizer.bypassSecurityTrustResourceUrl(url.origin.replace('4200','3000') + `/assets/ViewerJS/?zoom=page-width&title=${doc.fileName}#/documents/${doc.local_addr.split('/').splice(-2,2).join('/')}`);
           console.log(doc.source)
         });
         this.dob = data.patient.dob.year+ '/' + data.patient.dob.month + '/' +data.patient.dob.day;
@@ -55,6 +57,14 @@ export class DoctorPortalComponent implements OnInit {
     )
   }
 
-  tabChanged(){}
+  endVisit() {
+    this.restService.insert('end-visit/' + this.pid,{}).subscribe(
+      () => {
+        this.refresh();
+      },
+      err => {console.log('endVisit error:',err);}
+    )
+  }
 
+  tabChanged(){}
 }
