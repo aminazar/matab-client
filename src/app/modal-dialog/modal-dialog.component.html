@@ -1,0 +1,8 @@
+<md-card>
+<h1 md-dialog-title>{{data.title}}</h1>
+<div md-dialog-content>{{data.msg}}</div>
+<div md-dialog-actions>
+  <button md-raised-button color="primary" (click)="close('OK')">OK</button>
+  <button *ngIf="data.hasCancel" md-md-raised-button (click)="close('Cancel')">Cancel</button>
+</div>
+</md-card>
