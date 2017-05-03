@@ -1,9 +1,9 @@
 <md-card class="outerCard">
   <md-card-title class="cardTitle">Electronic Medical Record</md-card-title>
 
-    <button type="button" class="btn btn-lg btn-lg-o"
+    <button *ngIf="!externalVid" type="button" class="btn btn-lg btn-lg-o"
             (click)="refresh()"><i class="fa fa-refresh"></i></button>
-    <button  *ngIf="!notFound" style="right: 24px;position: absolute;" type="button" class="btn btn-lg btn-lg-o"
+    <button  *ngIf="!notFound&&!externalVid" style="right: 24px;position: absolute;" type="button" class="btn btn-lg btn-lg-o"
             (click)="endVisit()"><i class="fa fa-remove"></i></button>
   <md-card *ngIf="!notFound" class="innerCard">
       <app-patient-info></app-patient-info>

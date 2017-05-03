@@ -29,6 +29,7 @@ import { PatientInfoComponent } from './doctor-portal/patient-info.component';
 import {WebSocketService} from "angular2-websocket-service";
 import {SocketService} from "./socket.service";
 import { ModalDialogComponent } from './modal-dialog/modal-dialog.component';
+import { DoctorVisitsComponent } from './doctor-visits/doctor-visits.component';
 
 @NgModule({
   declarations: [
@@ -46,6 +47,7 @@ import { ModalDialogComponent } from './modal-dialog/modal-dialog.component';
     JalaliDateInputComponent,
     PatientInfoComponent,
     ModalDialogComponent,
+    DoctorVisitsComponent,
   ],
   imports: [
     FileUploadModule,
@@ -62,6 +64,7 @@ import { ModalDialogComponent } from './modal-dialog/modal-dialog.component';
       {path: 'scans', component: UploaderComponent, canActivate: [LoggedInGuard]},
       {path: 'visit', component: VisitComponent, canActivate:[LoggedInGuard]},
       {path: 'doctorPortal', component: DoctorPortalComponent, canActivate:[LoggedInGuard]},
+      {path: 'doctorVisits', component: DoctorVisitsComponent, canActivate:[LoggedInGuard]}
     ]),
   ],
   providers: [AuthService, RestService, LoggedInGuard, MessageService,PatientService, WebSocketService, SocketService],

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, Input} from '@angular/core';
 import {RestService} from "../rest.service";
 import {PatientService} from "../patient.service";
 import {DomSanitizer} from "@angular/platform-browser";
@@ -13,6 +13,17 @@ import {MessageService} from "../message.service";
   styleUrls: ['./doctor-portal.component.css']
 })
 export class DoctorPortalComponent implements OnInit {
+  private _vid: number;
+  @Input()
+  set externalVid(n:number){
+    this._vid = n;
+    this.refresh(null,this.patientService.visitCacheFind(n));
+  };
+
+  get externalVid(){
+    return this._vid;
+  }
+
   firstname = "";
   surname: "";
   documents=[];
@@ -26,36 +37,50 @@ export class DoctorPortalComponent implements OnInit {
   constructor(private restService:RestService,private patientService:PatientService, private sanitizer: DomSanitizer, private socket:SocketService,private authService:AuthService, private messageService:MessageService) { }
 
   ngOnInit() {
-    this.refresh();
-    this.socket.onMessage(msg=>{
-        if(msg.msgType === "Comments saved"){
-          msg.sd.description = moment().format('HH:mm ddd DDMMMYY');
-          msg.sd.display_name = this.authService.display_name;
-          this.documents.splice(0,0,this.prepareDocsForDisplay(msg.sd));
-          this.messageService.message(msg.text);
+    if(!this.externalVid) {
+      this.refresh();
+      this.socket.onMessage(msg => {
+          if (msg.msgType === "Comments saved") {
+            msg.sd.description = moment().format('HH:mm ddd DDMMMYY');
+            msg.sd.display_name = this.authService.display_name;
+            this.documents.splice(0, 0, this.prepareDocsForDisplay(msg.sd));
+            this.messageService.message(msg.text);
+          }
+          else {
+            this.messageService.popup(msg.text, msg.msgType, msg.msgType === "New patient", userResponse => this.refresh(userResponse));
+          }
         }
-        else if(msg.msgType === "Patient sent"){
-
-        }
-      }
-    );
+      );
+    }
   }
 
-  refresh() {
-    this.restService.get('my-visit').subscribe(
-      data => {
-        this.notFound = false;
-        this.firstname = data.patient.firstname;
-        this.surname = data.patient.surname;
-        this.startTime = data.start_time;
-        this.paperId = data.paper_id;
-        this.vid = data.vid;
-        this.pid = data.pid;
-        this.patientService.newPatient(data.patient);
-        this.documents = data.documents.map(this.prepareDocsForDisplay);
-      },
-      err => {console.log(err);this.notFound = true;}
-    )
+  refresh(userResponse="OK",loadedData=null) {
+    let load = data => {
+      this.notFound = false;
+      this.firstname = data.patient.firstname;
+      this.surname = data.patient.surname;
+      this.startTime = data.start_time;
+      this.paperId = data.paper_id;
+      this.vid = data.vid;
+      this.pid = data.pid;
+      this.patientService.newPatient(data.patient);
+      this.patientService.visitCachePush(data);
+      this.documents = data.documents.map(doc=>this.prepareDocsForDisplay(doc));
+      if(userResponse==="Cancel")
+        this.endVisit();
+    };
+
+    if(loadedData!==null) {
+      load(loadedData);
+    }
+    else {
+      this.restService.get('my-visit').subscribe(load,
+        err => {
+          console.log(err);
+          this.notFound = true;
+        }
+      )
+    }
   }
 
   private prepareDocsForDisplay(doc) {

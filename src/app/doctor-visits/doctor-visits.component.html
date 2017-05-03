@@ -1,0 +1,6 @@
+
+<md-button-toggle-group  multiple>
+  <md-button-toggle *ngFor="let row of selector.values;let i=index" (change)="visitChange($event)" [checked]="vid===row" [value]="row" [class.shared]="selector.display[i].sharingInfo.by">{{selector.display[i].text}}<span *ngIf="selector.display[i].sharingInfo.by"> - Shared by {{selector.display[i].sharingInfo.by}}</span></md-button-toggle>
+</md-button-toggle-group>
+
+<app-doctor-portal *ngIf="vid" [externalVid]="vid"></app-doctor-portal>
