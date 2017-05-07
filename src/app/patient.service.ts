@@ -21,7 +21,7 @@ export class PatientService{
     this.surname = data.surname;
     this.dob = data.dob;
     this.id_number = data.id_number;
-    this.contact_details = data.contangct_details;
+    this.contact_details = data.contact_details;
     this.pidStream.next(this.pid);
   }
 
