@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import {Subject, Observable} from "rxjs";
 import {Response, ResponseOptions} from "@angular/http";
+import {MdDialog} from '@angular/material';
+import {ModalDialogComponent} from "./modal-dialog/modal-dialog.component";
 
 @Injectable()
 export class MessageService {
@@ -38,7 +40,12 @@ export class MessageService {
   warn(msg:string){
     this.warningStream.next(msg);
   }
-  constructor() { }
+
+  popup(msg:string,title:string="",hasCancel=false,callback:any=()=>{}) {
+    let dialogRef = this.dialog.open(ModalDialogComponent,{data:{msg:msg,title:title,hasCancel:hasCancel}});
+    dialogRef.afterClosed().subscribe(callback);
+  }
+  constructor(public dialog: MdDialog) { }
 
   changeToUnderstandableMessage(msg: any): Response{
     let data = msg._body;

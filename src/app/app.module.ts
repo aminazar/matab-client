@@ -26,6 +26,9 @@ import { DoctorPortalComponent } from './doctor-portal/doctor-portal.component';
 import {FileUploadModule} from "ng2-file-upload";
 import { JalaliDateInputComponent } from './jalali-date-input/jalali-date-input.component';
 import { PatientInfoComponent } from './doctor-portal/patient-info.component';
+import {WebSocketService} from "angular2-websocket-service";
+import {SocketService} from "./socket.service";
+import { ModalDialogComponent } from './modal-dialog/modal-dialog.component';
 
 @NgModule({
   declarations: [
@@ -42,6 +45,7 @@ import { PatientInfoComponent } from './doctor-portal/patient-info.component';
     DoctorPortalComponent,
     JalaliDateInputComponent,
     PatientInfoComponent,
+    ModalDialogComponent,
   ],
   imports: [
     FileUploadModule,
@@ -60,8 +64,9 @@ import { PatientInfoComponent } from './doctor-portal/patient-info.component';
       {path: 'doctorPortal', component: DoctorPortalComponent, canActivate:[LoggedInGuard]},
     ]),
   ],
-  providers: [AuthService, RestService, LoggedInGuard, MessageService,PatientService],
-  bootstrap: [AppComponent]
+  providers: [AuthService, RestService, LoggedInGuard, MessageService,PatientService, WebSocketService, SocketService],
+  bootstrap: [AppComponent],
+  entryComponents: [ModalDialogComponent],
 })
 export class AppModule {
 }

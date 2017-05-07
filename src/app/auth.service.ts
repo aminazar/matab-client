@@ -3,6 +3,7 @@ import {RestService} from "./rest.service";
 import {Router} from "@angular/router";
 import {MessageService} from "./message.service";
 import {Observable, ReplaySubject} from "rxjs";
+import {SocketService} from "./socket.service";
 
 @Injectable()
 export class AuthService {
@@ -13,7 +14,7 @@ export class AuthService {
   originBeforeLogin = '/';
   public display_name='';
 
-  constructor(private restService: RestService, private router: Router, private messageService:MessageService) {
+  constructor(private restService: RestService, private router: Router, private messageService:MessageService,  private internalSocket:SocketService) {
     this.restService.call('validUser')
       .subscribe(
         res => {
@@ -50,6 +51,23 @@ export class AuthService {
     this.userType = data.userType;
     this.display_name = data.display_name;
     this.authStream.next(true);
+    this.internalSocket.initSocket(this.userType, this.user);
+    if(this.userType==='doctor')
+      this.internalSocket.send({
+        cmd: 'send',
+        target: ['admin','user'],
+        msg: {
+          msgType:'Login',
+          text: `${this.display_name} logged in.`,
+        },
+      });
+    if(this.userType === 'admin' || this.userType === 'user')
+      this.internalSocket.onMessage(msg=>{
+        if(msg.msgType==="Login")
+          this.messageService.warn(msg.text);
+        if(msg.msgType==="Patient Dismissed")
+          this.messageService.popup(msg.text,msg.msgType)
+      });
   }
 
   logOff() {
@@ -60,6 +78,7 @@ export class AuthService {
           this.userType = '';
           this.authStream.next(false);
           this.router.navigate(['login']);
+          this.internalSocket.ngOnDestroy();
         },
         err => {
           this.messageService.error(err);

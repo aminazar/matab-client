@@ -13,15 +13,15 @@ export class PatientIndexComponent implements OnInit {
   @Output() newAddedPatient = new EventEmitter<any>();
 
   addIsDisabledFlag = true;
-  firstname = "";
-  surname = "";
-  id_number = "";
+  firstname = null;
+  surname = null;
+  id_number = null;
   cd = {
-    referredBy:"",
-    surgeon:"",
-    surgeryHospital:"",
+    referredBy:null,
+    surgeon:null,
+    surgeryHospital:null,
     surgeryDate:{year:null,month:null,day:null},
-    angiographer:"",
+    angiographer:null,
     angioDate:{year:null,month:null,day:null},
     vip: false,
   };
@@ -65,10 +65,9 @@ export class PatientIndexComponent implements OnInit {
             //Adding new patient to patient table
             this.pid = data;
             let name = this.firstname +' '+ this.surname;
-            this.blankForm();
-            this.patientService.newPatient(this.patientData);
             this.newAddedPatient.emit(this.patientData);
             this.messageService.message(`'${name}' is added as a new patient.`);
+            this.blankForm();
           },
           (error) => {
             this.messageService.error(error);
@@ -83,11 +82,10 @@ export class PatientIndexComponent implements OnInit {
   updatePatient() {
     this.restService.update('patient', this.pid, this.patientData).subscribe(
       () =>{
-        this.blankForm();
         let name = this.firstname +' '+ this.surname;
-        this.patientService.newPatient(this.patientData);
-        this.newAddedPatient.emit(true);
+        this.newAddedPatient.emit(this.patientData);
         this.messageService.message(`${name}'s record is updated.`);
+        this.blankForm();
       },
       (error) => {
         this.messageService.error(error);
@@ -99,19 +97,20 @@ export class PatientIndexComponent implements OnInit {
   }
 
   cancelUpdate() {
-    this.newAddedPatient.emit(true);
+    this.newAddedPatient.emit(false);
   }
 
   private blankForm() {
-    this.firstname = '';
-    this.surname = '';
-    this.id_number = '';
+    this.pid = null;
+    this.firstname = null;
+    this.surname = null;
+    this.id_number = null;
     this.cd = {
-      referredBy: "",
-      surgeon: "",
-      surgeryHospital: "",
+      referredBy: null,
+      surgeon: null,
+      surgeryHospital: null,
       surgeryDate: {year: null, month: null, day: null},
-      angiographer: "",
+      angiographer: null,
       angioDate: {year: null, month: null, day: null},
       vip: false,
     };

@@ -54,3 +54,12 @@ background-color:antiquewhite !important; padding: 10px;
   border-bottom-left-radius: 0px;
   border-bottom-right-radius: 0px;
 }
+
+.mat-dialog-container {
+  background: antiquewhite !important;
+  border-radius: 10px !important;
+  padding: 10px !important;
+}
+
+.mat-dialog-title {
+}
