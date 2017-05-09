@@ -36,7 +36,7 @@ export class VisitComponent implements OnInit {
     this.socket.onMessage(msg=>{
       if(msg.msgType==="Patient Dismissed"){
         this.visits = this.visits.filter(r=>r.pid!==msg.pid);
-        this.doctors.concat(this.allDoctors.filter(r=>r.display_name===msg.dr_name));
+        this.doctors = this.doctors.concat(this.allDoctors.filter(r=>r.display_name===msg.dr_name));
         this.canGo = true;
         this.currentVisit = [];
       }
@@ -61,7 +61,16 @@ export class VisitComponent implements OnInit {
   endVisit(uid, pid) {
     this.restService.update('end-visit/' + pid, uid, {}).subscribe(
       () => {
-        this.visits.splice(this.visits.findIndex(r => r.pid === pid && r.did === uid), 1);
+        let ind = this.visits.findIndex(r => r.pid === pid && r.did === uid);
+        this.socket.send({
+          cmd: 'send',
+          target: ['doctor/'+this.allDoctors.filter(r=>r.uid===this.visits[ind].did)[0].name],
+          msg:{
+            msgType: 'Patient Dismissed by Admin',
+            text: `${moment().format('HH:mm')}: Visit of "${this.visits[ind].firstname} ${this.visits[ind].surname}" was ended by the admin.`,
+          }
+        });
+        this.visits.splice(this.visits[ind], 1);
         this.refresh();
       },
       err => {
@@ -107,6 +116,14 @@ export class VisitComponent implements OnInit {
       pid: this.pid,
     }).subscribe(
       () => {
+        this.socket.send({
+          cmd: 'send',
+          target:['doctor/' + this.allDoctors.filter(r=>r.uid===this.doctor)[0].name ],
+          msg:{
+            msgType: "New visit",
+            text: `${moment().format('HH:mm')}: New patient "${this.patientService.firstname} ${this.patientService.surname}" is sent to you for visit.`
+          }
+        });
         if (this.currentVisit.length && this.authService.display_name === this.currentVisit[0].display_name) { //referral by doctor
           this.endVisit(this.currentVisit[0].did, this.currentVisit[0].pid)
         }

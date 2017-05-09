@@ -61,6 +61,7 @@ export class AuthService {
           text: `${this.display_name} logged in.`,
         },
       });
+
     if(this.userType === 'admin' || this.userType === 'user')
       this.internalSocket.onMessage(msg=>{
         if(msg.msgType==="Login")
