@@ -4,6 +4,7 @@ import {PatientService} from "../patient.service";
 import {AuthService} from "../auth.service";
 import * as moment from "moment";
 import {SocketService} from "../socket.service";
+import {SafService} from "../saf.service";
 
 @Component({
   selector: 'app-visit',
@@ -12,9 +13,13 @@ import {SocketService} from "../socket.service";
 })
 export class VisitComponent implements OnInit {
   visits = [];
+  watings = [];
   pid: number;
+  x;
   enabled: boolean;
   currentVisit = [];
+  currentWating = [];
+  isVisitingOrWating: boolean;
   canGo: boolean;
   doctors = [];
   doctor = null;
@@ -27,7 +32,7 @@ export class VisitComponent implements OnInit {
   isDoctor:boolean;
   private allDoctors: any;
 
-  constructor(private restService: RestService, private patientService: PatientService, private authService: AuthService, private socket:SocketService) {
+  constructor(private restService: RestService, private patientService: PatientService, private authService: AuthService, private socket:SocketService, private safService:SafService) {
   }
 
   ngOnInit() {
@@ -48,7 +53,10 @@ export class VisitComponent implements OnInit {
       this.pid = pid;
       this.enabled = true;
       this.currentVisit = this.visits.filter(r => r.pid === this.pid);
-      this.canGo = this.currentVisit.length === 0 || this.authService.display_name === this.currentVisit[0].display_name;
+      this.currentWating = this.watings.filter(r=> r.pid === this.pid);
+      // this.x = this.allDoctors.filter(r => r.uid === this.currentWating[0].did)[0].name;
+      this.isVisitingOrWating = (this.currentWating.length>0) || (this.currentVisit.length>0);
+      this.canGo = !this.isVisitingOrWating ||(this.currentVisit.length>0 && this.authService.display_name === this.currentVisit[0].display_name);
       this.isCurrentDoctorVisit = this.canGo && this.currentVisit.length>0;
       if (this.isCurrentDoctorVisit) {
         this.pageNumber = this.currentVisit[0].paper_id % 101 + 1;
@@ -60,77 +68,100 @@ export class VisitComponent implements OnInit {
 
   endVisit(uid, pid) {
     this.restService.update('end-visit/' + pid, uid, {}).subscribe(
-      () => {
-        let ind = this.visits.findIndex(r => r.pid === pid && r.did === uid);
-        this.socket.send({
-          cmd: 'send',
-          target: ['doctor/'+this.allDoctors.filter(r=>r.uid===this.visits[ind].did)[0].name],
-          msg:{
-            msgType: 'Patient Dismissed by Admin',
-            text: `${moment().format('HH:mm')}: Visit of "${this.visits[ind].firstname} ${this.visits[ind].surname}" was ended by the admin.`,
-          }
-        });
-        this.visits.splice(this.visits[ind], 1);
-        this.refresh();
-      },
-      err => {
-        console.log(err);
-      }
+        () => {
+          let ind = this.visits.findIndex(r => r.pid === pid && r.did === uid);
+          this.socket.send({
+            cmd: 'send',
+            target: ['doctor/'+this.allDoctors.filter(r=>r.uid===this.visits[ind].did)[0].name],
+            msg:{
+              msgType: 'Patient Dismissed by Admin',
+              text: `${moment().format('HH:mm')}: Visit of "${this.visits[ind].firstname} ${this.visits[ind].surname}" was ended by the admin.`,
+            }
+          });
+          this.visits.splice(this.visits[ind], 1);
+          this.refresh();
+        },
+        err => {
+          console.log(err);
+        }
     )
   }
 
   refresh() {
-    this.restService.get('active-visits').subscribe(
-      data => {
-        this.visits = [];
-        data.forEach(r => this.visits.push(r));
-        setInterval(()=>this.visits.forEach(r=>r.duration = moment.duration(moment().diff(r.start_time)).humanize()),1000);
-        this.getPatientId();
-        if(this.allDoctors)
-          this.updateDoctorsDropDown();
-        else {
-          this.restService.get('doctors').subscribe(
-            drs => {
-              this.allDoctors = drs;
-              this.updateDoctorsDropDown();
-            });
-        }
+    this.watings = [];
+    let a = this.safService.safWatingForVisit;
+    for (let key in a) {
+      for (var x = 0; x < a[key].length; x++) {
+        this.watings.push(a[key][x]);
       }
+    }
+    this.restService.get('active-visits').subscribe(
+        data => {
+          this.visits = [];
+          data.forEach(r => this.visits.push(r));
+          setInterval(() => this.visits.forEach(r => r.duration = moment.duration(moment().diff(r.start_time)).humanize()), 1000);
+          this.getPatientId();
+          if (this.allDoctors)
+            this.updateDoctorsDropDown();
+          else {
+            this.restService.get('doctors').subscribe(
+                drs => {
+                  this.allDoctors = drs;
+                  this.updateDoctorsDropDown();
+                });
+          }
+        }
     );
   }
 
+  send() {
+    if( this.visits.filter(r => r.did === this.doctor).length ===0 ) {
+      this.restService.insert('visit', {
+        did: this.doctor,
+        page_number: this.pageNumber,
+        notebook_number: this.notebookNumber,
+        pid: this.pid,
+      }).subscribe(
+          () => {
+            this.socket.send({
+              cmd: 'send',
+              target: ['doctor/' + this.allDoctors.filter(r => r.uid === this.doctor)[0].name],
+              msg: {
+                msgType: "New visit",
+                text: `${moment().format('HH:mm')}: New patient "${this.patientService.firstname} ${this.patientService.surname}" is sent to you for visit.`
+              }
+            });
+            if (this.currentVisit.length && this.authService.display_name === this.currentVisit[0].display_name) { //referral by doctor
+              this.endVisit(this.currentVisit[0].did, this.currentVisit[0].pid);
+            }
+            else
+              this.refresh();
+          },
+          err => console.log(err)
+      )
+    }
+    else{
+      let data = {
+        did : this.doctor,
+        page_number : this.pageNumber,
+        notebook_number : this.notebookNumber,
+        pid : this.pid,
+        firstName : this.patientService.firstname,
+        surName : this.patientService.surname,
+        waite_start_time : moment().format('HH:mm')
+      };
+      this.safService.addPatientToSaf(data);
+      this.watings.push(data);
+      this.refresh();
+    }
+  }
+
   updateDoctorsDropDown() {
-    this.doctors = this.allDoctors.filter(r => !this.visits.find(s => s.did === r.uid));
-    this.allBusy = this.doctors.length === 0;
+    this.doctors = this.allDoctors;
+    this.allBusy  = this.allDoctors.filter(r => !this.visits.find(s => s.did === r.uid)).length === 0 ? true : false;
   }
 
   checkState() {
     this.sendEnabled = this.doctor !== null && this.pageNumber !== null && this.notebookNumber !== null;
-  }
-
-  send() {
-    this.restService.insert('visit', {
-      did: this.doctor,
-      page_number: this.pageNumber,
-      notebook_number: this.notebookNumber,
-      pid: this.pid,
-    }).subscribe(
-      () => {
-        this.socket.send({
-          cmd: 'send',
-          target:['doctor/' + this.allDoctors.filter(r=>r.uid===this.doctor)[0].name ],
-          msg:{
-            msgType: "New visit",
-            text: `${moment().format('HH:mm')}: New patient "${this.patientService.firstname} ${this.patientService.surname}" is sent to you for visit.`
-          }
-        });
-        if (this.currentVisit.length && this.authService.display_name === this.currentVisit[0].display_name) { //referral by doctor
-          this.endVisit(this.currentVisit[0].did, this.currentVisit[0].pid)
-        }
-        else
-          this.refresh();
-      },
-      err => console.log(err)
-    )
   }
 }

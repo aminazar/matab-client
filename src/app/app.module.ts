@@ -30,6 +30,7 @@ import {WebSocketService} from "angular2-websocket-service";
 import {SocketService} from "./socket.service";
 import { ModalDialogComponent } from './modal-dialog/modal-dialog.component';
 import { DoctorVisitsComponent } from './doctor-visits/doctor-visits.component';
+import {SafService} from "./saf.service";
 
 @NgModule({
   declarations: [
@@ -67,7 +68,7 @@ import { DoctorVisitsComponent } from './doctor-visits/doctor-visits.component';
       {path: 'doctorVisits', component: DoctorVisitsComponent, canActivate:[LoggedInGuard]}
     ]),
   ],
-  providers: [AuthService, RestService, LoggedInGuard, MessageService,PatientService, WebSocketService, SocketService],
+  providers: [AuthService, RestService, LoggedInGuard, MessageService,PatientService, WebSocketService, SocketService, SafService],
   bootstrap: [AppComponent],
   entryComponents: [ModalDialogComponent],
 })

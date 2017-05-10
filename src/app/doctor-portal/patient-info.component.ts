@@ -1,7 +1,7 @@
 import {Component, OnInit, Output, EventEmitter, Input} from '@angular/core';
 import {PatientService} from "../patient.service";
 import * as moment from 'moment';
-import DurationConstructor = moment.unitOfTime.DurationConstructor;
+// import DurationConstructor = moment.unitOfTime.DurationConstructor;
 
 @Component({
   selector: 'app-patient-info',

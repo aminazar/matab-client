@@ -1,11 +1,12 @@
 <md-card class="outerCard">
   <md-card-title class="cardTitle">Visits</md-card-title>
   <md-card *ngIf="enabled" class="innerCard">
-    <md-card-title>{{canGo?'Choose Doctor':'Already Sent'}}</md-card-title>
+    <md-card-title>{{canGo?'Choose Doctor':'Alredy Sent'}}</md-card-title>
     <md-card>
-      <p *ngIf="!canGo"><strong>{{currentVisit[0].firstname}} {{currentVisit[0].surname}}</strong> is being visited by <strong>{{currentVisit[0].display_name}}</strong> since <strong>{{currentVisit[0].start_time|date:'shortTime'}}</strong>.</p>
+      <p *ngIf="!canGo && currentVisit.length!==0"><strong>{{currentVisit[0].firstname}} {{currentVisit[0].surname}}</strong> is being visited by <strong>{{currentVisit[0].display_name}}</strong> since <strong>{{currentVisit[0].start_time|date:'shortTime'}}</strong>.</p>
+      <p *ngIf="!canGo && currentWating.length!==0"><strong>{{currentWating[0].firstName}} {{currentWating[0].surName}}</strong> is being wating for <strong>{{currentWating[0].did}}</strong> since <strong>{{currentWating[0].waite_start_time}}</strong>.</p>
       <p *ngIf="allBusy" style="color:darkred">All doctors are busy with current appointments!</p>
-      <span *ngIf="canGo&&!allBusy">
+      <span *ngIf="canGo">
       <md-select placeholder="Doctor" [(ngModel)]="doctor" (ngModelChange)="checkState()">
         <md-option *ngFor="let doctor of doctors" [value]="doctor.uid">{{ doctor.display_name }}</md-option>
       </md-select>
