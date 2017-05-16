@@ -164,7 +164,7 @@ export class VisitComponent implements OnInit,OnDestroy {
       };
       this.safService.addPatientToSaf(data);
       this.watings.push(data);
-      if (this.currentVisit.length && this.authService.display_name === this.currentVisit[0].display_name) { //referral by doctor
+      if(this.currentVisit.length && this.authService.display_name === this.currentVisit[0].display_name) { //referral by doctor
         this.endVisit(this.currentVisit[0].did, this.currentVisit[0].pid);
       }
       else
@@ -182,13 +182,13 @@ export class VisitComponent implements OnInit,OnDestroy {
   }
 
 
-    checkState() {
-        this.sendEnabled = this.doctor !== null && this.pageNumber !== null && this.notebookNumber !== null;
-        if(this.sendEnabled) {
-            this.patientService.notebookNumber = this.notebookNumber;
-            this.patientService.pageNumber = this.pageNumber;
-        }
-    }
+  checkState() {
+      this.sendEnabled = this.doctor !== null && this.pageNumber !== null && this.notebookNumber !== null;
+      if(this.sendEnabled) {
+          this.patientService.notebookNumber = this.notebookNumber;
+          this.patientService.pageNumber = this.pageNumber;
+      }
+  }
 
   ngOnDestroy(){
     this.pidSub.unsubscribe();
