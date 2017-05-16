@@ -156,12 +156,20 @@ export class VisitComponent implements OnInit {
       };
       this.safService.addPatientToSaf(data);
       this.watings.push(data);
-      this.refresh();
+      if (this.currentVisit.length && this.authService.display_name === this.currentVisit[0].display_name) { //referral by doctor
+        this.endVisit(this.currentVisit[0].did, this.currentVisit[0].pid);
+      }
+      else
+        this.refresh();
     }
   }
 
   updateDoctorsDropDown() {
-    this.doctors = this.allDoctors;
+    if (this.currentVisit.length && this.authService.display_name === this.currentVisit[0].display_name) { //referral by doctor
+      this.doctors = this.allDoctors.filter(r => r.display_name!=this.authService.display_name)
+    }
+    else
+      this.doctors = this.allDoctors;
     this.allBusy  = this.allDoctors.filter(r => !this.visits.find(s => s.did === r.uid)).length === 0 ? true : false;
   }
 
