@@ -1,16 +1,17 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, OnDestroy} from '@angular/core';
 import {RestService} from "../rest.service";
 import {PatientService} from "../patient.service";
 import {AuthService} from "../auth.service";
 import * as moment from "moment";
 import {SocketService} from "../socket.service";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-visit',
   templateUrl: './visit.component.html',
   styleUrls: ['./visit.component.css']
 })
-export class VisitComponent implements OnInit {
+export class VisitComponent implements OnInit,OnDestroy {
   visits = [];
   pid: number;
   enabled: boolean;
@@ -26,6 +27,7 @@ export class VisitComponent implements OnInit {
   isCurrentDoctorVisit = false;
   isDoctor:boolean;
   private allDoctors: any;
+  private pidSub: Subscription;
 
   constructor(private restService: RestService, private patientService: PatientService, private authService: AuthService, private socket:SocketService) {
   }
@@ -44,7 +46,7 @@ export class VisitComponent implements OnInit {
   }
 
   private getPatientId() {
-    this.patientService.pid$.subscribe(pid => {
+    this.pidSub = this.patientService.pid$.subscribe(pid => {
       this.pid = pid;
       this.enabled = true;
       this.currentVisit = this.visits.filter(r => r.pid === this.pid);
@@ -54,6 +56,10 @@ export class VisitComponent implements OnInit {
         this.pageNumber = this.currentVisit[0].paper_id % 101 + 1;
         this.notebookNumber = Math.floor(this.currentVisit[0].paper_id / 101 ) + 1;
         this.paperDisabled = true;
+      }
+      else {
+        this.notebookNumber = this.patientService.notebookNumber;
+        this.pageNumber = this.patientService.pageNumber;
       }
     })
   }
@@ -106,6 +112,10 @@ export class VisitComponent implements OnInit {
 
   checkState() {
     this.sendEnabled = this.doctor !== null && this.pageNumber !== null && this.notebookNumber !== null;
+    if(this.sendEnabled) {
+      this.patientService.notebookNumber = this.notebookNumber;
+      this.patientService.pageNumber = this.pageNumber;
+    }
   }
 
   send() {
@@ -132,5 +142,9 @@ export class VisitComponent implements OnInit {
       },
       err => console.log(err)
     )
+  }
+
+  ngOnDestroy(){
+    this.pidSub.unsubscribe();
   }
 }
