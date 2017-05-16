@@ -1,9 +1,10 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, OnDestroy} from '@angular/core';
 import {RestService} from "../rest.service";
 import {PatientService} from "../patient.service";
 import {AuthService} from "../auth.service";
 import * as moment from "moment";
 import {SocketService} from "../socket.service";
+import {Subscription} from "rxjs";
 import {SafService} from "../saf.service";
 
 @Component({
@@ -11,7 +12,7 @@ import {SafService} from "../saf.service";
   templateUrl: './visit.component.html',
   styleUrls: ['./visit.component.css']
 })
-export class VisitComponent implements OnInit {
+export class VisitComponent implements OnInit,OnDestroy {
   visits = [];
   watings = [];
   pid: number;
@@ -33,6 +34,7 @@ export class VisitComponent implements OnInit {
   isCurrentDoctorVisit = false;
   isDoctor:boolean;
   private allDoctors: any;
+  private pidSub: Subscription;
 
   constructor(private restService: RestService, private patientService: PatientService, private authService: AuthService, private socket:SocketService, private safService:SafService) {
   }
@@ -51,7 +53,7 @@ export class VisitComponent implements OnInit {
   }
 
   private getPatientId() {
-    this.patientService.pid$.subscribe(pid => {
+    this.pidSub = this.patientService.pid$.subscribe(pid => {
       this.pid = pid;
       this.enabled = true;
       this.currentVisit = this.visits.filter(r => r.pid === this.pid);
@@ -65,6 +67,10 @@ export class VisitComponent implements OnInit {
         this.pageNumber = this.currentVisit[0].paper_id % 101 + 1;
         this.notebookNumber = Math.floor(this.currentVisit[0].paper_id / 101 ) + 1;
         this.paperDisabled = true;
+      }
+      else {
+        this.notebookNumber = this.patientService.notebookNumber;
+        this.pageNumber = this.patientService.pageNumber;
       }
     })
   }
@@ -116,6 +122,8 @@ export class VisitComponent implements OnInit {
         }
     );
   }
+
+
 
   send() {
     if( this.visits.filter(r => r.did === this.doctor).length ===0 ) {
@@ -173,7 +181,16 @@ export class VisitComponent implements OnInit {
     this.allBusy  = this.allDoctors.filter(r => !this.visits.find(s => s.did === r.uid)).length === 0 ? true : false;
   }
 
-  checkState() {
-    this.sendEnabled = this.doctor !== null && this.pageNumber !== null && this.notebookNumber !== null;
+
+    checkState() {
+        this.sendEnabled = this.doctor !== null && this.pageNumber !== null && this.notebookNumber !== null;
+        if(this.sendEnabled) {
+            this.patientService.notebookNumber = this.notebookNumber;
+            this.patientService.pageNumber = this.pageNumber;
+        }
+    }
+
+  ngOnDestroy(){
+    this.pidSub.unsubscribe();
   }
 }

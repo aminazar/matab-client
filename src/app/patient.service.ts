@@ -14,8 +14,10 @@ export class PatientService{
   public pid$:Observable<number> = this.pidStream.asObservable();
   public dob = {year: null, month: null, day: null,gd:null};
   private visitCache=[];
-  constructor(private saf:SafService) {}
+  pageNumber: number;
+  notebookNumber: number;
 
+    constructor(private saf:SafService) {}
   newPatient(data:any) {
     this.pid = data.pid;
     this.firstname = data.firstname;
@@ -24,6 +26,8 @@ export class PatientService{
     this.id_number = data.id_number;
     this.contact_details = data.contact_details;
     this.pidStream.next(this.pid);
+    this.pageNumber = null;
+    this.notebookNumber = null;
   }
 
   visitCachePush(data:any, sharingInfo = {}) {

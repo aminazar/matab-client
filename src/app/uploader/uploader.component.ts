@@ -1,27 +1,31 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, OnDestroy} from '@angular/core';
 import {FileUploader} from "ng2-file-upload";
 import {PatientService} from "../patient.service";
 import {RestService} from "../rest.service";
+import {Subscription} from "rxjs";
 let URL = '/api/scans/';
 @Component({
   selector: 'app-uploader',
   templateUrl: './uploader.component.html',
   styleUrls: ['./uploader.component.css']
 })
-export class UploaderComponent implements OnInit{
+export class UploaderComponent implements OnInit,OnDestroy{
   public uploader:FileUploader;
   public hasBaseDropZoneOver:boolean = true;
   enabled: boolean=false;
   pid: any;
   documents = [];
   dis = {};
+  private pidSub: Subscription;
   constructor(private restService:RestService, private patientService:PatientService){}
   ngOnInit(): void {
-    this.patientService.pid$.subscribe(pid=>{
-      this.uploader = new FileUploader({url:URL + pid});
-      this.pid = pid;
-      this.refresh();
-      this.enabled = true;
+    this.pidSub = this.patientService.pid$.subscribe(pid=>{
+      if(this.pid !==pid ) {
+        this.uploader = new FileUploader({url: URL + pid});
+        this.pid = pid;
+        this.refresh();
+        this.enabled = true;
+      }
     });
   }
   public fileOverBase(e:any):void {
@@ -46,5 +50,9 @@ export class UploaderComponent implements OnInit{
         this.documents = [];
         data.filter(r=>r.vid===null).forEach(r=>this.documents.push(r));
       });
+  }
+
+  ngOnDestroy() {
+    this.pidSub.unsubscribe();
   }
 }

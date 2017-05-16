@@ -1,16 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, OnDestroy} from '@angular/core';
 import {RestService} from "../rest.service";
 import {MessageService} from "../message.service";
 import {PatientService} from "../patient.service";
 import {FormControl} from "@angular/forms";
-import {Observable} from "rxjs";
+import {Observable, Subscription} from "rxjs";
 
 @Component({
   selector: 'app-patient',
   templateUrl: './patient.component.html',
   styleUrls: ['./patient.component.css']
 })
-export class PatientComponent implements OnInit {
+export class PatientComponent implements OnInit,OnDestroy {
   patients:any[] = [];
   patientModelCtrl:FormControl = new FormControl();
   filteredNameCode:Observable<any>;
@@ -18,44 +18,31 @@ export class PatientComponent implements OnInit {
   filteredPatient: any;
   isFiltered: boolean;
   toUpdate = false;
+  private pidSub: Subscription;
   constructor(private restService:RestService, private messageService:MessageService,private patientService:PatientService) { }
 
   ngOnInit() {
-    this.restService.get('patient').subscribe(
-      data => {
-        data.forEach(row=>this.patients.push(row));
-        this.refreshPatientsDropDown();
-      });
-
     this.filteredNameCode = this.patientModelCtrl.valueChanges
       .startWith(null)
       .map((nameCode) => this.filterPatients(nameCode));
 
-    this.patientService.pid$.subscribe(pid => {
-      if(!this.isFiltered) {
-        let ind = this.patients.findIndex(r => r.pid == pid);
-        this.patients[ind].firstname = this.patientService.firstname;
-        this.patients[ind].surname = this.patientService.surname;
-        this.patients[ind].id_number = this.patientService.id_number;
-        this.patientsNameCode[ind] = `${this.patients[ind].firstname} ${this.patients[ind].surname} - ${this.patients[ind].id_number}`;
-        this.patientModelCtrl.setValue(this.patientsNameCode[ind]);
-        this.patientModelCtrl.markAsTouched();
-      }
-    });
-
     this.filteredNameCode.subscribe(
       (data) => {
-        if (data.length === 1) {
-          this.filteredPatient = this.patients[this.patientsNameCode.findIndex(r=>r===data[0])];
-          this.restService.get(`patient-full-data/${this.filteredPatient.pid}`).subscribe(
-            data => {
-              this.patientService.newPatient(data[0]);
-              this.filteredPatient=data[0];
-              this.isFiltered = true;
-              this.toUpdate = false;
-            })
+        if (data.length === 1 && !this.isFiltered) {
+          let temp = this.patients[this.patientsNameCode.findIndex(r=>r===data[0])];
+          if(temp!==this.filteredPatient) {
+            this.filteredPatient = temp;
+            this.restService.get(`patient-full-data/${this.filteredPatient.pid}`).subscribe(
+              data => {
+                if(this.patientService.pid !== data[0].pid)
+                  this.patientService.newPatient(data[0]);
+                this.filteredPatient = data[0];
+                this.isFiltered = true;
+                this.toUpdate = false;
+              })
+          }
         }
-        else{
+        else {
           this.isFiltered = false;
         }
       },
@@ -63,6 +50,23 @@ export class PatientComponent implements OnInit {
         console.log(err.message);
       }
     );
+
+    this.restService.get('patient').subscribe(
+      data => {
+        data.forEach(row=>this.patients.push(row));
+        this.refreshPatientsDropDown();
+        this.pidSub = this.patientService.pid$.subscribe(pid => {
+          if(!this.isFiltered) {
+            let ind = this.patients.findIndex(r => r.pid == pid);
+            this.patients[ind].firstname = this.patientService.firstname;
+            this.patients[ind].surname = this.patientService.surname;
+            this.patients[ind].id_number = this.patientService.id_number;
+            this.patientsNameCode[ind] = `${this.patients[ind].firstname} ${this.patients[ind].surname} - ${this.patients[ind].id_number}`;
+            this.patientModelCtrl.setValue(this.patientsNameCode[ind]);
+            this.patientModelCtrl.markAsTouched();
+          }
+        });
+      });
   }
 
   toUpdateChange(data) {
@@ -97,5 +101,9 @@ export class PatientComponent implements OnInit {
     this.refreshPatientsDropDown();
     this.isFiltered=false;
     this.patientService.newPatient(data);
+  }
+
+  ngOnDestroy() {
+    this.pidSub.unsubscribe();
   }
 }
