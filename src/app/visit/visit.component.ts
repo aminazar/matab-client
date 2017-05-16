@@ -20,6 +20,8 @@ export class VisitComponent implements OnInit {
   currentVisit = [];
   currentWating = [];
   isVisitingOrWating: boolean;
+  isWating: boolean;
+  isVisiting: boolean;
   canGo: boolean;
   doctors = [];
   doctor = null;
@@ -54,8 +56,9 @@ export class VisitComponent implements OnInit {
       this.enabled = true;
       this.currentVisit = this.visits.filter(r => r.pid === this.pid);
       this.currentWating = this.watings.filter(r=> r.pid === this.pid);
-      // this.x = this.allDoctors.filter(r => r.uid === this.currentWating[0].did)[0].name;
-      this.isVisitingOrWating = (this.currentWating.length>0) || (this.currentVisit.length>0);
+      this.isVisiting = this.currentVisit.length>0;
+      this.isWating = this.currentWating.length>0;
+      this.isVisitingOrWating = this.isVisiting || this.isWating;
       this.canGo = !this.isVisitingOrWating ||(this.currentVisit.length>0 && this.authService.display_name === this.currentVisit[0].display_name);
       this.isCurrentDoctorVisit = this.canGo && this.currentVisit.length>0;
       if (this.isCurrentDoctorVisit) {
@@ -148,7 +151,8 @@ export class VisitComponent implements OnInit {
         pid : this.pid,
         firstName : this.patientService.firstname,
         surName : this.patientService.surname,
-        waite_start_time : moment().format('HH:mm')
+        waite_start_time : moment().format('HH:mm'),
+        display_name: this.allDoctors.filter(r=>r.uid === this.doctor)[0].display_name,
       };
       this.safService.addPatientToSaf(data);
       this.watings.push(data);
