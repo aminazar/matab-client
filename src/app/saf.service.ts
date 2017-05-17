@@ -10,14 +10,19 @@ import {WebSocketService} from 'angular2-websocket-service'
 import {isUndefined} from "util";
 
 @Injectable()
-export class SafService implements OnInit{
+export class SafService{
   public safWatingForVisit = {};
+  public testObject = [];
 
-  constructor(private restService: RestService,private http: Http, private socket: WebSocketService, private messageService:MessageService) { }
-
-  ngOnInit() {
+  constructor(private restService: RestService,private http: Http, private socket: WebSocketService, private messageService:MessageService) {
+    this.restService.get('waitingSaf').subscribe( data => {
+          this.testObject.push(data);
+        },
+        err => console.log(err)
+    );
 
   }
+
 
   addPatientToSaf(data:any, callback) {
     this.restService.insert('waitingSaf/',data).subscribe(()=>{

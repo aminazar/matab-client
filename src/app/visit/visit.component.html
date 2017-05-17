@@ -1,7 +1,7 @@
 <md-card class="outerCard">
   <md-card-title class="cardTitle">Visits</md-card-title>
   <md-card *ngIf="enabled" class="innerCard">
-    <md-card-title>{{canGo?'Choose Doctor':(isVisiting? 'Alredy Sent': 'Iis Wating')}}</md-card-title>
+    <md-card-title>{{canGo?'Choose Doctor':(isVisiting? 'Alredy Sent': 'Is Wating')}}</md-card-title>
     <md-card>
       <p *ngIf="!canGo && currentVisit.length!==0"><strong>{{currentVisit[0].firstname}} {{currentVisit[0].surname}}</strong> is being visited by <strong>{{currentVisit[0].display_name}}</strong> since <strong>{{currentVisit[0].start_time|date:'shortTime'}}</strong>.</p>
       <p *ngIf="!canGo && currentWating.length!==0"><strong>{{currentWating[0].firstName}} {{currentWating[0].surName}}</strong> is wating for <strong>{{currentWating[0].display_name}}</strong> since <strong>{{currentWating[0].waite_start_time}}</strong>.</p>
