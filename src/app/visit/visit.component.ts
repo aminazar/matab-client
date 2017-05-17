@@ -154,21 +154,22 @@ export class VisitComponent implements OnInit,OnDestroy {
     else{
       let data = {
         did : this.doctor,
-        page_number : this.pageNumber,
-        notebook_number : this.notebookNumber,
         pid : this.pid,
+        page_num : this.pageNumber,
+        note_num : this.notebookNumber,
         firstName : this.patientService.firstname,
         surName : this.patientService.surname,
         waite_start_time : moment().format('HH:mm'),
         display_name: this.allDoctors.filter(r=>r.uid === this.doctor)[0].display_name,
       };
-      this.safService.addPatientToSaf(data);
-      this.watings.push(data);
-      if(this.currentVisit.length && this.authService.display_name === this.currentVisit[0].display_name) { //referral by doctor
-        this.endVisit(this.currentVisit[0].did, this.currentVisit[0].pid);
-      }
-      else
-        this.refresh();
+      this.safService.addPatientToSaf(data, ()=>{
+        this.watings.push(data);
+        if(this.currentVisit.length && this.authService.display_name === this.currentVisit[0].display_name) { //referral by doctor
+          this.endVisit(this.currentVisit[0].did, this.currentVisit[0].pid);
+        }
+        else
+          this.refresh();
+      });
     }
   }
 
