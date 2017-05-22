@@ -12,16 +12,16 @@ import moment = require("moment");
 
 @Injectable()
 export class SafService{
-  public safWatingForVisit = {};
+  public safWaitingForVisit = {};
 
   constructor(private restService: RestService,private http: Http, private socket: WebSocketService, private messageService:MessageService) {
     this.restService.get('waitingSaf').subscribe( data => {
-          this.safWatingForVisit = {};
+          this.safWaitingForVisit = {};
           data.forEach( d => {
-            if(isUndefined(this.safWatingForVisit[d.did])){
-              this.safWatingForVisit[d.did] = [];
+            if(isUndefined(this.safWaitingForVisit[d.did])){
+              this.safWaitingForVisit[d.did] = [];
             };
-            this.safWatingForVisit[d.did].push(d);
+            this.safWaitingForVisit[d.did].push(d);
           })
         },
         err => console.log(err)
@@ -31,10 +31,10 @@ export class SafService{
 
   addPatientToSaf(data:any, callback) {
     this.restService.insert('waitingSaf/',data).subscribe(()=>{
-      if(isUndefined(this.safWatingForVisit[data.did])){
-        this.safWatingForVisit[data.did] = [];
+      if(isUndefined(this.safWaitingForVisit[data.did])){
+        this.safWaitingForVisit[data.did] = [];
       };
-      this.safWatingForVisit[data.did].push(data);
+      this.safWaitingForVisit[data.did].push(data);
       callback();
     },
       err => console.log(err)

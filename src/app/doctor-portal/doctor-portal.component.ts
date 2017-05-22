@@ -40,15 +40,15 @@ export class DoctorPortalComponent implements OnInit {
     if(!this.externalVid) {
       this.refresh();
       this.socket.onMessage(msg => {
-          if (msg.msgType === "Comments saved") {
-            msg.sd.description = moment().format('HH:mm ddd DDMMMYY');
-            msg.sd.display_name = this.authService.display_name;
-            this.documents.splice(0, 0, this.prepareDocsForDisplay(msg.sd));
-            this.messageService.message(msg.text);
-          }
-          else {
-            this.messageService.popup(msg.text, msg.msgType, msg.msgType === "New patient", userResponse => this.refresh(userResponse));
-          }
+        if (msg.msgType === "Comments saved") {
+          msg.sd.description = moment().format('HH:mm ddd DDMMMYY');
+          msg.sd.display_name = this.authService.display_name;
+          this.documents.splice(0, 0, this.prepareDocsForDisplay(msg.sd));
+          this.messageService.message(msg.text);
+        }
+        else {
+          this.messageService.popup(msg.text, msg.msgType, msg.msgType === "New patient", userResponse => this.refresh(userResponse));
+        }
         }
       );
     }

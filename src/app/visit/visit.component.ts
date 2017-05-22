@@ -99,32 +99,30 @@ export class VisitComponent implements OnInit,OnDestroy {
 
   refresh() {
     this.waitings = [];
-    let a = this.safService.safWatingForVisit;
+    let a = this.safService.safWaitingForVisit;
     for (let key in a) {
       for (var x = 0; x < a[key].length; x++) {
         this.waitings.push(a[key][x]);
       }
     }
     this.restService.get('active-visits').subscribe(
-        data => {
-          this.visits = [];
-          data.forEach(r => this.visits.push(r));
-          setInterval(() => this.visits.forEach(r => r.duration = moment.duration(moment().diff(r.start_time)).humanize()), 1000);
-          this.getPatientId();
-          if (this.allDoctors)
-            this.updateDoctorsDropDown();
-          else {
-            this.restService.get('doctors').subscribe(
-                drs => {
-                  this.allDoctors = drs;
-                  this.updateDoctorsDropDown();
-                });
+      data => {
+        this.visits = [];
+        data.forEach(r => this.visits.push(r));
+        setInterval(() => this.visits.forEach(r => r.duration = moment.duration(moment().diff(r.start_time)).humanize()), 1000);
+        this.getPatientId();
+        if (this.allDoctors)
+          this.updateDoctorsDropDown();
+        else {
+          this.restService.get('doctors').subscribe(
+            drs => {
+              this.allDoctors = drs;
+              this.updateDoctorsDropDown();
+            });
           }
         }
     );
   }
-
-
 
   send() {
     if( this.visits.filter(r => r.did === this.doctor).length ===0 ) {
@@ -134,22 +132,22 @@ export class VisitComponent implements OnInit,OnDestroy {
         notebook_number: this.notebookNumber,
         pid: this.pid,
       }).subscribe(
-          () => {
-            this.socket.send({
-              cmd: 'send',
-              target: ['doctor/' + this.allDoctors.filter(r => r.uid === this.doctor)[0].name],
-              msg: {
-                msgType: "New visit",
-                text: `${moment().format('HH:mm')}: New patient "${this.patientService.firstname} ${this.patientService.surname}" is sent to you for visit.`
-              }
-            });
-            if (this.currentVisit.length && this.authService.display_name === this.currentVisit[0].display_name) { //referral by doctor
-              this.endVisit(this.currentVisit[0].did, this.currentVisit[0].pid);
+        () => {
+          this.socket.send({
+            cmd: 'send',
+            target: ['doctor/' + this.allDoctors.filter(r => r.uid === this.doctor)[0].name],
+            msg: {
+              msgType: "New visit",
+              text: `${moment().format('HH:mm')}: New patient "${this.patientService.firstname} ${this.patientService.surname}" is sent to you for visit.`
             }
-            else
-              this.refresh();
-          },
-          err => console.log(err)
+          });
+          if (this.currentVisit.length && this.authService.display_name === this.currentVisit[0].display_name) { //referral by doctor
+            this.endVisit(this.currentVisit[0].did, this.currentVisit[0].pid);
+          }
+          else
+            this.refresh();
+        },
+        err => console.log(err)
       )
     }
     else{
