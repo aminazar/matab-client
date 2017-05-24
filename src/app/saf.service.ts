@@ -34,14 +34,18 @@ export class SafService{
       if(isUndefined(this.safWaitingForVisit[data.did])){
         this.safWaitingForVisit[data.did] = [];
       };
-      this.safWaitingForVisit[data.did].push(data);
-      callback();
+      this.restService.get(`/waitingSaf/${data.pid}/${data.did}`).subscribe( data1 =>{
+        this.safWaitingForVisit[data.did].push(data1[0]);
+        callback();
+      })
     },
       err => console.log(err)
     );
   }
 
-  popPatientFromSaf(did){
-    let doctor_id = did.toString();
+  popPatientFromSaf(did,pid){
+    let arr = this.safWaitingForVisit[did];
+    let ind = arr.findIndex(el => el.pid===pid);
+    this.safWaitingForVisit[did].splice(ind,1);
   }
 }

@@ -17,7 +17,7 @@ export class PatientService{
   pageNumber: number;
   notebookNumber: number;
 
-    constructor(private saf:SafService) {}
+  constructor(private saf:SafService) {}
   newPatient(data:any) {
     this.pid = data.pid;
     this.firstname = data.firstname;

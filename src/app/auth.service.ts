@@ -13,13 +13,14 @@ export class AuthService {
   auth$:Observable<boolean> = this.authStream.asObservable();
   originBeforeLogin = '/';
   public display_name='';
+  public uid = null;
 
   constructor(private restService: RestService, private router: Router, private messageService:MessageService,  private internalSocket:SocketService) {
     this.restService.call('validUser')
       .subscribe(
         res => {
           this.afterLogin(res);
-          this.messageService.message(`You are already logged in as ${this.user}.`)
+          this.messageService.message(`You are already logged in as ${this.display_name}.`)  ///**************************///
         },
         err => {
           if(isDevMode())
@@ -35,7 +36,7 @@ export class AuthService {
           this.afterLogin(res);
           let url = this.originBeforeLogin;
           this.router.navigate([url !== null ? url : '/']);
-          this.messageService.message(`${this.user} logged in.`);
+          this.messageService.message(`${this.display_name} logged in.`); ///******************///
         },
         err => {
           this.authStream.next(false);
@@ -48,6 +49,7 @@ export class AuthService {
   private afterLogin(res) {
     let data = res.json();
     this.user = data.user;
+    this.uid = data.uid;
     this.userType = data.userType;
     this.display_name = data.display_name;
     this.authStream.next(true);
@@ -74,7 +76,7 @@ export class AuthService {
   logOff() {
     this.restService.call('logout')
       .subscribe(() => {
-          this.messageService.message(`${this.user} logged out.`);
+          this.messageService.message(`${this.display_name} logged out.`); ///*******************///
           this.user = '';
           this.userType = '';
           this.authStream.next(false);

@@ -6,6 +6,7 @@ import {SocketService} from "../socket.service";
 import {AuthService} from "../auth.service";
 import * as moment from 'moment';
 import {MessageService} from "../message.service";
+import {SafService} from "../saf.service";
 
 @Component({
   selector: 'app-doctor-portal',
@@ -33,8 +34,9 @@ export class DoctorPortalComponent implements OnInit {
   vid: any;
   pid: number;
   selectedIndex:number;
+  waitings = [];
 
-  constructor(private restService:RestService,private patientService:PatientService, private sanitizer: DomSanitizer, private socket:SocketService,private authService:AuthService, private messageService:MessageService) { }
+  constructor(private restService:RestService,private patientService:PatientService, private sanitizer: DomSanitizer, private socket:SocketService,private authService:AuthService, private messageService:MessageService,  private safService:SafService) { }
 
   ngOnInit() {
     if(!this.externalVid) {
@@ -91,7 +93,13 @@ export class DoctorPortalComponent implements OnInit {
   }
 
   endVisit() {
-    this.restService.insert('end-visit/' + this.pid,{}).subscribe(
+    let a = this.safService.safWaitingForVisit;
+    for (let key in a) {
+      for (var x = 0; x < a[key].length; x++) {
+        this.waitings.push(a[key][x]);
+      }
+    }
+    this.restService.insert('end-visit/' + this.pid,{}).subscribe(//put
       () => {
         this.socket.send({
           cmd: 'send',
@@ -103,6 +111,13 @@ export class DoctorPortalComponent implements OnInit {
             dr_name: this.authService.display_name,
           },
         });
+        let waitingsForCurrentUid = this.waitings.filter(el=>el.did === this.authService.uid);
+        if(waitingsForCurrentUid.length>0) {
+          var priorities = waitingsForCurrentUid.map(el=>el.priority);
+          var firstPriority = Math.min(...priorities);
+          console.log(firstPriority);
+        }
+        else console.log('*');
         this.refresh();
       },
       err => {console.log('endVisit error:',err);}

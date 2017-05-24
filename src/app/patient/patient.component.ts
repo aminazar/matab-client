@@ -4,6 +4,7 @@ import {MessageService} from "../message.service";
 import {PatientService} from "../patient.service";
 import {FormControl} from "@angular/forms";
 import {Observable, Subscription} from "rxjs";
+import {SafService} from "../saf.service";
 
 @Component({
   selector: 'app-patient',
@@ -19,7 +20,7 @@ export class PatientComponent implements OnInit,OnDestroy {
   isFiltered: boolean;
   toUpdate = false;
   private pidSub: Subscription;
-  constructor(private restService:RestService, private messageService:MessageService,private patientService:PatientService) { }
+  constructor(private restService:RestService, private messageService:MessageService,private patientService:PatientService,  private safService:SafService) { }
 
   ngOnInit() {
     this.filteredNameCode = this.patientModelCtrl.valueChanges

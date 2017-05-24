@@ -6,6 +6,9 @@ import * as moment from "moment";
 import {SocketService} from "../socket.service";
 import {Subscription} from "rxjs";
 import {SafService} from "../saf.service";
+import {isUndefined} from "util";
+import {forEach} from "@angular/router/src/utils/collection";
+// import {min} from "rxjs/operator/min";
 
 @Component({
   selector: 'app-visit',
@@ -62,6 +65,11 @@ export class VisitComponent implements OnInit,OnDestroy {
       this.isVisiting = this.currentVisit.length>0;
       this.isWaiting = this.currentWaiting.length>0;
       this.isVisitingOrWaiting = this.isVisiting || this.isWaiting;
+      // if(this.authService.userType!=='admin'){
+      //   this.canGo = this.currentVisit.length>0 && this.authService.display_name === this.currentVisit[0].display_name;
+      // }
+      // else
+      //   this.canGo = !this.isVisitingOrWaiting;
       this.canGo = !this.isVisitingOrWaiting ||(this.currentVisit.length>0 && this.authService.display_name === this.currentVisit[0].display_name);
       this.isCurrentDoctorVisit = this.canGo && this.currentVisit.length>0;
       if (this.isCurrentDoctorVisit) {
@@ -77,27 +85,6 @@ export class VisitComponent implements OnInit,OnDestroy {
   }
 
   endVisit(uid, pid) {
-    this.restService.update('end-visit/' + pid, uid, {}).subscribe(
-        () => {
-          let ind = this.visits.findIndex(r => r.pid === pid && r.did === uid);
-          this.socket.send({
-            cmd: 'send',
-            target: ['doctor/'+this.allDoctors.filter(r=>r.uid===this.visits[ind].did)[0].name],
-            msg:{
-              msgType: 'Patient Dismissed by Admin',
-              text: `${moment().format('HH:mm')}: Visit of "${this.visits[ind].firstname} ${this.visits[ind].surname}" was ended by the admin.`,
-            }
-          });
-          this.visits.splice(this.visits[ind], 1);
-          this.refresh();
-        },
-        err => {
-          console.log(err);
-        }
-    )
-  }
-
-  refresh() {
     this.waitings = [];
     let a = this.safService.safWaitingForVisit;
     for (let key in a) {
@@ -105,6 +92,55 @@ export class VisitComponent implements OnInit,OnDestroy {
         this.waitings.push(a[key][x]);
       }
     }
+
+    this.restService.update('end-visit/' + pid, uid, {}).subscribe(        //post
+      () => {
+        let ind = this.visits.findIndex(r => r.pid === pid && r.did === uid);
+        this.socket.send({
+          cmd: 'send',
+          target: ['doctor/'+this.allDoctors.filter(r=>r.uid===this.visits[ind].did)[0].name],
+          msg:{
+            msgType: 'Patient Dismissed by Admin',
+            text: `${moment().format('HH:mm')}: Visit of "${this.visits[ind].firstname} ${this.visits[ind].surname}" was ended by the admin.`,
+          }
+        });
+        this.visits.splice(ind, 1);
+        let waitingsForCurrentUid = this.waitings.filter(el=>el.did === uid);
+        if(waitingsForCurrentUid.length>0) {
+          var priorities = waitingsForCurrentUid.map(el=>el.priority);
+          var firstPriority = Math.min(...priorities);
+          console.log(firstPriority);
+          var firstWaiting = waitingsForCurrentUid.filter(el => el.priority===firstPriority.toString());
+          let ind2 =  this.waitings.findIndex(el => el===firstWaiting[0]);
+          if(firstWaiting.length===1) {
+            this.sendPatientToDoctorFromSaf(firstWaiting[0]);
+            this.restService.delete('waitingSaf/',firstWaiting[0].pid).subscribe(()=>{
+              this.safService.popPatientFromSaf(firstWaiting[0].did,firstWaiting[0].pid);
+              this.waitings.splice(ind2,1);
+            });
+          }
+        }
+        else {
+          console.log('Doctor is free!!');
+          this.refresh();
+        }
+      },
+      err => {
+        console.log(err);
+      }
+    )
+  }
+
+  refresh() {
+    //*******************************
+    this.waitings = [];
+    let a = this.safService.safWaitingForVisit;
+    for (let key in a) {
+      for (var x = 0; x < a[key].length; x++) {
+        this.waitings.push(a[key][x]);
+      }
+    }
+    //*******************************
     this.restService.get('active-visits').subscribe(
       data => {
         this.visits = [];
@@ -122,6 +158,30 @@ export class VisitComponent implements OnInit,OnDestroy {
           }
         }
     );
+  }
+
+  sendPatientToDoctorFromSaf(obj){
+    if( this.visits.filter(r => r.did === obj.did).length ===0 ) {
+      this.restService.insert('visit', {
+        did: obj.did,
+        page_number: obj.page_num,
+        notebook_number: obj.note_num,
+        pid: obj.pid,
+      }).subscribe(
+        () => {
+          this.socket.send({
+            cmd: 'send',
+            target: ['doctor/' + this.allDoctors.filter(r => r.uid === obj.did)[0].name],
+            msg: {
+              msgType: "New visit",
+              text: `${moment().format('HH:mm')}: New patient "${obj.firstname} ${obj.surname}" is sent to you for visit.`
+            }
+          });
+          this.refresh();
+        },
+        err => console.log(err)
+      )
+    }
   }
 
   send() {
@@ -162,7 +222,7 @@ export class VisitComponent implements OnInit,OnDestroy {
         display_name: this.allDoctors.filter(r=>r.uid === this.doctor)[0].display_name,
       };
       this.safService.addPatientToSaf(data,()=>{
-        this.waitings.push(data);
+        // this.waitings.push(data);
         if(this.currentVisit.length && this.authService.display_name === this.currentVisit[0].display_name) { //referral by doctor
           this.endVisit(this.currentVisit[0].did, this.currentVisit[0].pid);
         }
