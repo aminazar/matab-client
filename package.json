@@ -13,6 +13,7 @@
   "private": false,
   "repository": "https://github.com/aminazar/ng2-seed.git",
   "dependencies": {
+    "@angular/cli": "1.0.0",
     "@angular/common": "2.4.10",
     "@angular/compiler": "2.4.10",
     "@angular/core": "2.4.10",
