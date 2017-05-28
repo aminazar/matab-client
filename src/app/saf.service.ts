@@ -28,7 +28,6 @@ export class SafService{
     );
   }
 
-
   addPatientToSaf(data:any, callback) {
     this.restService.insert('waitingSaf/',data).subscribe(()=>{
       if(isUndefined(this.safWaitingForVisit[data.did])){
@@ -44,8 +43,8 @@ export class SafService{
   }
 
   popPatientFromSaf(did,pid){
-    let arr = this.safWaitingForVisit[did];
-    let ind = arr.findIndex(el => el.pid===pid);
+    let tempArr = this.safWaitingForVisit[did];
+    let ind = tempArr.findIndex(el => el.pid===pid);
     this.safWaitingForVisit[did].splice(ind,1);
   }
 }

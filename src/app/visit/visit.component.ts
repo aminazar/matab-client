@@ -8,6 +8,7 @@ import {Subscription} from "rxjs";
 import {SafService} from "../saf.service";
 import {isUndefined} from "util";
 import {forEach} from "@angular/router/src/utils/collection";
+import {MessageService} from "../message.service";
 // import {min} from "rxjs/operator/min";
 
 @Component({
@@ -39,7 +40,7 @@ export class VisitComponent implements OnInit,OnDestroy {
   private allDoctors: any;
   private pidSub: Subscription;
 
-  constructor(private restService: RestService, private patientService: PatientService, private authService: AuthService, private socket:SocketService, private safService:SafService) {
+  constructor(private restService: RestService,private messageService:MessageService,private patientService: PatientService, private authService: AuthService, private socket:SocketService, private safService:SafService) {
   }
 
   ngOnInit() {
@@ -92,7 +93,6 @@ export class VisitComponent implements OnInit,OnDestroy {
         this.waitings.push(a[key][x]);
       }
     }
-
     this.restService.update('end-visit/' + pid, uid, {}).subscribe(        //post
       () => {
         let ind = this.visits.findIndex(r => r.pid === pid && r.did === uid);
@@ -109,20 +109,14 @@ export class VisitComponent implements OnInit,OnDestroy {
         if(waitingsForCurrentUid.length>0) {
           var priorities = waitingsForCurrentUid.map(el=>el.priority);
           var firstPriority = Math.min(...priorities);
-          console.log(firstPriority);
           var firstWaiting = waitingsForCurrentUid.filter(el => el.priority===firstPriority.toString());
-          let ind2 =  this.waitings.findIndex(el => el===firstWaiting[0]);
           if(firstWaiting.length===1) {
             this.sendPatientToDoctorFromSaf(firstWaiting[0]);
-            this.restService.delete('waitingSaf/',firstWaiting[0].pid).subscribe(()=>{
-              this.safService.popPatientFromSaf(firstWaiting[0].did,firstWaiting[0].pid);
-              this.waitings.splice(ind2,1);
-            });
           }
         }
         else {
-          console.log('Doctor is free!!');
           this.refresh();
+          this.messageService.message(`${uid} is free!!`);
         }
       },
       err => {
@@ -161,6 +155,7 @@ export class VisitComponent implements OnInit,OnDestroy {
   }
 
   sendPatientToDoctorFromSaf(obj){
+    let firstWaitingInd =  this.waitings.findIndex(el => el===obj);
     if( this.visits.filter(r => r.did === obj.did).length ===0 ) {
       this.restService.insert('visit', {
         did: obj.did,
@@ -169,6 +164,10 @@ export class VisitComponent implements OnInit,OnDestroy {
         pid: obj.pid,
       }).subscribe(
         () => {
+          this.restService.delete('waitingSaf/',obj.pid).subscribe(()=>{
+            this.safService.popPatientFromSaf(obj.did,obj.pid);
+            this.waitings.splice(firstWaitingInd,1);
+          });
           this.socket.send({
             cmd: 'send',
             target: ['doctor/' + this.allDoctors.filter(r => r.uid === obj.did)[0].name],
@@ -178,6 +177,7 @@ export class VisitComponent implements OnInit,OnDestroy {
             }
           });
           this.refresh();
+          this.messageService.message(`${obj.firstname} ${obj.surname} is sent to ${obj.display_name} from SAF.`);
         },
         err => console.log(err)
       )

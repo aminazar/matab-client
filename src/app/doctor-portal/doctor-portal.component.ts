@@ -93,13 +93,14 @@ export class DoctorPortalComponent implements OnInit {
   }
 
   endVisit() {
+    this.waitings = [];
     let a = this.safService.safWaitingForVisit;
     for (let key in a) {
       for (var x = 0; x < a[key].length; x++) {
         this.waitings.push(a[key][x]);
       }
     }
-    this.restService.insert('end-visit/' + this.pid,{}).subscribe(//put
+    this.restService.insert('end-visit/' + this.pid,{}).subscribe(         //put
       () => {
         this.socket.send({
           cmd: 'send',
@@ -110,18 +111,54 @@ export class DoctorPortalComponent implements OnInit {
             pid: this.pid,
             dr_name: this.authService.display_name,
           },
+
         });
         let waitingsForCurrentUid = this.waitings.filter(el=>el.did === this.authService.uid);
         if(waitingsForCurrentUid.length>0) {
           var priorities = waitingsForCurrentUid.map(el=>el.priority);
           var firstPriority = Math.min(...priorities);
-          console.log(firstPriority);
+          var firstWaiting = waitingsForCurrentUid.filter(el => el.priority===firstPriority.toString());
+          if(firstWaiting.length===1) {
+            this.sendPatientToDoctorFromSaf(firstWaiting[0]);
+          }
         }
-        else console.log('*');
-        this.refresh();
+        else {
+          this.messageService.message(`You are free!!`);
+          this.refresh();
+        }
       },
       err => {console.log('endVisit error:',err);}
     )
+  }
+
+  sendPatientToDoctorFromSaf(obj){
+    let firstWaitingInd =  this.waitings.findIndex(el => el===obj);
+    // if( this.visits.filter(r => r.did === obj.did).length ===0 ) {
+      this.restService.insert('visit', {
+        did: obj.did,
+        page_number: obj.page_num,
+        notebook_number: obj.note_num,
+        pid: obj.pid,
+      }).subscribe(
+          () => {
+            this.restService.delete('waitingSaf/',obj.pid).subscribe(()=>{
+              this.safService.popPatientFromSaf(obj.did,obj.pid);
+              this.waitings.splice(firstWaitingInd,1);
+            });
+            // this.socket.send({
+            //   cmd: 'send',
+            //   target: ['doctor/' + this.allDoctors.filter(r => r.uid === obj.did)[0].name],
+            //   msg: {
+            //     msgType: "New visit",
+            //     text: `${moment().format('HH:mm')}: New patient "${obj.firstname} ${obj.surname}" is sent to you for visit.`
+            //   }
+            // });
+            this.refresh();
+            this.messageService.message(`${obj.firstname} ${obj.surname} is sent to you from SAF.`);
+          },
+          err => console.log(err)
+      )
+    // }
   }
 
   tabChanged(){}
