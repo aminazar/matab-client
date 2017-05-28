@@ -213,6 +213,7 @@ export class VisitComponent implements OnInit,OnDestroy {
     else{
       let data = {
         did : this.doctor,
+        
         pid : this.pid,
         page_num : this.pageNumber,
         note_num : this.notebookNumber,
