@@ -9,7 +9,6 @@ import {SafService} from "../saf.service";
 import {isUndefined} from "util";
 import {forEach} from "@angular/router/src/utils/collection";
 import {MessageService} from "../message.service";
-// import {min} from "rxjs/operator/min";
 
 @Component({
   selector: 'app-visit',
@@ -24,7 +23,6 @@ export class VisitComponent implements OnInit,OnDestroy {
   enabled: boolean;
   currentVisit = [];
   currentWaiting = [];
-  isVisitingOrWaiting: boolean;
   isWaiting: boolean;
   isVisiting: boolean;
   canGo: boolean;
@@ -65,13 +63,7 @@ export class VisitComponent implements OnInit,OnDestroy {
       this.currentWaiting = this.waitings.filter(r=> r.pid === this.pid);
       this.isVisiting = this.currentVisit.length>0;
       this.isWaiting = this.currentWaiting.length>0;
-      this.isVisitingOrWaiting = this.isVisiting || this.isWaiting;
-      // if(this.authService.userType!=='admin'){
-      //   this.canGo = this.currentVisit.length>0 && this.authService.display_name === this.currentVisit[0].display_name;
-      // }
-      // else
-      //   this.canGo = !this.isVisitingOrWaiting;
-      this.canGo = !this.isVisitingOrWaiting ||(this.currentVisit.length>0 && this.authService.display_name === this.currentVisit[0].display_name);
+      this.canGo = !(this.isVisiting || this.isWaiting) ||(this.currentVisit.length>0 && this.authService.display_name === this.currentVisit[0].display_name);
       this.isCurrentDoctorVisit = this.canGo && this.currentVisit.length>0;
       if (this.isCurrentDoctorVisit) {
         this.pageNumber = this.currentVisit[0].paper_id % 101 + 1;
@@ -126,7 +118,6 @@ export class VisitComponent implements OnInit,OnDestroy {
   }
 
   refresh() {
-    //*******************************
     this.waitings = [];
     let a = this.safService.safWaitingForVisit;
     for (let key in a) {
@@ -134,7 +125,6 @@ export class VisitComponent implements OnInit,OnDestroy {
         this.waitings.push(a[key][x]);
       }
     }
-    //*******************************
     this.restService.get('active-visits').subscribe(
       data => {
         this.visits = [];
@@ -213,7 +203,6 @@ export class VisitComponent implements OnInit,OnDestroy {
     else{
       let data = {
         did : this.doctor,
-        
         pid : this.pid,
         page_num : this.pageNumber,
         note_num : this.notebookNumber,
