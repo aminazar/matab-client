@@ -31,6 +31,8 @@ import {SocketService} from "./socket.service";
 import { ModalDialogComponent } from './modal-dialog/modal-dialog.component';
 import { DoctorVisitsComponent } from './doctor-visits/doctor-visits.component';
 import {SafService} from "./saf.service";
+import { WaitnigQueueComponent } from './waitnig-queue/waitnig-queue.component';
+import {NavService} from "./nav.service";
 
 @NgModule({
   declarations: [
@@ -49,6 +51,7 @@ import {SafService} from "./saf.service";
     PatientInfoComponent,
     ModalDialogComponent,
     DoctorVisitsComponent,
+    WaitnigQueueComponent
   ],
   imports: [
     FileUploadModule,
@@ -65,10 +68,11 @@ import {SafService} from "./saf.service";
       {path: 'scans', component: UploaderComponent, canActivate: [LoggedInGuard]},
       {path: 'visit', component: VisitComponent, canActivate:[LoggedInGuard]},
       {path: 'doctorPortal', component: DoctorPortalComponent, canActivate:[LoggedInGuard]},
-      {path: 'doctorVisits', component: DoctorVisitsComponent, canActivate:[LoggedInGuard]}
+      {path: 'doctorVisits', component: DoctorVisitsComponent, canActivate:[LoggedInGuard]},
+      {path: 'wl', component: WaitnigQueueComponent}
     ]),
   ],
-  providers: [AuthService, RestService, LoggedInGuard, MessageService,PatientService, WebSocketService, SocketService, SafService],
+  providers: [AuthService, RestService, LoggedInGuard, MessageService,PatientService, WebSocketService, SocketService, SafService , NavService],
   bootstrap: [AppComponent],
   entryComponents: [ModalDialogComponent],
 })

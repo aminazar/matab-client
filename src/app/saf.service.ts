@@ -9,10 +9,15 @@ import {Http, Response, URLSearchParams} from "@angular/http";
 import {WebSocketService} from 'angular2-websocket-service'
 import {isUndefined} from "util";
 import moment = require("moment");
+import {Subject} from "rxjs/Subject";
 
 @Injectable()
 export class SafService{
   public safWatingForVisit = {};
+
+  private safWaitingSource = new Subject<any>();
+
+  safWaitingReceived = this.safWaitingSource.asObservable();
 
   constructor(private restService: RestService,private http: Http, private socket: WebSocketService, private messageService:MessageService) {
     this.restService.get('waitingSaf').subscribe( data => {
@@ -22,11 +27,16 @@ export class SafService{
               this.safWatingForVisit[d.did] = [];
             };
             this.safWatingForVisit[d.did].push(d);
-          })
+
+          });
+
+          this.safWaitingSource.next(this.safWatingForVisit);
+
         },
         err => console.log(err)
     );
   }
+
 
 
   addPatientToSaf(data:any, callback) {
