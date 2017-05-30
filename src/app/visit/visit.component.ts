@@ -5,6 +5,7 @@ import {AuthService} from "../auth.service";
 import * as moment from "moment";
 import {SocketService} from "../socket.service";
 import {Subscription} from "rxjs";
+import {SafService} from "../saf.service";
 
 @Component({
   selector: 'app-visit',
@@ -13,9 +14,15 @@ import {Subscription} from "rxjs";
 })
 export class VisitComponent implements OnInit,OnDestroy {
   visits = [];
+  waitings = [];
   pid: number;
+  x;
   enabled: boolean;
   currentVisit = [];
+  currentWaiting = [];
+  isVisitingOrWaiting: boolean;
+  isWaiting: boolean;
+  isVisiting: boolean;
   canGo: boolean;
   doctors = [];
   doctor = null;
@@ -29,7 +36,7 @@ export class VisitComponent implements OnInit,OnDestroy {
   private allDoctors: any;
   private pidSub: Subscription;
 
-  constructor(private restService: RestService, private patientService: PatientService, private authService: AuthService, private socket:SocketService) {
+  constructor(private restService: RestService, private patientService: PatientService, private authService: AuthService, private socket:SocketService, private safService:SafService) {
   }
 
   ngOnInit() {
@@ -45,12 +52,17 @@ export class VisitComponent implements OnInit,OnDestroy {
     });
   }
 
+
   private getPatientId() {
     this.pidSub = this.patientService.pid$.subscribe(pid => {
       this.pid = pid;
       this.enabled = true;
       this.currentVisit = this.visits.filter(r => r.pid === this.pid);
-      this.canGo = this.currentVisit.length === 0 || this.authService.display_name === this.currentVisit[0].display_name;
+      this.currentWaiting = this.waitings.filter(r=> r.pid === this.pid);
+      this.isVisiting = this.currentVisit.length>0;
+      this.isWaiting = this.currentWaiting.length>0;
+      this.isVisitingOrWaiting = this.isVisiting || this.isWaiting;
+      this.canGo = !this.isVisitingOrWaiting ||(this.currentVisit.length>0 && this.authService.display_name === this.currentVisit[0].display_name);
       this.isCurrentDoctorVisit = this.canGo && this.currentVisit.length>0;
       if (this.isCurrentDoctorVisit) {
         this.pageNumber = this.currentVisit[0].paper_id % 101 + 1;
@@ -66,82 +78,118 @@ export class VisitComponent implements OnInit,OnDestroy {
 
   endVisit(uid, pid) {
     this.restService.update('end-visit/' + pid, uid, {}).subscribe(
-      () => {
-        let ind = this.visits.findIndex(r => r.pid === pid && r.did === uid);
-        this.socket.send({
-          cmd: 'send',
-          target: ['doctor/'+this.allDoctors.filter(r=>r.uid===this.visits[ind].did)[0].name],
-          msg:{
-            msgType: 'Patient Dismissed by Admin',
-            text: `${moment().format('HH:mm')}: Visit of "${this.visits[ind].firstname} ${this.visits[ind].surname}" was ended by the admin.`,
-          }
-        });
-        this.visits.splice(this.visits[ind], 1);
-        this.refresh();
-      },
-      err => {
-        console.log(err);
-      }
+        () => {
+          let ind = this.visits.findIndex(r => r.pid === pid && r.did === uid);
+          this.socket.send({
+            cmd: 'send',
+            target: ['doctor/'+this.allDoctors.filter(r=>r.uid===this.visits[ind].did)[0].name],
+            msg:{
+              msgType: 'Patient Dismissed by Admin',
+              text: `${moment().format('HH:mm')}: Visit of "${this.visits[ind].firstname} ${this.visits[ind].surname}" was ended by the admin.`,
+            }
+          });
+          this.visits.splice(this.visits[ind], 1);
+          this.refresh();
+        },
+        err => {
+          console.log(err);
+        }
     )
   }
 
   refresh() {
-    this.restService.get('active-visits').subscribe(
-      data => {
-        this.visits = [];
-        data.forEach(r => this.visits.push(r));
-        setInterval(()=>this.visits.forEach(r=>r.duration = moment.duration(moment().diff(r.start_time)).humanize()),1000);
-        this.getPatientId();
-        if(this.allDoctors)
-          this.updateDoctorsDropDown();
-        else {
-          this.restService.get('doctors').subscribe(
-            drs => {
-              this.allDoctors = drs;
-              this.updateDoctorsDropDown();
-            });
-        }
+    this.waitings = [];
+    let a = this.safService.safWatingForVisit;
+    for (let key in a) {
+      for (var x = 0; x < a[key].length; x++) {
+        this.waitings.push(a[key][x]);
       }
+    }
+    this.restService.get('active-visits').subscribe(
+        data => {
+          this.visits = [];
+          data.forEach(r => this.visits.push(r));
+          setInterval(() => this.visits.forEach(r => r.duration = moment.duration(moment().diff(r.start_time)).humanize()), 1000);
+          this.getPatientId();
+          if (this.allDoctors)
+            this.updateDoctorsDropDown();
+          else {
+            this.restService.get('doctors').subscribe(
+                drs => {
+                  this.allDoctors = drs;
+                  this.updateDoctorsDropDown();
+                });
+          }
+        }
     );
   }
 
-  updateDoctorsDropDown() {
-    this.doctors = this.allDoctors.filter(r => !this.visits.find(s => s.did === r.uid));
-    this.allBusy = this.doctors.length === 0;
-  }
 
-  checkState() {
-    this.sendEnabled = this.doctor !== null && this.pageNumber !== null && this.notebookNumber !== null;
-    if(this.sendEnabled) {
-      this.patientService.notebookNumber = this.notebookNumber;
-      this.patientService.pageNumber = this.pageNumber;
-    }
-  }
 
   send() {
-    this.restService.insert('visit', {
-      did: this.doctor,
-      page_number: this.pageNumber,
-      notebook_number: this.notebookNumber,
-      pid: this.pid,
-    }).subscribe(
-      () => {
-        this.socket.send({
-          cmd: 'send',
-          target:['doctor/' + this.allDoctors.filter(r=>r.uid===this.doctor)[0].name ],
-          msg:{
-            msgType: "New visit",
-            text: `${moment().format('HH:mm')}: New patient "${this.patientService.firstname} ${this.patientService.surname}" is sent to you for visit.`
-          }
-        });
-        if (this.currentVisit.length && this.authService.display_name === this.currentVisit[0].display_name) { //referral by doctor
-          this.endVisit(this.currentVisit[0].did, this.currentVisit[0].pid)
+    if( this.visits.filter(r => r.did === this.doctor).length ===0 ) {
+      this.restService.insert('visit', {
+        did: this.doctor,
+        page_number: this.pageNumber,
+        notebook_number: this.notebookNumber,
+        pid: this.pid,
+      }).subscribe(
+          () => {
+            this.socket.send({
+              cmd: 'send',
+              target: ['doctor/' + this.allDoctors.filter(r => r.uid === this.doctor)[0].name],
+              msg: {
+                msgType: "New visit",
+                text: `${moment().format('HH:mm')}: New patient "${this.patientService.firstname} ${this.patientService.surname}" is sent to you for visit.`
+              }
+            });
+            if (this.currentVisit.length && this.authService.display_name === this.currentVisit[0].display_name) { //referral by doctor
+              this.endVisit(this.currentVisit[0].did, this.currentVisit[0].pid);
+            }
+            else
+              this.refresh();
+          },
+          err => console.log(err)
+      )
+    }
+    else{
+      let data = {
+        did : this.doctor,
+        pid : this.pid,
+        page_num : this.pageNumber,
+        note_num : this.notebookNumber,
+        firstname : this.patientService.firstname,
+        surname : this.patientService.surname,
+        waite_start_time : moment().format('HH:mm'),
+        display_name: this.allDoctors.filter(r=>r.uid === this.doctor)[0].display_name,
+      };
+      this.safService.addPatientToSaf(data,()=>{
+        this.waitings.push(data);
+        if(this.currentVisit.length && this.authService.display_name === this.currentVisit[0].display_name) { //referral by doctor
+          this.endVisit(this.currentVisit[0].did, this.currentVisit[0].pid);
         }
         else
           this.refresh();
-      },
-      err => console.log(err)
-    )
+      });
+    }
+  }
+
+  updateDoctorsDropDown() {
+    if (this.currentVisit.length && this.authService.display_name === this.currentVisit[0].display_name) { //referral by doctor
+      this.doctors = this.allDoctors.filter(r => r.display_name!=this.authService.display_name)
+    }
+    else
+      this.doctors = this.allDoctors;
+    this.allBusy  = this.allDoctors.filter(r => !this.visits.find(s => s.did === r.uid)).length === 0 ? true : false;
+  }
+
+
+  checkState() {
+      this.sendEnabled = this.doctor !== null && this.pageNumber !== null && this.notebookNumber !== null;
+      if(this.sendEnabled) {
+          this.patientService.notebookNumber = this.notebookNumber;
+          this.patientService.pageNumber = this.pageNumber;
+      }
   }
 
   ngOnDestroy(){

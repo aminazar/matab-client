@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {AuthService} from "../auth.service";
 import {Router} from "@angular/router";
 import {PatientService} from "../patient.service";
+import {NavService} from "../nav.service";
 
 interface navLink{
   link:string;
@@ -24,12 +25,15 @@ export class NavbarComponent implements OnInit {
   private idNumber: string;
   private display_name: string;
 
-  constructor(private authService: AuthService, private router:Router, private patientService:PatientService) {
+  constructor(private authService: AuthService, private router:Router, private patientService:PatientService , private navService: NavService) {
   }
 
   ngOnInit() {
     this.authService.auth$.subscribe(auth => {
       this.auth = auth;
+      if (!auth)
+        this.navService.hide();
+
       this.user = this.authService.user;
       this.isAdmin = auth && this.authService.userType  === 'admin';
       this.isDoctor = auth && this.authService.userType === 'doctor';

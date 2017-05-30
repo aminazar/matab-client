@@ -20,5 +20,4 @@ export class DoctorVisitsComponent implements OnInit {
     console.log(data);
     this.vid = data.value;
   }
-
 }

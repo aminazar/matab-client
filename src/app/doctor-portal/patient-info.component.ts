@@ -1,7 +1,7 @@
-import {Component, OnInit, Output, EventEmitter} from '@angular/core';
+import {Component, OnInit, Output, EventEmitter, Input} from '@angular/core';
 import {PatientService} from "../patient.service";
 import * as moment from 'moment';
-import DurationConstructor = moment.unitOfTime.DurationConstructor;
+// import DurationConstructor = moment.unitOfTime.DurationConstructor;
 
 @Component({
   selector: 'app-patient-info',
@@ -9,8 +9,16 @@ import DurationConstructor = moment.unitOfTime.DurationConstructor;
   styleUrls: ['./patient-info.component.css']
 })
 export class PatientInfoComponent implements OnInit {
-  dob:any={};
-  contactDetails:any={};
+  @Input() dob;
+  private _cd: any;
+  @Input()
+  set contactDetails(data){
+    this._cd=data;
+    this.refreshDetails();
+  };
+  get contactDetails(){
+    return this._cd;
+  }
   surgeon="";
   hospital="";
   surgeryDate="";
@@ -48,6 +56,7 @@ export class PatientInfoComponent implements OnInit {
       this.angiographer = this.contactDetails.angiographer ? this.contactDetails.angiographer : '-';
       this.angioDate = this.contactDetails.angioDate && this.contactDetails.angioDate.year ? this.contactDetails.angioDate.year + '/' + this.contactDetails.angioDate.month + '/' + this.contactDetails.angioDate.day : '-';
       this.referredBy = this.contactDetails.referredBy ? this.contactDetails.referredBy : '-';
+      if(!this.dob) this.dob="-";
       }
   }
 

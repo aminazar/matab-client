@@ -1,6 +1,7 @@
 import {Injectable, OnInit} from '@angular/core';
 import {Observable, ReplaySubject} from "rxjs";
 import * as moment from 'moment';
+import {SafService} from "./saf.service";
 
 @Injectable()
 export class PatientService{
@@ -15,8 +16,8 @@ export class PatientService{
   private visitCache=[];
   pageNumber: number;
   notebookNumber: number;
-  constructor() {}
 
+    constructor(private saf:SafService) {}
   newPatient(data:any) {
     this.pid = data.pid;
     this.firstname = data.firstname;
