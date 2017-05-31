@@ -32,7 +32,7 @@ import { ModalDialogComponent } from './modal-dialog/modal-dialog.component';
 import { DoctorVisitsComponent } from './doctor-visits/doctor-visits.component';
 import {SafService} from "./saf.service";
 import { WaitnigQueueComponent } from './waitnig-queue/waitnig-queue.component';
-import {NavService} from "./nav.service";
+import { KeysPipe } from './keys.pipe';
 
 @NgModule({
   declarations: [
@@ -51,7 +51,8 @@ import {NavService} from "./nav.service";
     PatientInfoComponent,
     ModalDialogComponent,
     DoctorVisitsComponent,
-    WaitnigQueueComponent
+    WaitnigQueueComponent,
+    KeysPipe
   ],
   imports: [
     FileUploadModule,
@@ -72,7 +73,7 @@ import {NavService} from "./nav.service";
       {path: 'wl', component: WaitnigQueueComponent}
     ]),
   ],
-  providers: [AuthService, RestService, LoggedInGuard, MessageService,PatientService, WebSocketService, SocketService, SafService , NavService],
+  providers: [AuthService, RestService, LoggedInGuard, MessageService,PatientService, WebSocketService, SocketService, SafService],
   bootstrap: [AppComponent],
   entryComponents: [ModalDialogComponent],
 })

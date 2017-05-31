@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {AuthService} from "../auth.service";
 import {Router} from "@angular/router";
 import {PatientService} from "../patient.service";
-import {NavService} from "../nav.service";
+import {CONSTS} from "../const";
 
 interface navLink{
   link:string;
@@ -24,15 +24,22 @@ export class NavbarComponent implements OnInit {
   private surname: string;
   private idNumber: string;
   private display_name: string;
+  private nav_visible:boolean;
 
-  constructor(private authService: AuthService, private router:Router, private patientService:PatientService , private navService: NavService) {
+
+
+  constructor(private authService: AuthService, private router:Router, private patientService:PatientService) {
   }
 
   ngOnInit() {
     this.authService.auth$.subscribe(auth => {
       this.auth = auth;
-      if (!auth)
-        this.navService.hide();
+
+      // TODO if statement is temporary. it must be decided whether wl route needs auth or not.
+      if (auth && this.router.url !== CONSTS.WL_ROUTE)
+        this.nav_visible = true;
+      else
+        this.nav_visible = false;
 
       this.user = this.authService.user;
       this.isAdmin = auth && this.authService.userType  === 'admin';
