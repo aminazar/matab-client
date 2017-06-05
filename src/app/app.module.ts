@@ -32,7 +32,6 @@ import { ModalDialogComponent } from './modal-dialog/modal-dialog.component';
 import { DoctorVisitsComponent } from './doctor-visits/doctor-visits.component';
 import {SafService} from "./saf.service";
 import { WaitnigQueueComponent } from './waitnig-queue/waitnig-queue.component';
-import { KeysPipe } from './keys.pipe';
 
 @NgModule({
   declarations: [
@@ -52,7 +51,6 @@ import { KeysPipe } from './keys.pipe';
     ModalDialogComponent,
     DoctorVisitsComponent,
     WaitnigQueueComponent,
-    KeysPipe
   ],
   imports: [
     FileUploadModule,

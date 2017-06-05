@@ -1,4 +1,18 @@
 /* You can add global styles to this file, and also import other style files */
+
+@font-face {
+  font-family: 'Yekan';
+
+  src: url('assets/font-yekan/Yekan.eot?-wwn5ej');
+  src: url('assets/font-yekan/Yekan.eot?#iefix-wwn5ej') format('embedded-opentype'),
+  url('assets/font-yekan/Yekan.woff?-wwn5ej') format('woff'),
+  url('assets/font-yekan/Yekan.ttf?-wwn5ej') format('truetype'),
+  url('assets/font-yekan/Yekan.svg?-wwn5ej#icomoon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
 a{text-decoration: none;}
 a:focus{text-decoration: none;}
 a:hover{text-decoration: none;}
