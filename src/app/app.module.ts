@@ -30,8 +30,8 @@ import {WebSocketService} from "angular2-websocket-service";
 import {SocketService} from "./socket.service";
 import { ModalDialogComponent } from './modal-dialog/modal-dialog.component';
 import { DoctorVisitsComponent } from './doctor-visits/doctor-visits.component';
-import {SafService} from "./saf.service";
-import { WaitnigQueueComponent } from './waitnig-queue/waitnig-queue.component';
+import {WaitingQueueService} from "./waiting-queue.service";
+import { WaitingQueueComponent } from './waitnig-queue/waitnig-queue.component';
 
 @NgModule({
   declarations: [
@@ -50,7 +50,7 @@ import { WaitnigQueueComponent } from './waitnig-queue/waitnig-queue.component';
     PatientInfoComponent,
     ModalDialogComponent,
     DoctorVisitsComponent,
-    WaitnigQueueComponent,
+    WaitingQueueComponent,
   ],
   imports: [
     FileUploadModule,
@@ -68,10 +68,10 @@ import { WaitnigQueueComponent } from './waitnig-queue/waitnig-queue.component';
       {path: 'visit', component: VisitComponent, canActivate:[LoggedInGuard]},
       {path: 'doctorPortal', component: DoctorPortalComponent, canActivate:[LoggedInGuard]},
       {path: 'doctorVisits', component: DoctorVisitsComponent, canActivate:[LoggedInGuard]},
-      {path: 'wl', component: WaitnigQueueComponent}
+      {path: 'wl', component: WaitingQueueComponent}
     ]),
   ],
-  providers: [AuthService, RestService, LoggedInGuard, MessageService,PatientService, WebSocketService, SocketService, SafService],
+  providers: [AuthService, RestService, LoggedInGuard, MessageService,PatientService, WebSocketService, SocketService, WaitingQueueService],
   bootstrap: [AppComponent],
   entryComponents: [ModalDialogComponent],
 })

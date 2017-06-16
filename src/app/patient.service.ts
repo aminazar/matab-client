@@ -1,7 +1,7 @@
 import {Injectable, OnInit} from '@angular/core';
 import {Observable, ReplaySubject} from "rxjs";
 import * as moment from 'moment';
-import {SafService} from "./saf.service";
+import {WaitingQueueService} from "./waiting-queue.service";
 
 @Injectable()
 export class PatientService{
@@ -17,7 +17,7 @@ export class PatientService{
   pageNumber: number;
   notebookNumber: number;
 
-    constructor(private saf:SafService) {}
+    constructor(private saf:WaitingQueueService) {}
   newPatient(data:any) {
     this.pid = data.pid;
     this.firstname = data.firstname;
