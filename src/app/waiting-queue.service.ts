@@ -10,12 +10,13 @@ import {WebSocketService} from 'angular2-websocket-service'
 import {isUndefined} from "util";
 import moment = require("moment");
 import {Subject} from "rxjs/Subject";
+import {forEach} from "@angular/router/src/utils/collection";
 
 @Injectable()
 export class WaitingQueueService {
     public waitingQueue = [];
 
-    private waitingQueueSource = new Subject<any>();
+    private waitingQueueSource = new ReplaySubject<any>();
 
     waitingQueueObservable = this.waitingQueueSource.asObservable();
 
@@ -65,7 +66,12 @@ export class WaitingQueueService {
         this.restService.update('end-visit/' + pid, did, {}).subscribe(
             () => {
 
-                this.waitingQueue = this.waitingQueue.filter(d => d.pid !== pid);
+                this.waitingQueue = this.waitingQueue.filter(w => w.pid !== pid);
+                this.waitingQueue.filter(w => w.did === did).forEach(w => {
+                    if (w.priority > 0)
+                       w.priority = (w.priority -1).toString();
+                });
+
                 this.updateObservable();
             },
             err => {

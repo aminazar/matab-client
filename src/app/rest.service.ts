@@ -14,7 +14,6 @@ export class RestService {
 
   insert(table, values): Observable<any> {
 
-    let a = 1;
     return this.http.put('/api/' + table, values).map((data: Response) => data.json());
 
   }

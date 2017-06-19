@@ -1,8 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {WaitingQueueService} from "../waiting-queue.service";
-import {RestService} from "../rest.service";
-import {forEach} from "@angular/router/src/utils/collection";
-import {isNullOrUndefined} from "util";
+import * as _ from 'lodash';
 
 @Component({
     selector: 'app-waiting-queue',
@@ -11,22 +9,19 @@ import {isNullOrUndefined} from "util";
 })
 export class WaitingQueueComponent implements OnInit {
 
-    private drList = [];
 
-    constructor(private safService: WaitingQueueService, private restService: RestService) {
+    waitingList;
+    constructor(private waitingQueueService: WaitingQueueService) {
 
     }
 
     ngOnInit() {
 
-        this.safService.waitingQueueObservable.subscribe(waitingQueue => {
+        this.waitingQueueService.waitingQueueObservable.subscribe(waitingQueue => {
 
-/*
-            for (let key in waitingQueue) {
-                this.drList.push(waitingQueue[key]);
-            }*/
-
-
+            console.log('next is done => ' , waitingQueue);
+            this.waitingList = _.sortBy(waitingQueue , 'priority');
+            this.waitingList = _.groupBy(this.waitingList,'doctor');
 
         });
 

@@ -2,33 +2,37 @@
     <md-card-title class="cardTitle">صف انتظار</md-card-title>
     <md-grid-list cols="3">
 
-        <md-grid-tile *ngFor="let drWaiting of drList">
+        <md-grid-tile *ngFor="let drName of waitingList | keys">
             <md-card style="width: 100%;height: 100%; padding: 0 ; margin-right: 10px;">
 
                 <md-card-header style="background-color: #20bc76 ; padding: 10px;">
                     <md-card-title>
                         <i class="fa fa-user-md" aria-hidden="true"></i>
-                        {{drWaiting[0].display_name}}
+                        {{drName}}
                     </md-card-title>
                 </md-card-header>
 
+                <div *ngFor="let wait of waitingList[drName]; let i = index">
 
-                <md-card *ngIf="drWaiting.underVisit" style="margin: 10px 10px 20px 10px; background-color: #5bc0de">
+                    <md-card *ngIf="wait.priority === '0'" style="margin: 10px 10px 20px 10px; background-color: #5bc0de">
 
+                        <md-card-content>
 
-                    <md-card-content>
-                        {{drWaiting.underVisit}}
+                            {{wait.firstname}} {{wait.surname}}
+
+                        </md-card-content>
+
+                    </md-card>
+                    <md-card-content *ngIf="wait.priority !== '0'" style="padding: 0 15px 0 15px;">
+
+                            {{wait.firstname}} {{wait.surname}}
 
                     </md-card-content>
 
-                </md-card>
-
-                <md-card-content *ngFor="let waiting of drWaiting; let i = index" style="padding: 0 15px 0 15px;">
+                </div>
 
 
-                    {{i + 1}} - {{waiting.firstname}} {{waiting.surname}}
 
-                </md-card-content>
 
             </md-card>
         </md-grid-tile>
