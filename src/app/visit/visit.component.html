@@ -38,7 +38,7 @@
             <td>{{item.wait_start_time|date:'shortTime'}}</td>
             <td>{{item.duration}}</td>
             <td *ngIf="!isDoctor"><button type="button" class="btn btn-danger btn-xs"
-                        (click)="dismissVisit(item.did,item.pid)"><i class="fa fa-remove"></i></button></td>
+                        (click)="dismissVisit(item.did,item.pid ,item.firstname, item.surname )"><i class="fa fa-remove"></i></button></td>
           </tr>
         </table>
       </md-card>

@@ -20,10 +20,26 @@ export class WaitingQueueService {
 
     waitingQueueObservable = this.waitingQueueSource.asObservable();
 
-    constructor(private restService: RestService, private http: Http, private socket: WebSocketService, private messageService: MessageService) {
+    constructor(private restService: RestService, private socket: SocketService, private messageService: MessageService) {
 
         console.log('waiting service constructed');
         this.getWaitingList(() => {});
+
+        this.socket.onMessage(msg => {
+
+            console.log(msg.text , msg.type);
+
+            if (msg.msgType === "Patient Dismissed") {
+                this.waitingQueue = this.waitingQueue.filter(r => r.pid !== msg.pid);
+
+            }
+            this.updateObservable();
+            this.messageService.popup(msg.text, msg.msgType, true, () => {});
+
+
+        });
+
+
     }
 
 
@@ -62,7 +78,7 @@ export class WaitingQueueService {
     }
 
 
-    public dismissVisit(did, pid) {
+    public dismissVisit(did, pid, callback) {
         this.restService.update('end-visit/' + pid, did, {}).subscribe(
             () => {
 
@@ -73,6 +89,8 @@ export class WaitingQueueService {
                 });
 
                 this.updateObservable();
+
+                callback();
             },
             err => {
                 console.log(err);
@@ -88,6 +106,9 @@ export class WaitingQueueService {
             () => {
 
                 this.getWaitingList(() => {
+
+
+
                     callback();
                 });
 
@@ -99,6 +120,35 @@ export class WaitingQueueService {
 
 
     }
+
+    public informDoctorNewPatient(doctorName , firstname , surname){
+
+        this.socket.send({
+            cmd: 'send',
+            target: ['doctor/' + doctorName],
+            msg: {
+                msgType: "New visit",
+                text: `${moment().format('HH:mm')}: New patient "${firstname} ${surname}" is sent to you for visit.`
+            }
+        });
+
+
+    }
+
+    public informDoctorDismissPatient(pid, firstname, surname, doctorName ){
+        this.socket.send({
+            cmd: 'send',
+            target: ['doctor/' + doctorName],
+            msg: {
+                msgType:'Patient Dismissed',
+                text: `${moment().format('HH:mm')}: ${doctorName} dismissed "${firstname} ${surname}".`,
+                pid: pid,
+                dr_name: doctorName,
+            },
+        });
+
+    }
+
 
     private updateObservable() {
 

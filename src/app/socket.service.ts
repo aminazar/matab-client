@@ -5,8 +5,8 @@ import {Observable, Subscription} from "rxjs";
 
 @Injectable()
 export class SocketService {
-  private socketOutput: Observable<any>;
-  private socketInput: QueueingSubject<any>;
+  private socketOutput: Observable<any>; // outputStream
+  private socketInput: QueueingSubject<any>; // inputStream
   private subscriptions:Subscription[] = [];
 
   constructor(private socket: WebSocketService) { }

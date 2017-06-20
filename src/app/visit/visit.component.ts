@@ -36,7 +36,7 @@ export class VisitComponent implements OnInit, OnDestroy {
     // private allDoctors: any;
     private pidSub: Subscription;
 
-    constructor(private restService: RestService, private patientService: PatientService, private authService: AuthService, private socket: SocketService, private waitingQueueService: WaitingQueueService) {
+    constructor(private restService: RestService, private patientService: PatientService, private authService: AuthService, private waitingQueueService: WaitingQueueService) {
 
     }
 
@@ -45,14 +45,6 @@ export class VisitComponent implements OnInit, OnDestroy {
         console.log('Ng Init...');
 
         this.authService.auth$.subscribe((auth) => this.isDoctor = auth && this.authService.userType === 'doctor');
-        this.socket.onMessage(msg => {
-            if (msg.msgType === "Patient Dismissed") {
-                this.visits = this.visits.filter(r => r.pid !== msg.pid);
-                // this.doctors = this.doctors.concat(this.allDoctors.filter(r => r.display_name === msg.dr_name));
-                this.canGo = true;
-                this.currentVisit = [];
-            }
-        });
 
         this.waitingQueueService.waitingQueueObservable.subscribe((data) => {
 
@@ -142,14 +134,10 @@ export class VisitComponent implements OnInit, OnDestroy {
                 pid: this.pid,
             }, () => {
 
-                this.socket.send({
-                    cmd: 'send',
-                    target: ['doctor/' + this.doctors.filter(r => r.uid === this.did)[0].name],
-                    msg: {
-                        msgType: "New visit",
-                        text: `${moment().format('HH:mm')}: New patient "${this.patientService.firstname} ${this.patientService.surname}" is sent to you for visit.`
-                    }
-                });
+                this.waitingQueueService.informDoctorNewPatient(this.doctors.filter(r => r.uid === this.did)[0].name,
+                    this.patientService.firstname,
+                    this.patientService.surname);
+
                 this.refresh();
             }
         )
@@ -160,21 +148,6 @@ export class VisitComponent implements OnInit, OnDestroy {
     private referPatient() {
         if (this.currentVisit != null && this.authService.display_name === this.currentVisit.doctor) { //referral by doctor
 
-            // this.waitingQueueService.dismissVisit(this.currentVisit[0].did, this.currentVisit[0].pid, () => {
-            //
-            //     let ind = this.visits.findIndex(r => r.pid === this.currentVisit[0].pid && r.did === this.currentVisit[0].did);
-            //     this.socket.send({
-            //         cmd: 'send',
-            //         target: ['doctor/' + this.allDoctors.filter(r => r.uid === this.visits[ind].did)[0].name],
-            //         msg: {
-            //             msgType: 'Patient Dismissed by Admin',
-            //             text: `${moment().format('HH:mm')}: Visit of "${this.visits[ind].firstname} ${this.visits[ind].surname}" was ended by the admin.`,
-            //         }
-            //     });
-            // this.visits.splice(this.visits[ind], 1);
-            // this.refresh();
-            // });
-            // return;
 
             this.waitingQueueService.referPatient({
                 from_did: this.currentVisit.did,
@@ -182,6 +155,10 @@ export class VisitComponent implements OnInit, OnDestroy {
                 pid: this.currentVisit.pid
             }, () => {
                 this.updateDoctorsDropDown();
+
+                this.waitingQueueService.informDoctorNewPatient(this.doctors.filter(r => r.uid === this.did)[0].name,
+                    this.patientService.firstname,
+                    this.patientService.surname);
 
 
             });
@@ -191,24 +168,30 @@ export class VisitComponent implements OnInit, OnDestroy {
         }
     }
 
-    dismissVisit(did, pid) {
+    /**
+     * this method is accessible only for admin users
+     * @param did
+     * @param pid
+     * @param firstname
+     * @param surname
+     * @param doctor
+     */
+    dismissVisit(did, pid, firstname, surname) {
 
-        this.waitingQueueService.dismissVisit(did, pid);
+        this.waitingQueueService.dismissVisit(did, pid, () => {
+
+            let doctorName = this.doctors.filter(r => r.uid === this.did)[0].name;
+
+            this.waitingQueueService.informDoctorDismissPatient(pid, firstname, surname, doctorName);
+
+        });
     }
 
     updateDoctorsDropDown() {
 
-        // if (this.currentVisit != null && this.authService.display_name === this.currentVisit.doctor) { //referral by doctor
-        //     this.doctors = this.allDoctors.filter(r => r.display_name != this.authService.display_name)
-        // }
-
         if (this.authService.userType === 'doctor') {
             this.doctors = this.doctors.filter(r => r.display_name != this.authService.display_name)
         }
-        // else
-        //     this.doctors = this.allDoctors;
-
-        // this.allBusy = this.allDoctors.filter(r => !this.visits.find(s => s.did === r.uid)).length === 0 ? true : false;
 
     }
 
