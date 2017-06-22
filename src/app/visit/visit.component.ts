@@ -115,8 +115,7 @@ export class VisitComponent implements OnInit, OnDestroy {
     }
 
     refresh() {
-        this.waitingQueueService.getWaitingList(() => {
-        });
+        this.waitingQueueService.getWaitingList();
     }
 
 

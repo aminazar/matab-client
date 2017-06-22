@@ -2,6 +2,7 @@ import {Injectable, isDevMode} from '@angular/core';
 import { QueueingSubject } from 'queueing-subject'
 import { WebSocketService } from 'angular2-websocket-service'
 import {Observable, Subscription} from "rxjs";
+import {subscribeOn} from "rxjs/operator/subscribeOn";
 
 @Injectable()
 export class SocketService {

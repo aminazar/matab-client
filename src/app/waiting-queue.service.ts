@@ -23,7 +23,7 @@ export class WaitingQueueService {
     constructor(private restService: RestService, private socket: SocketService, private messageService: MessageService) {
 
         console.log('waiting service constructed');
-        this.getWaitingList(() => {});
+        this.getWaitingList();
 
         this.socket.onMessage(msg => {
 
@@ -33,6 +33,8 @@ export class WaitingQueueService {
                 this.waitingQueue = this.waitingQueue.filter(r => r.pid !== msg.pid);
 
             }
+
+            console.log('Hello ===> ',this.waitingQueue);
             this.updateObservable();
             this.messageService.popup(msg.text, msg.msgType, true, () => {});
 
@@ -47,7 +49,7 @@ export class WaitingQueueService {
      *
      * @param callBack is used when afterCall function must be called after list is received (e.g: referVisit)
      */
-    getWaitingList(callBack) {
+    getWaitingList(callBack:any=()=>{}) {
 
         this.restService.get('get-waiting-list').subscribe(data => {
                 this.waitingQueue = [];
