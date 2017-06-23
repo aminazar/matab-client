@@ -70,7 +70,7 @@ import { KeysPipe } from './keys.pipe';
       {path: 'visit', component: VisitComponent, canActivate:[LoggedInGuard]},
       {path: 'doctorPortal', component: DoctorPortalComponent, canActivate:[LoggedInGuard]},
       {path: 'doctorVisits', component: DoctorVisitsComponent, canActivate:[LoggedInGuard]},
-      {path: 'wl', component: WaitingQueueComponent}
+      {path: 'wl', component: WaitingQueueComponent, canActivate:[LoggedInGuard]}
     ]),
   ],
   providers: [AuthService, RestService, LoggedInGuard, MessageService,PatientService, WebSocketService, SocketService, WaitingQueueService],

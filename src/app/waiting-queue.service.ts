@@ -1,7 +1,5 @@
 import {Injectable, isDevMode} from '@angular/core';
-import {Component, OnInit, Input} from '@angular/core';
 import {RestService} from "./rest.service";
-import {Router} from "@angular/router";
 import {MessageService} from "./message.service";
 import {Observable, ReplaySubject} from "rxjs";
 import {SocketService} from "./socket.service";
@@ -22,28 +20,27 @@ export class WaitingQueueService {
 
     constructor(private restService: RestService, private socket: SocketService, private messageService: MessageService) {
 
-        console.log('waiting service constructed');
+
+
+    }
+
+
+    public init(){
         this.getWaitingList();
 
         this.socket.onMessage(msg => {
 
-            console.log(msg.text , msg.type);
 
             if (msg.msgType === "Patient Dismissed") {
                 this.waitingQueue = this.waitingQueue.filter(r => r.pid !== msg.pid);
+                this.updateObservable();
 
             }
-
-            console.log('Hello ===> ',this.waitingQueue);
-            this.updateObservable();
-            this.messageService.popup(msg.text, msg.msgType, true, () => {});
-
 
         });
 
 
     }
-
 
     /**
      *

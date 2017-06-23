@@ -2,7 +2,6 @@ import {Component, OnInit} from '@angular/core';
 import {AuthService} from "../auth.service";
 import {Router} from "@angular/router";
 import {PatientService} from "../patient.service";
-import {CONSTS} from "../const";
 
 interface navLink{
   link:string;
@@ -36,7 +35,7 @@ export class NavbarComponent implements OnInit {
       this.auth = auth;
 
       // TODO if statement is temporary. it must be decided whether wl route needs auth or not.
-      if (auth && this.router.url !== CONSTS.WL_ROUTE)
+      if (auth && this.router.url !== 'wl')
         this.nav_visible = true;
       else
         this.nav_visible = false;

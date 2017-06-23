@@ -4,7 +4,7 @@ import {Router} from "@angular/router";
 import {MessageService} from "./message.service";
 import {Observable, ReplaySubject} from "rxjs";
 import {SocketService} from "./socket.service";
-import {CONSTS} from "./const";
+import {WaitingQueueService} from "./waiting-queue.service";
 
 @Injectable()
 export class AuthService {
@@ -15,7 +15,7 @@ export class AuthService {
     originBeforeLogin = '/';
     public display_name = '';
 
-    constructor(private restService: RestService, private router: Router, private messageService: MessageService, private internalSocket: SocketService) {
+    constructor(private restService: RestService, private router: Router, private messageService: MessageService, private internalSocket: SocketService , private waitingService: WaitingQueueService) {
         this.restService.call('validUser')
             .subscribe(
                 res => {
@@ -27,10 +27,6 @@ export class AuthService {
                         console.log(err);
                     this.authStream.next(false);
 
-                    // TODO if statement is temporary. it should be fixed later on server
-
-                    if (this.router.url !== CONSTS.WL_ROUTE)
-                        this.router.navigate(['login']);
                 });
     }
 
@@ -75,6 +71,8 @@ export class AuthService {
                 if (msg.msgType === "Patient Dismissed")
                     this.messageService.popup(msg.text, msg.msgType)
             });
+
+        this.waitingService.init();
     }
 
     logOff() {

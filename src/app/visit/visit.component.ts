@@ -42,13 +42,10 @@ export class VisitComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
 
-        console.log('Ng Init...');
 
         this.authService.auth$.subscribe((auth) => this.isDoctor = auth && this.authService.userType === 'doctor');
 
         this.waitingQueueService.waitingQueueObservable.subscribe((data) => {
-
-            console.log('next is done on subscription');
             this.init(data);
 
         });
@@ -61,13 +58,13 @@ export class VisitComponent implements OnInit, OnDestroy {
     }
 
     private init(waitingQueue) {
-        console.log(waitingQueue);
+        // console.log(waitingQueue);
 
         this.visits = waitingQueue.filter(r => r.priority === '0');
-        console.log('visits:', this.visits);
+        // console.log('visits:', this.visits);
 
         this.waiting = waitingQueue.filter(r => r.priority !== '0');
-        console.log('waiting:', this.waiting);
+        // console.log('waiting:', this.waiting);
 
         setInterval(() => this.visits.forEach(r => r.duration = moment.duration(moment().diff(r.start_time)).humanize()), 0);
 
@@ -91,9 +88,9 @@ export class VisitComponent implements OnInit, OnDestroy {
 
         this.enabled = true;
         this.currentVisit = this.visits.filter(r => ( r.doctor === this.authService.display_name))[0];
-        console.log('current visit: ', this.currentVisit);
+        // console.log('current visit: ', this.currentVisit);
         this.currentWaiting = this.waiting.filter(r => r.doctor === this.authService.display_name);
-        console.log('current waiting: ', this.currentWaiting);
+        // console.log('current waiting: ', this.currentWaiting);
         this.isVisiting = this.currentVisit != null;
         this.isWaiting = this.currentWaiting.length > 0;
         this.isVisitingOrWaiting = this.isVisiting || this.isWaiting;
