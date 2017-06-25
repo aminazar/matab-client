@@ -48,6 +48,7 @@ export class VisitComponent implements OnInit, OnDestroy {
         this.waitingQueueService.waitingQueueObservable.subscribe((data) => {
             this.init(data);
 
+
         });
 
         // in admin mode, when new patient is added, it should be updated
@@ -58,13 +59,11 @@ export class VisitComponent implements OnInit, OnDestroy {
     }
 
     private init(waitingQueue) {
-        // console.log(waitingQueue);
+        console.log(waitingQueue);
 
-        this.visits = waitingQueue.filter(r => r.priority === '0');
-        // console.log('visits:', this.visits);
+        this.visits = waitingQueue.filter(r => r.vid);
 
-        this.waiting = waitingQueue.filter(r => r.priority !== '0');
-        // console.log('waiting:', this.waiting);
+        this.waiting = waitingQueue.filter(r => !r.vid);
 
         setInterval(() => this.visits.forEach(r => r.duration = moment.duration(moment().diff(r.start_time)).humanize()), 0);
 
@@ -164,6 +163,8 @@ export class VisitComponent implements OnInit, OnDestroy {
         }
     }
 
+
+
     /**
      * this method is accessible only for admin users
      * @param did
@@ -176,6 +177,7 @@ export class VisitComponent implements OnInit, OnDestroy {
 
         this.waitingQueueService.dismissVisit(did, pid, () => {
 
+            // todo: error in case of admin?? (no doctor did)
             let doctorName = this.doctors.filter(r => r.uid === this.did)[0].name;
 
             this.waitingQueueService.informDoctorDismissPatient(pid, firstname, surname, doctorName);
