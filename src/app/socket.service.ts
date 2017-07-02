@@ -1,43 +1,81 @@
-import {Injectable, isDevMode} from '@angular/core';
-import { QueueingSubject } from 'queueing-subject'
-import { WebSocketService } from 'angular2-websocket-service'
-import {Observable, Subscription} from "rxjs";
-import {subscribeOn} from "rxjs/operator/subscribeOn";
+import {Injectable} from '@angular/core';
+import * as io from 'socket.io-client';
+import {Observable} from "rxjs";
 
 @Injectable()
 export class SocketService {
-  private socketOutput: Observable<any>; // outputStream
-  private socketInput: QueueingSubject<any>; // inputStream
-  private subscriptions:Subscription[] = [];
 
-  constructor(private socket: WebSocketService) { }
 
-  public initSocket(userType, user) {
-    if(this.socketOutput)
-      this.ngOnDestroy();
+    public static readonly LOGIN_CMD : string = 'login';
+    public static readonly DISMISS_CMD : string = 'dismiss';
+    public static readonly NEW_VISIT_CMD: string = 'newVisit';
 
-    let url = new URL(window.location.href);
-    this.socketOutput = this.socket.connect(
-      `ws://${url.hostname}:3001/${userType}/${user}`,
-      this.socketInput = new QueueingSubject<any>()
-    ).share();
-    this.onMessage(msg=>{
-      if(isDevMode())
-        console.log("socket logger:",msg)
+    private url = 'http://localhost:3000';
+    private socketConfig = {
+        transports: ['websocket']
+    };
+
+    private userSocket;
+    private patientSocket;
+
+    private userObservable = new Observable(observer => {
+        this.userSocket.on('message', (data) => {
+            observer.next(data);
+        });
+        return () => {
+            this.userSocket.disconnect();
+        };
     });
-  }
 
-  public send(data) {
-    if(this.socketInput)
-      this.socketInput.next(JSON.stringify(data));
-  }
+    private patientObservable = new Observable(observer => {
+        this.patientSocket.on('message', (data) => {
+            observer.next(data);
+        });
+        return () => {
+            this.patientSocket.disconnect();
+        };
+    });
 
-  public onMessage(callback) {
-    if(this.socketOutput)
-      this.subscriptions.push(this.socketOutput.subscribe(callback));
-  }
 
-  ngOnDestroy(){
-    this.subscriptions.forEach(r=>r.unsubscribe());
-  }
+    constructor() {
+
+    }
+
+
+    public init() {
+
+        this.userSocket = io(this.url + '/user', this.socketConfig);
+        this.patientSocket = io(this.url + '/patient', this.socketConfig);
+
+    }
+
+
+    /**
+     * socket.broadcast.emit() behaves similar to io.sockets.emit ,
+     * but instead of emitting to all connected sockets it will emit to all connected socket except the one it is being called on.
+     * @param message
+     */
+
+
+    sendUserMessage(message) {
+        this.userSocket.emit('message', message);
+    }
+
+
+    sendPatientMessage(message) {
+        this.userSocket.emit('message', message);
+    }
+
+
+    getUserMessages() {
+
+        return this.userObservable;
+    }
+
+    getPatientMessages() {
+
+        return this.patientObservable;
+    }
+
+
 }

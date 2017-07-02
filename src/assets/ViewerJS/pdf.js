@@ -2602,7 +2602,7 @@ var WorkerTransport = (function WorkerTransportClosure() {
       }
       PDFJS.fakeWorkerFilesLoadedCapability.promise.then(function () {
         warn('Setting up fake worker.');
-        // If we don't use a worker, just post/sendMessage to the main thread.
+        // If we don't use a worker, just post/sendUserMessage to the main thread.
         var fakeWorker = {
           postMessage: function WorkerTransport_postMessage(obj) {
             fakeWorker.onmessage({data: obj});

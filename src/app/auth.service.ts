@@ -15,7 +15,13 @@ export class AuthService {
     originBeforeLogin = '/';
     public display_name = '';
 
-    constructor(private restService: RestService, private router: Router, private messageService: MessageService, private internalSocket: SocketService , private waitingService: WaitingQueueService) {
+    private userSocketObserver;
+
+    constructor(private restService: RestService,
+                private router: Router,
+                private messageService: MessageService,
+                private socketService: SocketService,
+                private waitingService: WaitingQueueService) {
         this.restService.call('validUser')
             .subscribe(
                 res => {
@@ -53,26 +59,27 @@ export class AuthService {
         this.userType = data.userType;
         this.display_name = data.display_name;
         this.authStream.next(true);
-        this.internalSocket.initSocket(this.userType, this.user);
+
+        this.socketService.init();
+
+
         if (this.userType === 'doctor')
-            this.internalSocket.send({
-                cmd: 'send',
-                target: ['admin', 'user'],
+            this.socketService.sendUserMessage({
+                cmd: SocketService.LOGIN_CMD,
                 msg: {
-                    msgType: 'Login',
-                    text: `${this.display_name} logged in.`,
-                },
+                    text: `${this.display_name} logged in.`
+                }
             });
 
         if (this.userType === 'admin' || this.userType === 'user')
-            this.internalSocket.onMessage(msg => {
-                if (msg.msgType === "Login")
-                    this.messageService.warn(msg.text);
-                if (msg.msgType === "Patient Dismissed")
-                    this.messageService.popup(msg.text, msg.msgType)
+            this.userSocketObserver = this.socketService.getUserMessages().subscribe( (message:any) => {
+                if (message.cmd === "Login")
+                    this.messageService.warn(message.msg.text);
             });
 
         this.waitingService.init();
+
+
     }
 
     logOff() {
@@ -83,7 +90,7 @@ export class AuthService {
                     this.userType = '';
                     this.authStream.next(false);
                     this.router.navigate(['login']);
-                    this.internalSocket.ngOnDestroy();
+                    this.userSocketObserver.unsubscribe();
                 },
                 err => {
                     this.messageService.error(err);
@@ -91,4 +98,6 @@ export class AuthService {
                         console.log(err);
                 });
     }
+
+
 }

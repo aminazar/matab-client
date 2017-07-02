@@ -13,26 +13,21 @@ import {forEach} from "@angular/router/src/utils/collection";
 @Injectable()
 export class WaitingQueueService {
     public waitingQueue = [];
-
     private waitingQueueSource = new ReplaySubject<any>();
-
     waitingQueueObservable = this.waitingQueueSource.asObservable();
+    private socketObserver;
 
-    constructor(private restService: RestService, private socket: SocketService, private messageService: MessageService) {
-
-
-
+    constructor(private restService: RestService, private socketService: SocketService) {
     }
 
 
     public init(){
         this.getWaitingList();
 
-        this.socket.onMessage(msg => {
+       this.socketObserver =  this.socketService.getPatientMessages().subscribe( (message:any) => {
 
-
-            if (msg.msgType === "Patient Dismissed") {
-                this.waitingQueue = this.waitingQueue.filter(r => r.pid !== msg.pid);
+            if (message.cmd === SocketService.DISMISS_CMD) {
+                this.waitingQueue = this.waitingQueue.filter(r => r.pid !== message.msg.pid);
                 this.updateObservable();
 
             }
@@ -106,8 +101,6 @@ export class WaitingQueueService {
 
                 this.getWaitingList(() => {
 
-
-
                     callback();
                 });
 
@@ -122,11 +115,9 @@ export class WaitingQueueService {
 
     public informDoctorNewPatient(doctorName , firstname , surname){
 
-        this.socket.send({
-            cmd: 'send',
-            target: ['doctor/' + doctorName],
+        this.socketService.sendPatientMessage({
+            cmd: SocketService.NEW_VISIT_CMD,
             msg: {
-                msgType: "New visit",
                 text: `${moment().format('HH:mm')}: New patient "${firstname} ${surname}" is sent to you for visit.`
             }
         });
@@ -135,11 +126,9 @@ export class WaitingQueueService {
     }
 
     public informDoctorDismissPatient(pid, firstname, surname, doctorName ){
-        this.socket.send({
-            cmd: 'send',
-            target: ['doctor/' + doctorName],
+        this.socketService.sendPatientMessage({
+            cmd: SocketService.DISMISS_CMD,
             msg: {
-                msgType:'Patient Dismissed',
                 text: `${moment().format('HH:mm')}: ${doctorName} dismissed "${firstname} ${surname}".`,
                 pid: pid,
                 dr_name: doctorName,
@@ -152,6 +141,10 @@ export class WaitingQueueService {
     private updateObservable() {
 
         this.waitingQueueSource.next(this.waitingQueue);
+    }
+
+    ngOnDestroy() {
+        this.socketObserver.unsubscribe();
     }
 
 }
