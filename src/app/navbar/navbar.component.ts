@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {AuthService} from "../auth.service";
-import {Router} from "@angular/router";
+import {NavigationEnd, Router} from "@angular/router";
 import {PatientService} from "../patient.service";
 
 interface navLink {
@@ -30,20 +30,32 @@ export class NavbarComponent implements OnInit {
     }
 
     ngOnInit() {
+
+
+        console.log('init!!!!');
+
+        this.router.events.subscribe(event => {
+                if(event instanceof NavigationEnd) {
+
+                    console.log('====> ' , this.router.url);
+                    if (this.router.url !== '/wl' && this.router.url !== '/login')
+                        this.nav_visible = true;
+                    else
+                        this.nav_visible = false;
+                }
+            });
+
+
         this.authService.auth$.subscribe(auth => {
             this.auth = auth;
 
+            if (auth) {
+                this.user = this.authService.user;
+                this.isAdmin = auth && this.authService.userType === 'admin';
+                this.isDoctor = auth && this.authService.userType === 'doctor';
+                this.display_name = this.authService.display_name;
+            }
 
-            // TODO if statement is temporary. it must be decided whether wl route needs auth or not.
-            if (auth && this.router.url !== 'wl')
-                this.nav_visible = true;
-            else
-                this.nav_visible = false;
-
-            this.user = this.authService.user;
-            this.isAdmin = auth && this.authService.userType === 'admin';
-            this.isDoctor = auth && this.authService.userType === 'doctor';
-            this.display_name = this.authService.display_name;
         });
         this.patientService.pid$.subscribe(pid => {
             this.pid = pid;

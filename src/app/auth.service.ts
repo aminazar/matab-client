@@ -72,7 +72,7 @@ export class AuthService {
             });
 
         if (this.userType === 'admin' || this.userType === 'user')
-            this.userSocketObserver = this.socketService.getUserMessages().subscribe( (message:any) => {
+            this.userSocketObserver = this.socketService.getUserMessages().subscribe((message: any) => {
                 if (message.cmd === "Login")
                     this.messageService.warn(message.msg.text);
             });

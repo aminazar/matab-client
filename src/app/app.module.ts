@@ -63,7 +63,7 @@ import { KeysPipe } from './keys.pipe';
     FlexLayoutModule,
     ReactiveFormsModule,
     RouterModule.forRoot([
-      {path: '', component: HomeComponent, pathMatch: 'full' },
+      {path: '', component: HomeComponent, pathMatch: 'full', canActivate: [LoggedInGuard] },
       {path: 'login', component: LoginComponent},
       {path: 'patient', component: PatientComponent, canActivate: [LoggedInGuard]},
       {path: 'scans', component: UploaderComponent, canActivate: [LoggedInGuard]},
