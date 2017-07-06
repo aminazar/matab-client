@@ -36,10 +36,10 @@ export class VisitComponent implements OnInit, OnDestroy {
     // private allDoctors: any;
     private pidSub: Subscription;
     private authSub: Subscription;
-    private socketSub: Subscription;
+    private waitingQueueSub: Subscription;
 
 
-    constructor(private restService: RestService, private patientService: PatientService, private authService: AuthService, private waitingQueueService: WaitingQueueService, private socket: SocketService) {
+    constructor(private restService: RestService, private patientService: PatientService, private authService: AuthService, private waitingQueueService: WaitingQueueService) {
 
     }
 
@@ -48,7 +48,7 @@ export class VisitComponent implements OnInit, OnDestroy {
 
         this.authSub = this.authService.auth$.subscribe((auth) => this.isDoctor = auth && this.authService.userType === 'doctor');
 
-        this.waitingQueueService.waitingQueue$.subscribe((data) => {
+        this.waitingQueueSub =this.waitingQueueService.waitingQueue$.subscribe((data) => {
             this.init(data);
         });
 
@@ -58,16 +58,13 @@ export class VisitComponent implements OnInit, OnDestroy {
         });
 
 
-        this.socketSub = this.socket.getPatientMessages().subscribe(data => {
-            console.log(data);
-            // todo: diff!
-            this.refresh();
-        });
+
 
     }
 
     private init(waitingQueue) {
-        console.log(waitingQueue);
+
+        console.log('===> ' , waitingQueue);
 
         this.visits = waitingQueue.filter(r => r.vid);
 
@@ -137,8 +134,6 @@ export class VisitComponent implements OnInit, OnDestroy {
                 pid: this.pid,
             }, () => {
 
-                // todo: diff!!!
-                this.refresh();
                 this.waitingQueueService.informDoctorNewPatient(this.doctors.filter(r => r.uid === this.did)[0].name,
                     this.patientService.firstname,
                     this.patientService.surname);
@@ -185,10 +180,8 @@ export class VisitComponent implements OnInit, OnDestroy {
 
         this.waitingQueueService.dismissVisit(did, pid, () => {
 
-            // todo: error in case of admin?? (no doctor did)
-            let doctorName = this.doctors.filter(r => r.uid === this.did)[0].name;
-
-            this.waitingQueueService.informDoctorDismissPatient(pid, firstname, surname, doctorName);
+            let name = this.authService.display_name;
+            this.waitingQueueService.informDoctorDismissPatient(pid, firstname, surname, name);
 
         });
     }
@@ -213,6 +206,6 @@ export class VisitComponent implements OnInit, OnDestroy {
     ngOnDestroy() {
         this.authSub.unsubscribe();
         this.pidSub.unsubscribe();
-        this.socketSub.unsubscribe();
+        this.waitingQueueSub.unsubscribe();
     }
 }

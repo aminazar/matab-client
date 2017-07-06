@@ -9,13 +9,14 @@ import {isUndefined} from "util";
 import moment = require("moment");
 import {Subject} from "rxjs/Subject";
 import {forEach} from "@angular/router/src/utils/collection";
+import {Subscription} from "rxjs/Subscription";
 
 @Injectable()
 export class WaitingQueueService {
     public waitingQueue = [];
     private waitingQueueSource = new ReplaySubject<any>();
     waitingQueue$ = this.waitingQueueSource.asObservable();
-    private socketObserver;
+    private socketSub : Subscription;
 
     constructor(private restService: RestService, private socketService: SocketService) {
     }
@@ -24,16 +25,14 @@ export class WaitingQueueService {
     public init(){
         this.getWaitingList();
 
-       this.socketObserver =  this.socketService.getPatientMessages().subscribe( (message:any) => {
+       this.socketSub =  this.socketService.getPatientMessages().subscribe( (message:any) => {
 
             if (message.cmd === SocketService.DISMISS_CMD) {
                 this.waitingQueue = this.waitingQueue.filter(r => r.pid !== message.msg.pid);
-                this.updateObservable();
-
             }
+           this.updateObservable();
 
-        });
-
+       });
 
     }
 
@@ -63,7 +62,10 @@ export class WaitingQueueService {
 
         this.restService.insert('waiting', data).subscribe((data) => {
 
-                this.waitingQueue.push(data);
+                data.forEach(d => {
+                    this.waitingQueue.push(d);
+
+                });
                 this.updateObservable();
                 callback();
             },
@@ -144,7 +146,7 @@ export class WaitingQueueService {
     }
 
     ngOnDestroy() {
-        this.socketObserver.unsubscribe();
+        this.socketSub.unsubscribe();
     }
 
 }
