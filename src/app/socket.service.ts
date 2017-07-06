@@ -19,7 +19,7 @@ export class SocketService {
     private patientSocket;
 
     private userObservable = new Observable(observer => {
-        this.userSocket.on('message', (data) => {
+        this.userSocket.on('ans', (data) => {
             observer.next(data);
         });
         return () => {
@@ -28,7 +28,8 @@ export class SocketService {
     });
 
     private patientObservable = new Observable(observer => {
-        this.patientSocket.on('message', (data) => {
+        this.patientSocket.on('ans', (data) => {
+
             observer.next(data);
         });
         return () => {
@@ -49,21 +50,13 @@ export class SocketService {
 
     }
 
-
-    /**
-     * socket.broadcast.emit() behaves similar to io.sockets.emit ,
-     * but instead of emitting to all connected sockets it will emit to all connected socket except the one it is being called on.
-     * @param message
-     */
-
-
     sendUserMessage(message) {
-        this.userSocket.emit('message', message);
+        this.userSocket.emit('req', message);
     }
 
 
     sendPatientMessage(message) {
-        this.userSocket.emit('message', message);
+        this.patientSocket.emit('req', message);
     }
 
 

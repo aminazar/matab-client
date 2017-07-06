@@ -31,13 +31,9 @@ export class NavbarComponent implements OnInit {
 
     ngOnInit() {
 
-
-        console.log('init!!!!');
-
         this.router.events.subscribe(event => {
                 if(event instanceof NavigationEnd) {
 
-                    console.log('====> ' , this.router.url);
                     if (this.router.url !== '/wl' && this.router.url !== '/login')
                         this.nav_visible = true;
                     else

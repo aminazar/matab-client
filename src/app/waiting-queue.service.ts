@@ -14,7 +14,7 @@ import {forEach} from "@angular/router/src/utils/collection";
 export class WaitingQueueService {
     public waitingQueue = [];
     private waitingQueueSource = new ReplaySubject<any>();
-    waitingQueueObservable = this.waitingQueueSource.asObservable();
+    waitingQueue$ = this.waitingQueueSource.asObservable();
     private socketObserver;
 
     constructor(private restService: RestService, private socketService: SocketService) {

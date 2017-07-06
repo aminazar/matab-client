@@ -35,25 +35,33 @@ export class VisitComponent implements OnInit, OnDestroy {
     isDoctor: boolean;
     // private allDoctors: any;
     private pidSub: Subscription;
+    private authSub: Subscription;
+    private socketSub: Subscription;
 
-    constructor(private restService: RestService, private patientService: PatientService, private authService: AuthService, private waitingQueueService: WaitingQueueService) {
+
+    constructor(private restService: RestService, private patientService: PatientService, private authService: AuthService, private waitingQueueService: WaitingQueueService, private socket: SocketService) {
 
     }
 
     ngOnInit() {
 
 
-        this.authService.auth$.subscribe((auth) => this.isDoctor = auth && this.authService.userType === 'doctor');
+        this.authSub = this.authService.auth$.subscribe((auth) => this.isDoctor = auth && this.authService.userType === 'doctor');
 
-        this.waitingQueueService.waitingQueueObservable.subscribe((data) => {
+        this.waitingQueueService.waitingQueue$.subscribe((data) => {
             this.init(data);
-
-
         });
 
         // in admin mode, when new patient is added, it should be updated
         this.pidSub = this.patientService.pid$.subscribe(pid => {
             this.pid = pid;
+        });
+
+
+        this.socketSub = this.socket.getPatientMessages().subscribe(data => {
+            console.log(data);
+            // todo: diff!
+            this.refresh();
         });
 
     }
@@ -129,11 +137,12 @@ export class VisitComponent implements OnInit, OnDestroy {
                 pid: this.pid,
             }, () => {
 
+                // todo: diff!!!
+                this.refresh();
                 this.waitingQueueService.informDoctorNewPatient(this.doctors.filter(r => r.uid === this.did)[0].name,
                     this.patientService.firstname,
                     this.patientService.surname);
 
-                this.refresh();
             }
         )
 
@@ -162,7 +171,6 @@ export class VisitComponent implements OnInit, OnDestroy {
 
         }
     }
-
 
 
     /**
@@ -203,6 +211,8 @@ export class VisitComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
+        this.authSub.unsubscribe();
         this.pidSub.unsubscribe();
+        this.socketSub.unsubscribe();
     }
 }

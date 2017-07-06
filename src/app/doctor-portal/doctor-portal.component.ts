@@ -1,4 +1,4 @@
-import {Component, OnInit, Input} from '@angular/core';
+import {Component, OnInit, Input, OnDestroy} from '@angular/core';
 import {RestService} from "../rest.service";
 import {PatientService} from "../patient.service";
 import {DomSanitizer} from "@angular/platform-browser";
@@ -12,8 +12,9 @@ import {MessageService} from "../message.service";
     templateUrl: './doctor-portal.component.html',
     styleUrls: ['./doctor-portal.component.css']
 })
-export class DoctorPortalComponent implements OnInit {
+export class DoctorPortalComponent implements OnInit, OnDestroy {
     private _vid: number;
+    private connection;
 
     @Input()
     set externalVid(n: number) {
@@ -39,6 +40,12 @@ export class DoctorPortalComponent implements OnInit {
     }
 
     ngOnInit() {
+        this.connection = this.socket.getPatientMessages().subscribe(data => {
+            console.log(data);
+           // todo: diff!
+            this.refresh();
+        });
+
         if (!this.externalVid) {
             this.refresh();
 
@@ -115,5 +122,9 @@ export class DoctorPortalComponent implements OnInit {
     }
 
     tabChanged() {
+    }
+
+    ngOnDestroy() {
+        this.connection.unsubscribe();
     }
 }

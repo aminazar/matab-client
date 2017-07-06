@@ -17,7 +17,7 @@ export class WaitingQueueComponent implements OnInit {
 
     ngOnInit() {
 
-        this.waitingQueueService.waitingQueueObservable.subscribe(waitingQueue => {
+        this.waitingQueueService.waitingQueue$.subscribe(waitingQueue => {
 
             console.log('next is done => ' , waitingQueue);
             this.waitingList = _.sortBy(waitingQueue , 'priority');

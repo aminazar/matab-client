@@ -90,6 +90,8 @@ export class AuthService {
                     this.userType = '';
                     this.authStream.next(false);
                     this.router.navigate(['login']);
+
+                    //todo: following line makes error!!!
                     this.userSocketObserver.unsubscribe();
                 },
                 err => {
