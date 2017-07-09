@@ -7,8 +7,6 @@ import {Http, Response, URLSearchParams} from "@angular/http";
 import {WebSocketService} from 'angular2-websocket-service'
 import {isUndefined} from "util";
 import moment = require("moment");
-import {Subject} from "rxjs/Subject";
-import {forEach} from "@angular/router/src/utils/collection";
 import {Subscription} from "rxjs/Subscription";
 
 @Injectable()
@@ -16,31 +14,80 @@ export class WaitingQueueService {
     public waitingQueue = [];
     private waitingQueueSource = new ReplaySubject<any>();
     waitingQueue$ = this.waitingQueueSource.asObservable();
-    private socketSub : Subscription;
+    private socketSub: Subscription;
 
     constructor(private restService: RestService, private socketService: SocketService) {
     }
 
 
-    public init(){
+    public init() {
         this.getWaitingList();
 
-       this.socketSub =  this.socketService.getPatientMessages().subscribe( (message:any) => {
+        this.socketSub = this.socketService.getPatientMessages().subscribe((message: any) => {
 
-            if (message.cmd === SocketService.DISMISS_CMD) {
-                this.waitingQueue = this.waitingQueue.filter(r => r.pid !== message.msg.pid);
+            console.log(message);
+
+
+            if (message.cmd == SocketService.NEW_VISIT_CMD) {
+
+                this.waitingQueue.push(message.msg);
+
+            } else if (message.cmd === SocketService.DISMISS_CMD) {
+
+                this.waitingQueue = this.waitingQueue.filter(w => w.pid !== message.msg.pid);
+                this.waitingQueue.filter(w => w.did === message.msg.did && w.priority > 0).forEach(w => {
+
+                    w.priority --;
+
+                    if (w.priority === 0)
+                        w.vid = message.msg.vid
+                });
+
+            } else if (message.cmd == SocketService.REFER_VISIT_CMD) {
+
+
+                let referred_waiting = this.waitingQueue.filter(w => w.vid === message.msg.refer_vid)[0];
+                referred_waiting.did = message.msg.to_did;
+                referred_waiting.doctor = message.msg.to_doctor;
+
+                this.waitingQueue.filter(w => w.did === message.msg.from_did && w.priority > 0).forEach(w => {
+
+                    w.priority --;
+
+                    if (w.priority === 0)
+                        w.vid = message.msg.vid
+                });
+
+                // as referred patient is already in to_did list, the list length is >= 1
+                if (this.waitingQueue.filter(w => w.did === message.msg.to_did).length > 1) {
+                    this.waitingQueue.filter(w => w.did === message.msg.to_did && w.priority > 0).forEach(w => {
+
+                        w.priority ++;
+                    });
+
+                    referred_waiting.priority = 1;
+                    referred_waiting.vid = null;
+
+                } else {
+                    referred_waiting.priority = 0;
+                    referred_waiting.vid = message.msg.refer_vid;
+                }
+
+
             }
-           this.updateObservable();
+            this.updateObservable();
 
-       });
+            console.log('after ===> ', JSON.stringify(this.waitingQueue));
+
+        });
 
     }
 
     /**
      *
-     * @param callBack is used when afterCall function must be called after list is received (e.g: referVisit)
+     * @param callBack is used when afterCall function must be called after list is received
      */
-    getWaitingList(callBack:any=()=>{}) {
+    getWaitingList(callBack: any = () => {}) {
 
         this.restService.get('get-waiting-list').subscribe(data => {
                 this.waitingQueue = [];
@@ -48,6 +95,8 @@ export class WaitingQueueService {
                     this.waitingQueue.push(d);
 
                 });
+
+                console.log(JSON.stringify(this.waitingQueue));
 
                 this.updateObservable();
 
@@ -58,53 +107,18 @@ export class WaitingQueueService {
         );
     }
 
-    addPatientToQueue(data: any, callback) {
+    addPatientToQueue(data: any) {
 
         this.restService.insert('waiting', data).subscribe((data) => {
 
-                data.forEach(d => {
-                    this.waitingQueue.push(d);
-
-                });
-                this.updateObservable();
-                callback();
             },
             err => console.log(err)
         );
     }
 
 
-    public dismissVisit(did, pid, callback) {
-        this.restService.update('end-visit/' + pid, did, {}).subscribe(
-            () => {
-
-                this.waitingQueue = this.waitingQueue.filter(w => w.pid !== pid);
-                this.waitingQueue.filter(w => w.did === did).forEach(w => {
-                    if (w.priority > 0)
-                       w.priority = (w.priority -1).toString();
-                });
-
-                this.updateObservable();
-
-                callback();
-            },
-            err => {
-                console.log(err);
-            }
-        )
-
-    }
-
-
-    public referPatient(data , callback) {
-
-        this.restService.update('refer-visit/', null, data).subscribe(
-            () => {
-
-                this.getWaitingList(() => {
-
-                    callback();
-                });
+    public dismissVisit(did, pid) {
+        this.restService.update('end-visit/' + pid, did, {}).subscribe(() => {
 
             },
             err => {
@@ -112,36 +126,22 @@ export class WaitingQueueService {
             }
         )
 
-
     }
 
-    public informDoctorNewPatient(doctorName , firstname , surname){
 
-        this.socketService.sendPatientMessage({
-            cmd: SocketService.NEW_VISIT_CMD,
-            msg: {
-                text: `${moment().format('HH:mm')}: New patient "${firstname} ${surname}" is sent to you for visit.`
-            }
-        });
+    public referPatient(data) {
 
+        this.restService.update('refer-visit/', null, data).subscribe(() => {
 
-    }
-
-    public informDoctorDismissPatient(pid, firstname, surname, doctorName ){
-        this.socketService.sendPatientMessage({
-            cmd: SocketService.DISMISS_CMD,
-            msg: {
-                text: `${moment().format('HH:mm')}: ${doctorName} dismissed "${firstname} ${surname}".`,
-                pid: pid,
-                dr_name: doctorName,
             },
-        });
-
+            err => {
+                console.log(err);
+            }
+        )
     }
 
 
     private updateObservable() {
-
         this.waitingQueueSource.next(this.waitingQueue);
     }
 

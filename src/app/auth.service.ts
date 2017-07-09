@@ -5,6 +5,7 @@ import {MessageService} from "./message.service";
 import {Observable, ReplaySubject} from "rxjs";
 import {SocketService} from "./socket.service";
 import {WaitingQueueService} from "./waiting-queue.service";
+import {Subscription} from "rxjs/Subscription";
 
 @Injectable()
 export class AuthService {
@@ -15,7 +16,7 @@ export class AuthService {
     originBeforeLogin = '/';
     public display_name = '';
 
-    private userSocketObserver;
+    private userSocketSub: Subscription;
 
     constructor(private restService: RestService,
                 private router: Router,
@@ -72,8 +73,8 @@ export class AuthService {
             });
 
         if (this.userType === 'admin' || this.userType === 'user')
-            this.userSocketObserver = this.socketService.getUserMessages().subscribe((message: any) => {
-                if (message.cmd === "Login")
+            this.userSocketSub = this.socketService.getUserMessages().subscribe((message: any) => {
+                if (message.cmd === SocketService.LOGIN_CMD)
                     this.messageService.warn(message.msg.text);
             });
 
@@ -91,8 +92,10 @@ export class AuthService {
                     this.authStream.next(false);
                     this.router.navigate(['login']);
 
-                    //todo: following line makes error!!!
-                    this.userSocketObserver.unsubscribe();
+                    if (this.userType === 'admin' || this.userType === 'user')
+                        this.userSocketSub.unsubscribe();
+
+                    this.socketService.disconnect();
                 },
                 err => {
                     this.messageService.error(err);

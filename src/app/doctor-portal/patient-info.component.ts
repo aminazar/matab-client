@@ -10,6 +10,7 @@ import * as moment from 'moment';
 })
 export class PatientInfoComponent implements OnInit {
   @Input() dob;
+
   private _cd: any;
   @Input()
   set contactDetails(data){

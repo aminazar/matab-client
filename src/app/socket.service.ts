@@ -6,9 +6,10 @@ import {Observable} from "rxjs";
 export class SocketService {
 
 
-    public static readonly LOGIN_CMD : string = 'login';
-    public static readonly DISMISS_CMD : string = 'dismiss';
+    public static readonly LOGIN_CMD: string = 'login';
+    public static readonly DISMISS_CMD: string = 'dismiss';
     public static readonly NEW_VISIT_CMD: string = 'newVisit';
+    public static readonly REFER_VISIT_CMD: string = 'referVisit';
 
     private url = 'http://localhost:3000';
     private socketConfig = {
@@ -22,19 +23,19 @@ export class SocketService {
         this.userSocket.on('ans', (data) => {
             observer.next(data);
         });
-        return () => {
-            this.userSocket.disconnect();
-        };
+        // return () => {
+        //     this.userSocket.disconnect();
+        // };
     });
 
     private patientObservable = new Observable(observer => {
         this.patientSocket.on('ans', (data) => {
-
+            console.log('patient socket data received...');
             observer.next(data);
         });
-        return () => {
-            this.patientSocket.disconnect();
-        };
+        // return () => {
+        //     this.patientSocket.disconnect();
+        // };
     });
 
 
@@ -47,7 +48,6 @@ export class SocketService {
 
         this.userSocket = io(this.url + '/user', this.socketConfig);
         this.patientSocket = io(this.url + '/patient', this.socketConfig);
-
     }
 
     sendUserMessage(message) {
@@ -70,5 +70,10 @@ export class SocketService {
         return this.patientObservable;
     }
 
+    disconnect() {
+
+        this.userSocket.disconnect();
+        this.patientSocket.disconnect();
+    }
 
 }
