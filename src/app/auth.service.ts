@@ -15,6 +15,7 @@ export class AuthService {
     auth$: Observable<boolean> = this.authStream.asObservable();
     originBeforeLogin = '/';
     public display_name = '';
+    public userId = -1;
 
     private userSocketSub: Subscription;
 
@@ -35,6 +36,7 @@ export class AuthService {
                     this.authStream.next(false);
 
                 });
+
     }
 
     logIn(username, password) {
@@ -59,6 +61,7 @@ export class AuthService {
         this.user = data.user;
         this.userType = data.userType;
         this.display_name = data.display_name;
+        this.userId = data.uid;
         this.authStream.next(true);
 
         this.socketService.init();
@@ -74,11 +77,11 @@ export class AuthService {
 
         if (this.userType === 'admin' || this.userType === 'user')
             this.userSocketSub = this.socketService.getUserMessages().subscribe((message: any) => {
-                if (message.cmd === SocketService.LOGIN_CMD)
+                if (message.cmd === SocketService.LOGIN_CMD || message.cmd === SocketService.LOGOUT_CMD)
                     this.messageService.warn(message.msg.text);
             });
 
-        this.waitingService.init();
+        this.waitingService.init(this.userType , this.userId);
 
 
     }
@@ -89,6 +92,7 @@ export class AuthService {
                     this.messageService.message(`${this.user} logged out.`);
                     this.user = '';
                     this.userType = '';
+                    this.userId = -1;
                     this.authStream.next(false);
                     this.router.navigate(['login']);
 

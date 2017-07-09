@@ -31,7 +31,10 @@ export class VisitComponent implements OnInit, OnDestroy {
     private waitingQueueSub: Subscription;
 
 
-    constructor(private restService: RestService, private patientService: PatientService, private authService: AuthService, private waitingQueueService: WaitingQueueService) {
+    constructor(private restService: RestService,
+                private patientService: PatientService,
+                private authService: AuthService,
+                private waitingQueueService: WaitingQueueService) {
 
     }
 
@@ -72,7 +75,7 @@ export class VisitComponent implements OnInit, OnDestroy {
         this.pid = this.patientService.pid;
 
         this.enabled = true;
-        this.currentVisit = this.visits.filter(r => r.doctor === this.authService.display_name && r.vid)[0];
+        this.currentVisit = this.visits.filter(r => r.did === this.authService.userId && r.vid)[0];
         // console.log('current visit: ', this.currentVisit);
 
         if (this.currentVisit) {
@@ -84,6 +87,8 @@ export class VisitComponent implements OnInit, OnDestroy {
             this.notebookNumber = this.patientService.notebookNumber;
             this.pageNumber = this.patientService.pageNumber;
         }
+
+        this.checkState();
 
     }
 
@@ -140,7 +145,7 @@ export class VisitComponent implements OnInit, OnDestroy {
     updateDoctorsDropDown() {
 
         if (this.authService.userType === 'doctor') {
-            this.doctors = this.doctors.filter(r => r.display_name != this.authService.display_name)
+            this.doctors = this.doctors.filter(r => r.uid != this.authService.userId)
         }
 
     }
