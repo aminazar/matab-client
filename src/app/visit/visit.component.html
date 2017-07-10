@@ -1,12 +1,10 @@
 <md-card class="outerCard">
   <md-card-title class="cardTitle">Visits</md-card-title>
   <md-card *ngIf="enabled" class="innerCard">
-    <md-card-title>{{canGo?'Choose Doctor':(isVisiting? 'Alredy Sent': 'Is Waiting')}}</md-card-title>
+    <md-card-title>Choose Doctor</md-card-title>
     <md-card>
-      <p *ngIf="!canGo && currentVisit != null"><strong>{{currentVisit.firstname}} {{currentVisit.surname}}</strong> is being visited by <strong>{{currentVisit.display_name}}</strong> since <strong>{{currentVisit.start_time|date:'shortTime'}}</strong>.</p>
-      <p *ngIf="!canGo && currentWaiting != null"><strong>{{currentWaiting[0].firstname}} {{currentWaiting[0].surname}}</strong> is waiting for <strong>{{currentWaiting[0].display_name}}</strong> since <strong>{{currentWaiting[0].wait_start_time}}</strong>.</p>
+      <p *ngIf="currentVisit != null"><strong>{{currentVisit.firstname}} {{currentVisit.surname}}</strong> is being visited by <strong>{{currentVisit.display_name}}</strong> since <strong>{{currentVisit.start_time|date:'shortTime'}}</strong>.</p>
       <p *ngIf="allBusy" style="color:darkred">All doctors are busy with current appointments!</p>
-      <span *ngIf="canGo">
       <md-select placeholder="Doctor" [(ngModel)]="did" (ngModelChange)="checkState()">
         <md-option *ngFor="let doctor of doctors" [value]="doctor.uid">{{ doctor.display_name }}</md-option>
       </md-select>
@@ -17,7 +15,6 @@
         <input mdInput autocomplete="off" type="number" min="1" max="25" placeholder="Page Number" [(ngModel)]="pageNumber" (ngModelChange)="checkState()" [disabled]="paperDisabled">
       </md-input-container>
       <button md-mini-fab (click)="send()" [disabled]="!sendEnabled" color="primary"><i class="fa fa-send"></i></button>
-      </span>
     </md-card>
   </md-card>
     <md-card class="innerCard">

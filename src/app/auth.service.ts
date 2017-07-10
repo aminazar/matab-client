@@ -5,6 +5,7 @@ import {MessageService} from "./message.service";
 import {Observable, ReplaySubject} from "rxjs";
 import {SocketService} from "./socket.service";
 import {WaitingQueueService} from "./waiting-queue.service";
+import {Subscription} from "rxjs/Subscription";
 
 @Injectable()
 export class AuthService {
@@ -14,8 +15,15 @@ export class AuthService {
     auth$: Observable<boolean> = this.authStream.asObservable();
     originBeforeLogin = '/';
     public display_name = '';
+    public userId = -1;
 
-    constructor(private restService: RestService, private router: Router, private messageService: MessageService, private internalSocket: SocketService , private waitingService: WaitingQueueService) {
+    private userSocketSub: Subscription;
+
+    constructor(private restService: RestService,
+                private router: Router,
+                private messageService: MessageService,
+                private socketService: SocketService,
+                private waitingService: WaitingQueueService) {
         this.restService.call('validUser')
             .subscribe(
                 res => {
@@ -28,6 +36,7 @@ export class AuthService {
                     this.authStream.next(false);
 
                 });
+
     }
 
     logIn(username, password) {
@@ -52,27 +61,29 @@ export class AuthService {
         this.user = data.user;
         this.userType = data.userType;
         this.display_name = data.display_name;
+        this.userId = data.uid;
         this.authStream.next(true);
-        this.internalSocket.initSocket(this.userType, this.user);
+
+        this.socketService.init();
+
+
         if (this.userType === 'doctor')
-            this.internalSocket.send({
-                cmd: 'send',
-                target: ['admin', 'user'],
+            this.socketService.sendUserMessage({
+                cmd: SocketService.LOGIN_CMD,
                 msg: {
-                    msgType: 'Login',
-                    text: `${this.display_name} logged in.`,
-                },
+                    text: `${this.display_name} logged in.`
+                }
             });
 
         if (this.userType === 'admin' || this.userType === 'user')
-            this.internalSocket.onMessage(msg => {
-                if (msg.msgType === "Login")
-                    this.messageService.warn(msg.text);
-                if (msg.msgType === "Patient Dismissed")
-                    this.messageService.popup(msg.text, msg.msgType)
+            this.userSocketSub = this.socketService.getUserMessages().subscribe((message: any) => {
+                if (message.cmd === SocketService.LOGIN_CMD || message.cmd === SocketService.LOGOUT_CMD)
+                    this.messageService.warn(message.msg.text);
             });
 
-        this.waitingService.init();
+        this.waitingService.init(this.userType , this.userId);
+
+
     }
 
     logOff() {
@@ -81,9 +92,14 @@ export class AuthService {
                     this.messageService.message(`${this.user} logged out.`);
                     this.user = '';
                     this.userType = '';
+                    this.userId = -1;
                     this.authStream.next(false);
                     this.router.navigate(['login']);
-                    this.internalSocket.ngOnDestroy();
+
+                    if (this.userType === 'admin' || this.userType === 'user')
+                        this.userSocketSub.unsubscribe();
+
+                    this.socketService.disconnect();
                 },
                 err => {
                     this.messageService.error(err);
@@ -91,4 +107,6 @@ export class AuthService {
                         console.log(err);
                 });
     }
+
+
 }

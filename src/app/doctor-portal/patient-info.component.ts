@@ -11,6 +11,7 @@ import {SafService} from "../saf.service";
 })
 export class PatientInfoComponent implements OnInit {
   @Input() dob;
+
   private _cd: any;
   @Input()
   set contactDetails(data){

@@ -1,31 +1,39 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {WaitingQueueService} from "../waiting-queue.service";
 import * as _ from 'lodash';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
     selector: 'app-waiting-queue',
     templateUrl: './waiting-queue.component.html',
     styleUrls: ['./waiting-queue.component.css']
 })
-export class WaitingQueueComponent implements OnInit {
+export class WaitingQueueComponent implements OnInit, OnDestroy {
 
 
-    waitingList;
+    private waitingList;
+    private waitingQueueSub: Subscription;
+
     constructor(private waitingQueueService: WaitingQueueService) {
 
     }
 
     ngOnInit() {
 
-        this.waitingQueueService.waitingQueueObservable.subscribe(waitingQueue => {
+        this.waitingQueueSub = this.waitingQueueService.waitingQueue$.subscribe(waitingQueue => {
 
-            console.log('next is done => ' , waitingQueue);
-            this.waitingList = _.sortBy(waitingQueue , 'priority');
-            this.waitingList = _.groupBy(this.waitingList,'doctor');
+            this.waitingList = _.sortBy(waitingQueue, 'priority');
+            this.waitingList = _.groupBy(this.waitingList, 'doctor');
 
         });
 
 
     }
+
+    ngOnDestroy(): void {
+        this.waitingQueueSub.unsubscribe();
+
+    }
+
 
 }

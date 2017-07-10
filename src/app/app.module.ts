@@ -26,7 +26,6 @@ import { DoctorPortalComponent } from './doctor-portal/doctor-portal.component';
 import {FileUploadModule} from "ng2-file-upload";
 import { JalaliDateInputComponent } from './jalali-date-input/jalali-date-input.component';
 import { PatientInfoComponent } from './doctor-portal/patient-info.component';
-import {WebSocketService} from "angular2-websocket-service";
 import {SocketService} from "./socket.service";
 import { ModalDialogComponent } from './modal-dialog/modal-dialog.component';
 import { DoctorVisitsComponent } from './doctor-visits/doctor-visits.component';
@@ -63,7 +62,7 @@ import { KeysPipe } from './keys.pipe';
     FlexLayoutModule,
     ReactiveFormsModule,
     RouterModule.forRoot([
-      {path: '', component: HomeComponent, pathMatch: 'full'},
+      {path: '', component: HomeComponent, pathMatch: 'full', canActivate: [LoggedInGuard] },
       {path: 'login', component: LoginComponent},
       {path: 'patient', component: PatientComponent, canActivate: [LoggedInGuard]},
       {path: 'scans', component: UploaderComponent, canActivate: [LoggedInGuard]},
@@ -73,7 +72,7 @@ import { KeysPipe } from './keys.pipe';
       {path: 'wl', component: WaitingQueueComponent, canActivate:[LoggedInGuard]}
     ]),
   ],
-  providers: [AuthService, RestService, LoggedInGuard, MessageService,PatientService, WebSocketService, SocketService, WaitingQueueService],
+  providers: [AuthService, RestService, LoggedInGuard, MessageService,PatientService, SocketService, WaitingQueueService],
   bootstrap: [AppComponent],
   entryComponents: [ModalDialogComponent],
 })

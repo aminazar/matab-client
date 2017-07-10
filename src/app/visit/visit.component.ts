@@ -14,40 +14,41 @@ import {current} from "codelyzer/util/syntaxKind";
     styleUrls: ['./visit.component.css']
 })
 export class VisitComponent implements OnInit, OnDestroy {
-    visits = [];
-    waiting = [];
-    pid: number; // is used in admin mode. when admin wants to send patient to doctor visit list
-    enabled: boolean;
-    currentVisit;
-    currentWaiting = [];
-    isVisitingOrWaiting: boolean;
-    isWaiting: boolean;
-    isVisiting: boolean;
-    canGo: boolean;
-    doctors;
-    did = null;
-    pageNumber: number = null;
-    notebookNumber: number = null;
-    sendEnabled = false;
-    // allBusy = false;
-    paperDisabled: boolean = false;
-    isCurrentDoctorVisit = false;
-    isDoctor: boolean;
-    // private allDoctors: any;
+    private visits = [];
+    private pid: number; // is used in admin mode. when admin wants to send patient to doctor visit list
+    private enabled: boolean;
+    private currentVisit;
+    private doctors;
+    private did = null; // selected doctor (from drop down) did
+    private pageNumber: number = null;
+    private notebookNumber: number = null;
+    private sendEnabled = false;
+    private allBusy = false;
+    private paperDisabled: boolean = false;
+    private isDoctor: boolean;
     private pidSub: Subscription;
+    private authSub: Subscription;
+    private waitingQueueSub: Subscription;
 
-    constructor(private restService: RestService, private patientService: PatientService, private authService: AuthService, private waitingQueueService: WaitingQueueService) {
+
+    constructor(private restService: RestService,
+                private patientService: PatientService,
+                private authService: AuthService,
+                private waitingQueueService: WaitingQueueService) {
 
     }
 
     ngOnInit() {
 
 
-        this.authService.auth$.subscribe((auth) => this.isDoctor = auth && this.authService.userType === 'doctor');
 
-        this.waitingQueueService.waitingQueueObservable.subscribe((data) => {
-            this.init(data);
+        this.authSub = this.authService.auth$.subscribe((auth) => this.isDoctor = auth && this.authService.userType === 'doctor');
 
+        this.waitingQueueSub =this.waitingQueueService.waitingQueue$.subscribe((data) => {
+
+            this.visits = data.filter(r => r.vid);
+            setInterval(() => this.visits.forEach(r => r.duration = moment.duration(moment().diff(r.start_time)).humanize()), 0);
+            this.getCurrentPatient();
         });
 
         // in admin mode, when new patient is added, it should be updated
@@ -55,30 +56,17 @@ export class VisitComponent implements OnInit, OnDestroy {
             this.pid = pid;
         });
 
-    }
-
-    private init(waitingQueue) {
-        // console.log(waitingQueue);
-
-        this.visits = waitingQueue.filter(r => r.priority === '0');
-        // console.log('visits:', this.visits);
-
-        this.waiting = waitingQueue.filter(r => r.priority !== '0');
-        // console.log('waiting:', this.waiting);
-
-        setInterval(() => this.visits.forEach(r => r.duration = moment.duration(moment().diff(r.start_time)).humanize()), 0);
-
-        this.getCurrentPatient();
-
         if (this.doctors)
             this.updateDoctorsDropDown();
         else {
+
             this.restService.get('doctors').subscribe(
                 drs => {
                     this.doctors = drs;
                     this.updateDoctorsDropDown();
                 });
         }
+
     }
 
     private getCurrentPatient() {
@@ -87,19 +75,10 @@ export class VisitComponent implements OnInit, OnDestroy {
         this.pid = this.patientService.pid;
 
         this.enabled = true;
-        this.currentVisit = this.visits.filter(r => ( r.doctor === this.authService.display_name))[0];
+        this.currentVisit = this.visits.filter(r => r.did === this.authService.userId && r.vid)[0];
         // console.log('current visit: ', this.currentVisit);
-        this.currentWaiting = this.waiting.filter(r => r.doctor === this.authService.display_name);
-        // console.log('current waiting: ', this.currentWaiting);
-        this.isVisiting = this.currentVisit != null;
-        this.isWaiting = this.currentWaiting.length > 0;
-        this.isVisitingOrWaiting = this.isVisiting || this.isWaiting;
 
-        // what?? if  this.currentVisit is true => this.isVisitingOrWaiting is true !!! so what is purpose?
-        this.canGo = !this.isVisitingOrWaiting || (this.currentVisit != null && this.authService.display_name === this.currentVisit.doctor);
-
-        this.isCurrentDoctorVisit = this.canGo && this.currentVisit != null;
-        if (this.isCurrentDoctorVisit) {
+        if (this.currentVisit) {
             this.pageNumber = this.currentVisit.paper_id % 101 + 1;
             this.notebookNumber = Math.floor(this.currentVisit.paper_id / 101) + 1;
             this.paperDisabled = true;
@@ -108,6 +87,8 @@ export class VisitComponent implements OnInit, OnDestroy {
             this.notebookNumber = this.patientService.notebookNumber;
             this.pageNumber = this.patientService.pageNumber;
         }
+
+        this.checkState();
 
     }
 
@@ -128,41 +109,25 @@ export class VisitComponent implements OnInit, OnDestroy {
                 page_num: this.pageNumber,
                 note_num: this.notebookNumber,
                 pid: this.pid,
-            }, () => {
-
-                this.waitingQueueService.informDoctorNewPatient(this.doctors.filter(r => r.uid === this.did)[0].name,
-                    this.patientService.firstname,
-                    this.patientService.surname);
-
-                this.refresh();
             }
         )
-
-
     }
 
     private referPatient() {
         if (this.currentVisit != null && this.authService.display_name === this.currentVisit.doctor) { //referral by doctor
 
-
             this.waitingQueueService.referPatient({
                 from_did: this.currentVisit.did,
                 to_did: this.did,
-                pid: this.currentVisit.pid
-            }, () => {
-                this.updateDoctorsDropDown();
-
-                this.waitingQueueService.informDoctorNewPatient(this.doctors.filter(r => r.uid === this.did)[0].name,
-                    this.patientService.firstname,
-                    this.patientService.surname);
-
+                to_doctor: this.doctors.filter(d => d.uid === this.did)[0].display_name,
+                pid: this.currentVisit.pid,
+                vid: this.currentVisit.vid
 
             });
 
-            return;
-
         }
     }
+
 
     /**
      * this method is accessible only for admin users
@@ -172,21 +137,15 @@ export class VisitComponent implements OnInit, OnDestroy {
      * @param surname
      * @param doctor
      */
-    dismissVisit(did, pid, firstname, surname) {
+    dismissVisit(did, pid) {
 
-        this.waitingQueueService.dismissVisit(did, pid, () => {
-
-            let doctorName = this.doctors.filter(r => r.uid === this.did)[0].name;
-
-            this.waitingQueueService.informDoctorDismissPatient(pid, firstname, surname, doctorName);
-
-        });
+        this.waitingQueueService.dismissVisit(did, pid);
     }
 
     updateDoctorsDropDown() {
 
         if (this.authService.userType === 'doctor') {
-            this.doctors = this.doctors.filter(r => r.display_name != this.authService.display_name)
+            this.doctors = this.doctors.filter(r => r.uid != this.authService.userId)
         }
 
     }
@@ -194,6 +153,10 @@ export class VisitComponent implements OnInit, OnDestroy {
 
     checkState() {
         this.sendEnabled = this.did != null && this.pageNumber != null && this.notebookNumber != null;
+
+        if (this.authService.userType === 'doctor' && !this.currentVisit)
+            this.sendEnabled = false;
+
         if (this.sendEnabled) {
             this.patientService.notebookNumber = this.notebookNumber;
             this.patientService.pageNumber = this.pageNumber;
@@ -201,6 +164,8 @@ export class VisitComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
+        this.authSub.unsubscribe();
         this.pidSub.unsubscribe();
+        this.waitingQueueSub.unsubscribe();
     }
 }
