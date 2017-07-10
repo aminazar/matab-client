@@ -1,7 +1,8 @@
 import {Component, OnInit, Output, EventEmitter, Input} from '@angular/core';
 import {PatientService} from "../patient.service";
 import * as moment from 'moment';
-// import DurationConstructor = moment.unitOfTime.DurationConstructor;
+import {SafService} from "../saf.service";
+
 
 @Component({
   selector: 'app-patient-info',
@@ -32,7 +33,7 @@ export class PatientInfoComponent implements OnInit {
   age: any;
   @Output() updateAsked = new EventEmitter<any>();
 
-  constructor(private patientService:PatientService) { }
+  constructor(private patientService:PatientService,  private safService:SafService) { }
 
   ngOnInit() {
     this.patientService.pid$.subscribe(pid=>{

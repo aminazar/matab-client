@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {PatientService} from "../patient.service";
+import {SafService} from "../saf.service";
 
 @Component({
   selector: 'app-doctor-visits',
@@ -10,7 +11,7 @@ export class DoctorVisitsComponent implements OnInit {
   selector: any;
   vid:number;
 
-  constructor(private patientService:PatientService) { }
+  constructor(private patientService:PatientService,  private safService:SafService) { }
 
   ngOnInit() {
     this.selector = this.patientService.visitCacheSelectorData();

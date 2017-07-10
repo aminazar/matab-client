@@ -6,6 +6,7 @@ import {SocketService} from "../socket.service";
 import {AuthService} from "../auth.service";
 import * as moment from 'moment';
 import {MessageService} from "../message.service";
+import {SafService} from "../saf.service";
 
 @Component({
     selector: 'app-doctor-portal',
