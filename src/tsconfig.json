@@ -19,7 +19,8 @@
       "hammerjs",
       "rrule",
       "node",
-      "jasmine"
+      "jasmine",
+      "lodash"
     ]
   }
 }

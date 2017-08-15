@@ -23,7 +23,7 @@ export class NavbarComponent implements OnInit {
     private surname: string;
     private idNumber: string;
     private display_name: string;
-    private nav_visible: boolean;
+    nav_visible: boolean;
 
 
     constructor(private authService: AuthService, private router: Router, private patientService: PatientService) {
