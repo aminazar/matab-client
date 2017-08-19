@@ -1,0 +1,35 @@
+<p-panel header="Title" [toggleable]="true" (onAfterToggle)="change($event)">
+    <div class="panels-container">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th [ngStyle]="{position:collapsed?'relative':'absolute'}">Dr 1</th>
+                <th>Dr 2</th>
+                <th>Dr 3</th>
+                <th>Dr 4</th>
+                <th>Dr 5</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td [ngStyle]="{position:collapsed?'relative':'absolute'}">
+                    <app-doctor-panel></app-doctor-panel>
+                </td>
+                <td>
+                    <app-doctor-panel></app-doctor-panel>
+                </td>
+                <td>
+                    <app-doctor-panel></app-doctor-panel>
+                </td>
+                <td>
+                    <app-doctor-panel></app-doctor-panel>
+                </td>
+                <td>
+                    <app-doctor-panel></app-doctor-panel>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</p-panel>

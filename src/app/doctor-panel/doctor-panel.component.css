@@ -1,0 +1,13 @@
+.mat-card{
+    padding:0px;
+    width:200px;
+    text-align: center;
+    display:inline-block;
+    vertical-align: top;
+}
+.current-visit{
+    min-height: 120px;
+    background:lightsteelblue;
+    width:100%;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='120px' width='185px'><text x='40' y='60' fill='grey' font-size='24px' font-family='Arial'>Current Visit</text></svg>");
+}

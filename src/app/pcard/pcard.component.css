@@ -1,0 +1,35 @@
+.mat-card-title{
+    margin:0px !important;
+    padding: 0px 3px !important;
+    background: whitesmoke;
+    color: #41200b;
+    font-size:15.6pt;
+}
+.mat-card{
+    padding:0px;
+    width:185px;
+}
+.mat-card-actions{
+    margin:0px !important;
+    padding:3px 3px 0px 3px!important;
+    background: whitesmoke;
+    color: #41200b;
+    font-size:65%;
+}
+.mat-card-content{
+    margin:0px !important;
+    padding:0px 3px !important;
+}
+.mat-input-element{
+    width: 80px;
+}
+.mat-input-container{
+    padding:0px 3px !important;
+}
+td{
+    padding:0px 3px;
+    border: 1px inset;
+}
+table{
+    width:100%;
+}

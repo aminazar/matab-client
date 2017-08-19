@@ -1,0 +1,31 @@
+<md-card [ngStyle]="{'border':selected ? 'solid 3px #607d8b' : null,'padding':selected?'0px':'3px'}">
+    <md-card-title [ngStyle]="{'background':emgy?'palevioletred':nocardio?'#F1F1B9':vip?'palegreen':null}">Ali Alavi</md-card-title>
+
+    <md-card-content>
+        <span *ngIf="!hasVisit">
+            <md-input-container>
+                <input mdInput placeholder="Page #" type="number">
+            </md-input-container>
+            <md-input-container>
+                <input mdInput placeholder="Notebook #" type="number">
+            </md-input-container>
+        </span>
+        <span *ngIf="hasVisit">
+            <table>
+                <tr [ngStyle]="{'background':waitingTimerColor}">
+                    <td>Waiting timer:</td>
+                    <td>{{timer}}</td>
+                </tr>
+                <tr *ngIf="hasReferral">
+                    <td>Referred by:</td>
+                    <td>{{referredBy}}</td>
+                </tr>
+            </table>
+        </span>
+    </md-card-content>
+    <md-card-actions *ngIf="hasVisit">
+        <md-checkbox [(ngModel)]="emgy">Emgy</md-checkbox>
+        <md-checkbox [(ngModel)]="vip">VIP</md-checkbox>
+        <md-checkbox [(ngModel)]="nocardio">No Cardio</md-checkbox>
+    </md-card-actions>
+</md-card>

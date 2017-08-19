@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {RestService} from './rest.service';
 import {SocketService} from './socket.service';
 import {MessageService} from './message.service';
+import {Observable} from 'rxjs';
 
 @Injectable()
 export class VisitService {
@@ -11,14 +12,14 @@ export class VisitService {
 
   constructor(private rest: RestService, private socket: SocketService, private msg: MessageService) {
     this.handleDiff = {
-      INSERT: data => this.addVisit(data),
-      UPDATE: data => this.updateVisit(data),
-      DELETE: data => this.deleteVisit(data),
-      REFER: data => this.referVisit(data),
+      INSERT: data => this.addLocalVisit(data),
+      UPDATE: data => this.updateLocalVisit(data),
+      DELETE: data => this.deleteLocalVisit(data),
+      REFER: data => this.referLocalVisit(data),
     };
   }
 
-  getVisits() {
+  private getLocalVisits() {
     this.rest.get('visits')
       .subscribe(
         data => this.visits = data,
@@ -27,7 +28,7 @@ export class VisitService {
   }
 
   initSocketSub(userType, userId) {
-    this.getVisits();
+    this.getLocalVisits();
     if (!this.socketSub) {
       this.socketSub = this.socket.getPatientMessages().subscribe(
         (message: any) => {
@@ -42,7 +43,7 @@ export class VisitService {
     }
   }
 
-  addVisit(diff) {
+  private addLocalVisit(diff) {
     for (let key in diff) {
       if (!this.visits[key]) {
         this.visits[key] = diff[key];
@@ -53,7 +54,7 @@ export class VisitService {
     }
   }
 
-  updateVisit(diff) {
+  private updateLocalVisit(diff) {
     for (let key in diff) {
       if (!this.visits[key]) {
         console.error(`UpdateVisit error: vid=${key} is not in data!`);
@@ -68,7 +69,7 @@ export class VisitService {
     }
   }
 
-  deleteVisit(diff) {
+  private deleteLocalVisit(diff) {
     for (let key in diff) {
       if (!this.visits[key]) {
         console.error(`DeleteVisit error: vid=${key} is not in data!`);
@@ -79,7 +80,7 @@ export class VisitService {
     }
   }
 
-  referVisit(diff) {
+  private referLocalVisit(diff) {
     for (let key in diff) {
       if (this.visits[key]) {
         console.error(`ReferVisit error: vid=${key} is already in data!`);
@@ -90,5 +91,59 @@ export class VisitService {
         console.log(`Referral: visit ${oldVisit} is marked as ended, new referral visit ${key} is added`);
       }
     }
+  }
+
+  getVisit(vid): Observable<any> {
+    return this.rest.getWithParams('visit', {vid: vid});
+  }
+
+  startImmediateVisit(did, pid, pageNumber, notebookNumber): Observable<any> {
+    return this.rest.insert(`immediate-visit/${did}/${pid}`, {
+      page_number: pageNumber,
+      notebook_number: notebookNumber
+    });
+  }
+
+  startWaiting(did, pid, pageNumber, notebookNumber): Observable<any> {
+    return this.rest.insert(`waiting/${did}/${pid}`, {
+      page_number: pageNumber,
+      notebook_number: notebookNumber
+    });
+  }
+
+  startVisit(vid): Observable<any> {
+    return this.rest.insert(`visit/${vid}`);
+  }
+
+  changeQueue(vid, did): Observable<any> {
+    return this.rest.update(`queue/${vid}`, did);
+  }
+
+  removeWaiting(vid): Observable<any> {
+    return this.rest.delete(`waiting`, vid);
+  }
+
+  refer(vid, did): Observable<any> {
+    return this.rest.update(`refer/${vid}`, did);
+  }
+
+  endVisit(vid): Observable<any> {
+    return this.rest.update(`end-visit`, vid);
+  }
+
+  undoVisit(vid): Observable<any> {
+    return this.rest.update(`undo-visit`, vid);
+  }
+
+  emgyChecked(vid, value): Observable<any> {
+    return this.rest.update(`emgy-checked/${vid}`, value ? 1 : 0);
+  }
+
+  vipChecked(vid, value): Observable<any> {
+    return this.rest.update(`vip-checked/${vid}`, value ? 1 : 0);
+  }
+
+  nocardioChecked(vid, value): Observable<any> {
+    return this.rest.update(`nocardio-checked/${vid}`, value ? 1 : 0);
   }
 }

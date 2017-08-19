@@ -1,5 +1,4 @@
-import {Component, OnInit, ViewChild, isDevMode, EventEmitter} from '@angular/core';
-import {Input, Output} from "@angular/core/src/metadata/directives";
+import {Component, OnInit, isDevMode, EventEmitter,Input, Output} from '@angular/core';
 import {RestService} from "../rest.service";
 import {MessageService} from "../message.service";
 import {PatientService} from "../patient.service";

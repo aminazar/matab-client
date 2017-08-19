@@ -19,7 +19,7 @@
       "mobile": false,
       "styles": [
         "styles.css",
-        "md-theme.sass"
+        "md-theme.scss"
       ],
       "scripts": [],
       "environmentSource": "environments/environment.ts",

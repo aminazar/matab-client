@@ -12,7 +12,7 @@ export class RestService {
     return this.http.get('/api/' + table);
   }
 
-  insert(table, values): Observable<any> {
+  insert(table, values = {}): Observable<any> {
 
     return this.http.put('/api/' + table, values).map((data: Response) => data.json());
 
@@ -35,7 +35,7 @@ export class RestService {
     return this.http.delete('/api/' + table + '/' + id);
   }
 
-  update(table, id, values): Observable<Response>{
-    return this.http.post('/api/' + table + (id ? '/' + id : ''), values)
+  update(table, id, values = {}): Observable<Response>{
+    return this.http.post('/api/' + table + (id ? '/' + id : ''), values);
   }
 }

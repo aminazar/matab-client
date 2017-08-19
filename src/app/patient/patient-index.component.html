@@ -14,7 +14,7 @@
       <label>Date of Birth:</label>
       <app-jalali-date-input [(inDate)]="dob" [isInput]="true"></app-jalali-date-input>
       <md-input-container>
-        <input mdInput placeholder="Referred By" [(ngModel)]="cd.referredBy">
+        <input mdInput placeholder="Referred By" [(ngModel)]="cd.referredBy" ngDefaultControl>
       </md-input-container>
 
         <md-checkbox [(ngModel)]="cd.vip">VIP</md-checkbox>

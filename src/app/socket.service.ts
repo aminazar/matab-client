@@ -10,7 +10,7 @@ export class SocketService {
     public static readonly LOGOUT_CMD: string = 'logout';
     public static readonly DISMISS_CMD: string = 'dismiss';
     public static readonly NEW_VISIT_CMD: string = 'newVisit';
-    public static readonly REFER_VISIT_CMD: string = 'referVisit';
+    public static readonly REFER_VISIT_CMD: string = 'referLocalVisit';
 
     private url = 'http://localhost:3000';
     private socketConfig = {
