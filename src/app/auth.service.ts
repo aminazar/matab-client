@@ -6,6 +6,7 @@ import {Observable, ReplaySubject} from 'rxjs';
 import {SocketService} from './socket.service';
 import {Subscription} from 'rxjs/Subscription';
 import {VisitService} from './visit.service';
+import {PatientService} from "./patient.service";
 
 @Injectable()
 export class AuthService {
@@ -23,7 +24,8 @@ export class AuthService {
               private router: Router,
               private messageService: MessageService,
               private socketService: SocketService,
-              private visitService: VisitService) {
+              private visitService: VisitService,
+              private patientService: PatientService) {
     this.restService.call('validUser')
       .subscribe(
         res => {
@@ -63,6 +65,10 @@ export class AuthService {
     this.display_name = data.display_name;
     this.userId = data.uid;
     this.authStream.next(true);
+
+    //Initialize tp list for patient list of necessary
+    this.patientService.initTPList();
+
 
     this.socketService.init();
 
