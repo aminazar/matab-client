@@ -1,5 +1,5 @@
 <md-card>
-  <md-card-title (click)="enableUpdate()">{{firstname}} {{surname}} - {{age}}<span *ngIf="isVip" style="padding: 5px;background-color: darkred;color:white;text-weight:bold;border-radius: 5px;font-size:75%">VIP</span></md-card-title>
+  <md-card-title (click)="enableUpdate()" style="cursor: pointer;">{{firstname}} {{surname}} - {{age}}<span *ngIf="isVip" style="padding: 5px;background-color: darkred;color:white;text-weight:bold;border-radius: 5px;font-size:75%">VIP</span></md-card-title>
     <table class="table info">
       <tr>
         <th colspan="2">Personal Info</th>

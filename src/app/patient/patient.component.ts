@@ -58,12 +58,15 @@ export class PatientComponent implements OnInit,OnDestroy {
         this.pidSub = this.patientService.pid$.subscribe(pid => {
           if(!this.isFiltered) {
             let ind = this.patients.findIndex(r => r.pid == pid);
-            this.patients[ind].firstname = this.patientService.firstname;
-            this.patients[ind].surname = this.patientService.surname;
-            this.patients[ind].id_number = this.patientService.id_number;
-            this.patientsNameCode[ind] = `${this.patients[ind].firstname} ${this.patients[ind].surname} - ${this.patients[ind].id_number}`;
-            this.patientModelCtrl.setValue(this.patientsNameCode[ind]);
-            this.patientModelCtrl.markAsTouched();
+
+            if(ind !== -1){
+              this.patients[ind].firstname = this.patientService.firstname;
+              this.patients[ind].surname = this.patientService.surname;
+              this.patients[ind].id_number = this.patientService.id_number;
+              this.patientsNameCode[ind] = `${this.patients[ind].firstname} ${this.patients[ind].surname} - ${this.patients[ind].id_number}`;
+              this.patientModelCtrl.setValue(this.patientsNameCode[ind]);
+              this.patientModelCtrl.markAsTouched();
+            }
           }
         });
       });
@@ -105,5 +108,18 @@ export class PatientComponent implements OnInit,OnDestroy {
 
   ngOnDestroy() {
     this.pidSub.unsubscribe();
+  }
+
+  deletePatient(patientData){
+    this.patients = this.patients.filter(el => el.pid !== patientData.pid);
+    this.isFiltered = false;
+    this.toUpdate = false;
+
+    //Remove patient from patientsNameCode list
+    let tmpNameCode = `${patientData.firstname} ${patientData.surname} - ${patientData.id_number}`;
+    this.patientsNameCode = this.patientsNameCode.filter(el => el !== tmpNameCode);
+
+    this.patientModelCtrl.setValue('');
+    this.patientService.clearPatient();
   }
 }

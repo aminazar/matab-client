@@ -33,6 +33,18 @@ export class PatientService{
     this.notebookNumber = null;
   }
 
+  clearPatient(){
+    this.pid = null;
+    this.firstname = null;
+    this.surname = null;
+    this.dob = {year: null, month: null, day: null,gd:null};
+    this.id_number = null;
+    this.contact_details = null;
+    this.pidStream.next(this.pid);
+    this.pageNumber = null;
+    this.notebookNumber = null;
+  }
+
   visitCachePush(data:any, sharingInfo = {}) {
     if(!this.visitCacheFind(data.vid)) {
       this.visitCache.push(data);
@@ -77,11 +89,13 @@ export class PatientService{
     return this._tpList;
   }
 
-  private modifyTPList(patientData: any){
+  modifyTPList(patientData: any, shouldDelete: boolean = false){
     let currentDate = moment().format('YYYY-MM-DD');
     let tpObject = JSON.parse(localStorage.getItem('tp_list'));
     if(tpObject){
-      if(tpObject[currentDate] && tpObject[currentDate].find(el => el.pid === patientData.pid))
+      if(shouldDelete)
+        this.deleteFromTPList(patientData.pid, tpObject, currentDate);
+      else if(tpObject[currentDate] && tpObject[currentDate].find(el => el.pid === patientData.pid))
         this.updateTPList(patientData, tpObject, currentDate);
       else
         this.insertToTPList(patientData, tpObject, currentDate);
@@ -107,6 +121,15 @@ export class PatientService{
       targetPatient.contact_details = patientData.contact_details;
       targetPatient.pageNumber = null;
       targetPatient.notebookNumber = null;
+      localStorage.setItem('tp_list', JSON.stringify(tpObject));
+    }
+  }
+
+  private deleteFromTPList(patientId: number, tpObject, date){
+    if(tpObject){
+      this._tpList = tpObject[date];
+      this._tpList = this._tpList.filter(el => el.pid !== patientId);
+      tpObject[date] = this._tpList;
       localStorage.setItem('tp_list', JSON.stringify(tpObject));
     }
   }
