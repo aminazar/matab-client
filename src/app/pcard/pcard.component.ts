@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import * as moment from 'moment';
 const padZero = (num, pad = 2) => {
   let ret = Array(pad);
@@ -12,16 +12,42 @@ const padZero = (num, pad = 2) => {
   styleUrls: ['./pcard.component.css']
 })
 export class PcardComponent implements OnInit {
+  name = '';
+  _v: any = {};
   hasVisit = true;
   emgy = false;
   vip = false;
   nocardio = false;
+  draggable = false;
   startTime = moment();
+  activeVisit = true;
+  pageNumber: number;
+  notebookNumber: number;
+  referredBy = '';
   waitingTimerColor;
   private timerInterval;
   timer = '';
-  selected=true;
-  constructor() { }
+  @Input() selected = false;
+
+  @Input()
+  get value() {
+    return this._v;
+  }
+
+  set value(data) {
+    this._v = data;
+    this.activeVisit = data.start_time && !data.ent_time;
+    this.hasVisit = !!data.vid;
+    this.emgy = !!data.emgy;
+    this.vip = !!data.vip;
+    this.nocardio = !!data.nocardio;
+    this.startTime = data.start_time ? data.start_time : data.waiting_start;
+    this.name = data.firstname + ' ' + data.surname;
+    this.referredBy = data.referred_by;
+  }
+
+  constructor() {
+  }
 
   ngOnInit() {
     this.timerInterval = setInterval(() => {
@@ -34,4 +60,11 @@ export class PcardComponent implements OnInit {
     }, 1000);
   }
 
+  dragStart(e, pc) {
+    console.log(e, pc);
+  }
+
+  dragEnd(e, pc) {
+    console.log(e, pc);
+  }
 }

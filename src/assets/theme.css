@@ -46,6 +46,7 @@ div.drPanel{
 }
 .drPanel .ui-panel-content {
   padding: 5px !important;
+  min-height: 120px;
 }
 .ui-widget-header a {
   color: #ffffff; }

@@ -1,13 +1,15 @@
-<md-card [ngStyle]="{'border':selected ? 'solid 3px #607d8b' : null,'padding':selected?'0px':'3px'}">
-    <md-card-title [ngStyle]="{'background':emgy?'palevioletred':nocardio?'#F1F1B9':vip?'palegreen':null}">Ali Alavi</md-card-title>
+<md-card [ngStyle]="{'border':selected ? 'solid 3px #607d8b' : null,'padding':selected?'0px':'3px',margin:hasVisit?null:'7px'}" pDraggable="p-cards" (onDragStart)="dragStart($event,pcard)" (onDragEnd)="dragEnd($event)" dragHandle="md-card-title">
+    <md-card-title [ngStyle]="{'background':emgy?'palevioletred':nocardio?'#F1F1B9':vip?'palegreen':null}">{{name}}
+        <button *ngIf="activeVisit" md-raised-button (click)="endVisit()"><md-icon fontSet="fa" fontIcon="fa-close"></md-icon></button>
+    </md-card-title>
 
     <md-card-content>
         <span *ngIf="!hasVisit">
             <md-input-container>
-                <input mdInput placeholder="Page #" type="number">
+                <input mdInput [(ngModel)]="pageNumber" placeholder="Page #" type="number">
             </md-input-container>
             <md-input-container>
-                <input mdInput placeholder="Notebook #" type="number">
+                <input mdInput [(ngModel)]="notebookNumber" placeholder="NB #" type="number">
             </md-input-container>
         </span>
         <span *ngIf="hasVisit">

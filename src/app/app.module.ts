@@ -34,11 +34,12 @@ import {SocketService} from './socket.service';
 import { ModalDialogComponent } from './modal-dialog/modal-dialog.component';
 import { KeysPipe } from './keys.pipe';
 import {VisitService} from './visit.service';
-import { PanelModule } from 'primeng/primeng';
+import {DragDropModule, PanelModule} from 'primeng/primeng';
 import { VisitsComponent } from './visits/visits.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { PcardComponent } from './pcard/pcard.component';
 import { DoctorPanelComponent } from './doctor-panel/doctor-panel.component';
+import { AdminPanelComponent } from './admin-panel/admin-panel.component';
 
 @NgModule({
   declarations: [
@@ -59,6 +60,7 @@ import { DoctorPanelComponent } from './doctor-panel/doctor-panel.component';
     VisitsComponent,
     PcardComponent,
     DoctorPanelComponent,
+    AdminPanelComponent,
   ],
   imports: [
     FileUploadModule,
@@ -79,6 +81,7 @@ import { DoctorPanelComponent } from './doctor-panel/doctor-panel.component';
     FlexLayoutModule,
     ReactiveFormsModule,
     PanelModule,
+    DragDropModule,
     RouterModule.forRoot([
       {path: '', component: HomeComponent, pathMatch: 'full', canActivate: [LoggedInGuard] },
       {path: 'login', component: LoginComponent},

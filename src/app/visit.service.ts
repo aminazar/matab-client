@@ -8,6 +8,7 @@ import {Observable} from 'rxjs';
 export class VisitService {
   socketSub: any;
   visits: any = {};
+  doctors: any = {};
   private handleDiff: any;
 
   constructor(private rest: RestService, private socket: SocketService, private msg: MessageService) {
@@ -24,6 +25,11 @@ export class VisitService {
       .subscribe(
         data => this.visits = data,
         err => console.error('failed in initializing visits service. Could not get all visits', err)
+      );
+    this.rest.get('doctors')
+      .subscribe(
+        data => this.doctors = data,
+        err  => console.error('failed in initializing visits service, could not get all doctors', err)
       );
   }
 
