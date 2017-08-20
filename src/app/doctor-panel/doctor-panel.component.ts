@@ -30,7 +30,7 @@ export class DoctorPanelComponent implements OnInit, OnDestroy {
       if (Object.keys(msg.msg) && Object.keys(msg.msg)[0]) {
         let vid = Object.keys(msg.msg)[0];
         let data = msg.msg[vid];
-        if (msg.cmd !== 'UPDATE' && this.visits[vid] || (msg.cmd === 'INSERT' && +this.did === +data.did)
+        if ((msg.cmd !== 'UPDATE' || data.end_time || data.start_time) && this.visits[vid] || (msg.cmd === 'INSERT' && +this.did === +data.did)
           || (msg.cmd === 'REFER' && this.currentPCard && +data.referee_visit === +this.currentPCard.vid)) {
           this.extractVisits();
         }
@@ -64,57 +64,6 @@ export class DoctorPanelComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.socketSub.unsubscribe();
   }
-
-  //
-  //   this.vs.socketMsg$.subscribe(
-  //     msg => {
-  //       let vid = Object.keys(msg.msg)[0];
-  //       let data = msg.msg[vid];
-  //       data.vid = +vid;
-  //       if (this.handleDiff[msg.cmd]) {
-  //         this.handleDiff[msg.cmd](data);
-  //       }
-  //     }
-  //   );
-  // }
-  //
-  // insertVisit(data) {
-  //   if (data.did && +data.did === +this.did) {
-  //     if (data.start_time) {
-  //       if (data.end_time) {
-  //         this.pastPCards.push(data);
-  //       } else {
-  //         this.currentPCard.push(data);
-  //       }
-  //     } else {
-  //       this.queuePCards.push(data);
-  //     }
-  //   }
-  // }
-  //
-  // updateVisit(data) {
-  //   if (data.did && +data.did === +this.did) {
-  //     if (data.start_time) {
-  //       if (data.end_time) {
-  //         let found = this.pastPCards.find(row => +row.vid === +data.vid);
-  //         if (found) {
-  //           for (let key in data) {
-  //             found[key] = data[key];
-  //           }
-  //         }
-  //       } else {
-  //         let found = this.currentPCard.find(row => +row.vid === +data.vid);
-  //         if (found) {
-  //           for (let key in data) {
-  //             found[key] = data[key];
-  //           }
-  //         }
-  //       }
-  //     } else {
-  //       this.queuePCards.push(data);
-  //     }
-  //   }
-  // }
 
   drop(destination) {
     this.vs.endDrag(destination);

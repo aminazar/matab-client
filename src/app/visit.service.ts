@@ -162,7 +162,10 @@ export class VisitService {
           } else {
             this.msg.warn('Cannot find destination doctor');
           }
-        } else {
+        } else { // Card is already a visit
+          // if (+did) {
+          //   if (+did === )
+          // }
         }
       } else {
         this.msg.message('No Change');
