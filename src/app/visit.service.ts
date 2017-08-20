@@ -149,23 +149,76 @@ export class VisitService {
             } else if (+loc === 1) { // Dropped as the current visit
               this.startImmediateVisit(did, this.pCardPID, +pageNumber, +notebookNumber).subscribe(
                 () => this.msg.message('New visit'),
-                err => console.warn('Error in creating new visit: ' + err)
+                err => console.warn('Error in creating new visit: ', err)
               );
             } else if (+loc === 0) { // Dropped in the queue
               this.startWaiting(did, this.pCardPID, +pageNumber, +notebookNumber).subscribe(
                 () => {
                   this.msg.message('New waiting');
                 },
-                    err => console.warn('Error in creating new visit: ' + err)
+                    err => console.warn('Error in creating new visit: ', err)
               );
             }
           } else {
             this.msg.warn('Cannot find destination doctor');
           }
         } else { // Card is already a visit
-          // if (+did) {
-          //   if (+did === )
-          // }
+          if (+did) {
+            let originLoc, originDID;
+            [originDID, originLoc] = this.pCardOrigin.split('_');
+            if (+did === +this.pCardDID) {
+              if (this.auth.userType === 'doctor' && +this.auth.uid !== this.pCardPID) {
+                this.msg.warn('You cannot change queue of other doctors, only admin can do this.');
+                this.resetPCard();
+              } else if (+loc === 2) {
+                this.msg.warn('You cannot move visit to past');
+                this.resetPCard();
+              } else if (+originLoc === 0 && +loc === 1) {
+                this.startVisit(this.pCardVID).subscribe(
+                  () => this.msg.message('New visit'),
+                  err => console.warn('Error in creating new visit: ', err)
+                );
+              } else if (+originLoc === 1 && +loc === 0) {
+                this.undoVisit(this.pCardVID).subscribe(
+                  () => this.msg.message('Undoing visit'),
+                  err => console.warn('Error in undoing visit: ', err)
+                );
+              }
+            } else {
+              if (+loc === 1) {
+                if (+originLoc === 2) {// creating new visit from past
+                  let paperId = this.visits[this.pCardVID].paper_id;
+                  let pageNumber = Math.floor(paperId / 101) + 1;
+                  let notebookNumber = paperId % 101 + 1;
+                  this.startImmediateVisit(did, this.pCardPID, pageNumber, notebookNumber).subscribe(
+                    () => this.msg.message('New visit'),
+                    err => console.warn('Error in creating new visit: ' + err)
+                  );
+                } else if (+originLoc === 1) {// creating referral
+                  this.refer(this.pCardVID, +did).subscribe(
+                    () => this.msg.message('New referral'),
+                    err => console.warn('Error in creating new referral: ',err)
+                  );
+                } else {
+                  this.msg.warn('You should first put the patient in the queue');
+                  this.resetPCard();
+                }
+              } else if (+loc === 2) {
+                this.msg.warn('You cannot move visit to past');
+                this.resetPCard();
+              } else if (+did) {
+                this.changeQueue(this.pCardVID, did).subscribe(
+                  () => this.msg.message('Changing queue'),
+                  err => console.warn('Error in changing queue: ', err)
+                );
+              } else {
+                this.removeWaiting(this.pCardVID).subscribe(
+                  () => this.msg.message('Removing patient from queue'),
+                  err => console.warn('Error in removing patient from queue', err)
+                );
+              }
+            }
+          }
         }
       } else {
         this.msg.message('No Change');
@@ -222,14 +275,14 @@ export class VisitService {
   }
 
   emgyChecked(vid, value): Observable<any> {
-    return this.rest.update(`emgy-checked/${vid}`, value ? 1 : 0);
+    return this.rest.update(`emgy-checked/${vid}`, value ? '1' : '0');
   }
 
   vipChecked(vid, value): Observable<any> {
-    return this.rest.update(`vip-checked/${vid}`, value ? 1 : 0);
+    return this.rest.update(`vip-checked/${vid}`, value ? '1' : '0');
   }
 
   nocardioChecked(vid, value): Observable<any> {
-    return this.rest.update(`nocardio-checked/${vid}`, value ? 1 : 0);
+    return this.rest.update(`nocardio-checked/${vid}`, value ? '1' : '0');
   }
 }

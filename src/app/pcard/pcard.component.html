@@ -1,6 +1,6 @@
 <md-card [ngStyle]="{'border':selected ? 'solid 3px #607d8b' : null,'padding':selected?'0px':'3px',margin:hasVisit?null:'7px'}" pDraggable="p-cards" (onDragStart)="dragStart()" dragHandle="md-card-title">
     <md-card-title [ngStyle]="{'background':emgy?'palevioletred':nocardio?'#F1F1B9':vip?'palegreen':null}">{{name}}
-        <button *ngIf="activeVisit" md-raised-button (click)="endVisit()"><md-icon fontSet="fa" fontIcon="fa-close"></md-icon></button>
+        <button *ngIf="activeVisit" md-raised-button (click)="endVisit()" [disabled]="endVisitDisabled"><md-icon fontSet="fa" fontIcon="fa-close"></md-icon></button>
     </md-card-title>
 
     <md-card-content>
@@ -30,8 +30,8 @@
         </span>
     </md-card-content>
     <md-card-actions *ngIf="hasVisit">
-        <md-checkbox [(ngModel)]="emgy">Emgy</md-checkbox>
-        <md-checkbox [(ngModel)]="vip">VIP</md-checkbox>
-        <md-checkbox [(ngModel)]="nocardio">No Cardio</md-checkbox>
+        <md-checkbox [(ngModel)]="emgy" (ngModelChange)="emgyChecked()">Emgy</md-checkbox>
+        <md-checkbox [(ngModel)]="vip" (ngModelChange)="vipChecked()">VIP</md-checkbox>
+        <md-checkbox [(ngModel)]="nocardio" (ngModelChange)="nocChecked()">No Cardio</md-checkbox>
     </md-card-actions>
 </md-card>

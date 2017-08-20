@@ -4,6 +4,7 @@ import {VisitService} from "../visit.service";
 import {MessageService} from "../message.service";
 import {Subscription} from "rxjs/Subscription";
 import {isUndefined} from "util";
+import {AuthService} from "../auth.service";
 
 const padZero = (num, pad = 2) => {
   let ret = Array(pad);
@@ -17,7 +18,7 @@ const padZero = (num, pad = 2) => {
   templateUrl: './pcard.component.html',
   styleUrls: ['./pcard.component.css']
 })
-export class PcardComponent implements OnInit,OnDestroy {
+export class PcardComponent implements OnInit, OnDestroy {
   socketSub: Subscription;
   dummyDate: any;
   endTime: any = '';
@@ -58,7 +59,7 @@ export class PcardComponent implements OnInit,OnDestroy {
     this.endTime = data.end_time ? moment(data.end_time).format('HH:mm') : '';
   }
 
-  constructor(private vs: VisitService, private msg: MessageService) {
+  constructor(private vs: VisitService, private msg: MessageService, private auth: AuthService) {
   }
 
   ngOnInit() {
@@ -114,17 +115,53 @@ export class PcardComponent implements OnInit,OnDestroy {
 
   endVisit() {
     if (this.hasVisit && this.activeVisit) {
-      this.endVisitDisabled = true;
-      this.vs.endVisit(this.value.vid).subscribe(
-        () => {
-          this.endVisitDisabled = false;
-          clearInterval(this.timerInterval);
-          this.calcTimer(new Date());
-          this.endTime = moment().format('HH:mm');
-        },
+      if (this.auth.userType !== 'doctor' || +this.auth.userId === +this.value.did) {
+        this.endVisitDisabled = true;
+        this.vs.endVisit(this.value.vid).subscribe(
+          () => {
+            this.endVisitDisabled = false;
+            clearInterval(this.timerInterval);
+            this.calcTimer(new Date());
+            this.endTime = moment().format('HH:mm');
+          },
           err => console.error('Failed to end visit:', this.value.vid, err)
-      );
+        );
+      } else {
+        this.msg.warn('You cannot end visits of other doctors.');
+      }
     }
   }
 
+  vipChecked() {
+    this.vs.vipChecked(this.value.vid, this.vip).subscribe(
+      () => {
+      },
+      err => {
+        console.warn('error in checking VIP', err);
+        this.vip = !this.vip;
+      }
+    );
+  }
+
+  emgyChecked() {
+    this.vs.emgyChecked(this.value.vid, this.emgy).subscribe(
+      () => {
+      },
+      err => {
+        console.warn('error in checking emgy', err);
+        this.emgy = !this.emgy;
+      }
+    );
+  }
+
+  nocChecked() {
+    this.vs.nocardioChecked(this.value.vid, this.nocardio).subscribe(
+      () => {
+      },
+      err => {
+        console.warn('error in checking nocardio', err);
+        this.nocardio = !this.nocardio;
+      }
+    );
+  }
 }
