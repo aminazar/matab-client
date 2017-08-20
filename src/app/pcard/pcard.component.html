@@ -1,4 +1,4 @@
-<md-card [ngStyle]="{'border':selected ? 'solid 3px #607d8b' : null,'padding':selected?'0px':'3px',margin:hasVisit?null:'7px'}" pDraggable="p-cards" (onDragStart)="dragStart($event,pcard)" (onDragEnd)="dragEnd($event)" dragHandle="md-card-title">
+<md-card [ngStyle]="{'border':selected ? 'solid 3px #607d8b' : null,'padding':selected?'0px':'3px',margin:hasVisit?null:'7px'}" pDraggable="p-cards" (onDragStart)="dragStart()" dragHandle="md-card-title">
     <md-card-title [ngStyle]="{'background':emgy?'palevioletred':nocardio?'#F1F1B9':vip?'palegreen':null}">{{name}}
         <button *ngIf="activeVisit" md-raised-button (click)="endVisit()"><md-icon fontSet="fa" fontIcon="fa-close"></md-icon></button>
     </md-card-title>
@@ -15,8 +15,12 @@
         <span *ngIf="hasVisit">
             <table>
                 <tr [ngStyle]="{'background':waitingTimerColor}">
-                    <td>Waiting timer:</td>
+                    <td>{{value.start_time ? 'Visit Time' : 'Waiting Time'}}</td>
                     <td>{{timer}}</td>
+                </tr>
+                <tr *ngIf="value.end_time">
+                    <td>Visit Ended At</td>
+                    <td>{{endTime}}</td>
                 </tr>
                 <tr *ngIf="hasReferral">
                     <td>Referred by:</td>

@@ -65,8 +65,9 @@ export class AuthService {
     this.display_name = data.display_name;
     this.userId = data.uid;
     this.authStream.next(true);
+    this.visitService.auth = data;
 
-    //Initialize tp list for patient list of necessary
+    // Initialize tp list for patient list of necessary
     this.patientService.initTPList();
 
 

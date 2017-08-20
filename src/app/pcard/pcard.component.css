@@ -1,14 +1,15 @@
 .mat-card-title {
     margin: 0px !important;
     padding: 0px 3px !important;
-    background: whitesmoke;
+    background: lightgray;
     color: #41200b;
     font-size: 12pt;
+    font-weight:bold;
 }
 
 .mat-card {
     padding: 0px;
-    width: 185px;
+    margin-bottom: 7px;
 }
 
 .mat-card-actions {
@@ -42,7 +43,13 @@ td {
 table {
     width: 100%;
 }
-
+table > tbody > tr > td:first-child {
+    text-align: right;
+    font-weight: bold;
+}
+table > tbody > tr > td:nth-child(2) {
+    text-align: left;
+}
 button {
     position: absolute;
     right: 0px;
