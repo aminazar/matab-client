@@ -19,6 +19,9 @@ export class VisitsComponent implements OnInit {
   }
 
   ngOnInit() {
+    if (this.vs.currentVisit) {
+      this.collapsed = true;
+    }
   }
 
 }

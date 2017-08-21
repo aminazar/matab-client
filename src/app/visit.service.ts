@@ -8,6 +8,7 @@ import {AuthService} from './auth.service';
 
 @Injectable()
 export class VisitService {
+  currentVisit: any;
   pCardDID: any;
   pCardVID: any;
   pCardPID: any;
@@ -17,7 +18,9 @@ export class VisitService {
   doctors: any = {};
   private handleDiff: any;
   private socketMsgStream = new Subject<any>();
+  private selectedVisitStream = new Subject<any>();
   socketMsg$: Observable<any> = this.socketMsgStream.asObservable();
+  selectedVisit$: Observable<any> = this.selectedVisitStream.asObservable();
   auth: any = {};
 
   constructor(private rest: RestService, private socket: SocketService, private msg: MessageService, private ps: PatientService) {
@@ -32,7 +35,13 @@ export class VisitService {
   private getLocalVisits() {
     this.rest.get('visits')
       .subscribe(
-        data => this.visits = data,
+        data => {
+          this.visits = data;
+          let found = this.findMyVisit();
+          if (found) {
+            this.currentVisit = found;
+          }
+        },
         err => console.error('failed in initializing visits service. Could not get all visits', err)
       );
     this.rest.get('doctors')
@@ -172,7 +181,7 @@ export class VisitService {
           [originDID, originLoc] = this.pCardOrigin.split('_');
           if (+did) {
             if (+did === +this.pCardDID) {
-              if (this.auth.userType === 'doctor' && +this.auth.uid !== this.pCardPID) {
+              if (this.auth.userType === 'doctor' && +this.auth.uid !== this.pCardDID) {
                 this.msg.warn('You cannot change queue of other doctors, only admin can do this.');
                 this.resetPCard();
               } else if (+loc === 2) {
@@ -252,7 +261,7 @@ export class VisitService {
   }
 
   getVisit(vid): Observable<any> {
-    return this.rest.getWithParams('visit', {vid: vid});
+    return this.rest.get('visit/' + vid);
   }
 
   startImmediateVisit(did, pid, pageNumber, notebookNumber): Observable<any> {
@@ -303,5 +312,29 @@ export class VisitService {
 
   nocardioChecked(vid, value): Observable<any> {
     return this.rest.update(`nocardio-checked/${vid}`, value ? '1' : '0');
+  }
+
+  selectVisit(vid) {
+    this.getVisit(vid).subscribe(
+      data => {
+        this.currentVisit = data;
+        this.selectedVisitStream.next(vid);
+      },
+      err => console.warn('could not get visit with vid', vid, err)
+    );
+  }
+
+  unselectVist() {
+    this.currentVisit = null;
+    if (this.auth.is_doctor) {
+      let found = this.findMyVisit();
+      if (found) {
+        this.currentVisit = found;
+      }
+    }
+  }
+
+  private findMyVisit() {
+    return Object.keys(this.visits).map(r => this.visits[r]).find(r => r.did === this.auth.uid && r.start_time && !r.end_time);
   }
 }

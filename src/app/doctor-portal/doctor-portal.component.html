@@ -1,23 +1,16 @@
+<p-panel [header]="header" [toggleable]="true" (onAfterToggle)="toggle($event)">
+    <app-patient-info [value]="patientData"></app-patient-info>
+</p-panel>
 <md-card class="outerCard">
-  <md-card-title class="cardTitle">Electronic Medical Record</md-card-title>
-
-    <button *ngIf="!externalVid" type="button" class="btn btn-lg btn-lg-o"
-            (click)="refresh()"><i class="fa fa-refresh"></i></button>
-    <button  *ngIf="!notFound&&!externalVid" style="right: 24px;position: absolute;" type="button" class="btn btn-lg btn-lg-o"
-            (click)="endVisit()"><i class="fa fa-remove"></i></button>
-  <md-card *ngIf="!notFound" class="innerCard">
-      <app-patient-info></app-patient-info>
-  </md-card>
-</md-card>
-<md-card  *ngIf="!notFound" class="outerCard">
-    <md-tab-group [(selectedIndex)]="selectedIndex" (selectChange)="tabChanged()"><md-tab *ngFor="let doc of documents">
-        <template md-tab-label>
-          {{doc.description}}
-        </template>
-        <md-card>
-        <h4 *ngIf="doc.vid">Comments by {{doc.display_name}}</h4>
-          <iframe [src]="doc.source" width='566' height='800' allowfullscreen webkitallowfullscreen></iframe>
-        </md-card>
-      </md-tab>
+    <md-tab-group>
+        <md-tab *ngFor="let doc of documents">
+            <ng-template md-tab-label>
+                {{doc.description}}
+            </ng-template>
+            <md-card>
+                <h4 *ngIf="doc.vid">Comments by {{doc.display_name}}</h4>
+                <iframe [src]="doc.source" width='566' height='800' allowfullscreen webkitallowfullscreen></iframe>
+            </md-card>
+        </md-tab>
     </md-tab-group>
 </md-card>

@@ -71,7 +71,7 @@ export class AuthService {
     this.patientService.initTPList();
 
 
-    this.socketService.init();
+    this.socketService.init(this.userType, this.user);
 
 
     if (this.userType === 'doctor')

@@ -37,7 +37,7 @@ export class PcardComponent implements OnInit, OnDestroy {
   waitingTimerColor;
   private timerInterval;
   timer = '';
-  @Input() selected = false;
+  selected = false;
   currentDropLocation = ''; // 0 is Admin Panel, each location in doctor panel is did + '_' + loc, where loc = 0 for queue, 1 for active visit and 2 for past visit
 
   @Input()
@@ -85,6 +85,13 @@ export class PcardComponent implements OnInit, OnDestroy {
         }
       }
     });
+
+    this.vs.selectedVisit$.subscribe(
+      sv => {
+        if (this.hasVisit && +sv !== +this.value.vid) {
+          this.selected = false;
+          }
+      });
   }
 
   ngOnDestroy() {
@@ -166,6 +173,13 @@ export class PcardComponent implements OnInit, OnDestroy {
   }
 
   select() {
-    this.selected = !this.selected;
+    if (this.hasVisit) {
+      this.selected = !this.selected;
+      if (this.selected) {
+        this.vs.selectVisit(this.value.vid);
+      } else {
+        this.vs.unselectVist();
+      }
+    }
   }
 }
