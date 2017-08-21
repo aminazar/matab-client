@@ -15,7 +15,7 @@
   </md-card>
   <md-card [class.hidden]="!toUpdate" class="innerCard">
     <md-card-title>Update Patient's Record</md-card-title>
-    <app-patient-index (newAddedPatient)="toUpdateChange($event)" [patientData]="filteredPatient"></app-patient-index>
+    <app-patient-index (newAddedPatient)="toUpdateChange($event)" (deletePatient)="deletePatient($event)" [patientData]="filteredPatient"></app-patient-index>
   </md-card>
   <md-card [class.hidden]="!isFiltered||toUpdate" class="innerCard">
     <md-card-title>Current Patient</md-card-title>
