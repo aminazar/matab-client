@@ -1,0 +1,11 @@
+<md-card class="drPanel">
+    <p-panel [toggleable]="true" collapsed="true" header="Past visits">
+        <app-pcard *ngFor="let v of pastPCards" [value]="v" [selected]="v.pid === ps.selectedCard"></app-pcard>
+    </p-panel>
+    <div class="current-visit" pDroppable="p-cards" (onDrop)="drop($event)">
+        <app-pcard *ngIf="currentPCard" [value]="currentPCard"></app-pcard>
+    </div>
+    <p-panel [toggleable]="true" header="Queued patients">
+        <app-pcard *ngFor="let v of queuePCards" [value]="v" [selected]="v.pid === ps.selectedCard"></app-pcard>
+    </p-panel>
+</md-card>

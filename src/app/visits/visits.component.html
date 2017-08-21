@@ -1,0 +1,23 @@
+<p-panel header="Title" [toggleable]="true" (onAfterToggle)="change($event)">
+    <div class="panels-container">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th [ngStyle]="{position:collapsed?'relative':'absolute'}" [class.hiddenFirst]="auth.userType!=='admin'">Admin Panel</th>
+                <th *ngFor="let dr of vs.doctors;let i=index" [class.noPaddingSecond]="!i && auth.userType!=='admin'" [class.paddingSecond]="!i && auth.userType==='admin'">{{dr.display_name}}</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td [ngStyle]="{position:collapsed?'relative':'absolute'}" [class.hiddenFirst]="auth.userType!=='admin'">
+                    <app-admin-panel></app-admin-panel>
+                </td>
+                <td *ngFor="let dr of vs.doctors;let i=index" [class.noPaddingSecond]="!i && auth.userType!=='admin'" [class.paddingSecond]="!i && auth.userType==='admin'">
+                    <app-doctor-panel [did]="dr.uid"></app-doctor-panel>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</p-panel>
