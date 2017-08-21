@@ -4,21 +4,31 @@ import {PatientService} from "../patient.service";
 import {AuthService} from "../auth.service";
 
 @Component({
-  selector: 'app-visits',
-  templateUrl: './visits.component.html',
-  styleUrls: ['./visits.component.css']
+    selector: 'app-visits',
+    templateUrl: './visits.component.html',
+    styleUrls: ['./visits.component.css']
 })
 export class VisitsComponent implements OnInit {
-  collapsed = false;
+    collapsed = false;
 
-  constructor(private vs: VisitService, private auth:AuthService) {
-  }
+    doctors: any[] = [];
 
-  change(e) {
-    this.collapsed = e.collapsed;
-  }
+    constructor(private vs: VisitService, private auth: AuthService) {
+    }
 
-  ngOnInit() {
-  }
+    change(e) {
+        this.collapsed = e.collapsed;
+    }
+
+    ngOnInit() {
+
+
+        this.vs.doctorsObservable.subscribe( doctors =>{
+            this.doctors = Array.from(doctors);
+        });
+
+
+
+    }
 
 }
