@@ -62,6 +62,7 @@ export class VisitService {
   private addLocalVisit(diff) {
     for (let key in diff) {
       if (!this.visits[key]) {
+        this.ps.modifyTPList(diff[key], true);
         this.visits[key] = diff[key];
         console.log(`visit ${key} is added`);
       } else {
@@ -148,13 +149,17 @@ export class VisitService {
               this.resetPCard();
             } else if (+loc === 1) { // Dropped as the current visit
               this.startImmediateVisit(did, this.pCardPID, +pageNumber, +notebookNumber).subscribe(
-                () => this.msg.message('New visit'),
+                () => {
+                  this.msg.message('New visit');
+                  this.ps.modifyTPList({pid: this.pCardPID}, true);
+                },
                 err => console.warn('Error in creating new visit: ', err)
               );
             } else if (+loc === 0) { // Dropped in the queue
               this.startWaiting(did, this.pCardPID, +pageNumber, +notebookNumber).subscribe(
                 () => {
                   this.msg.message('New waiting');
+                  this.ps.modifyTPList({pid: this.pCardPID}, true);
                 },
                     err => console.warn('Error in creating new visit: ', err)
               );
@@ -163,9 +168,9 @@ export class VisitService {
             this.msg.warn('Cannot find destination doctor');
           }
         } else { // Card is already a visit
+          let originLoc, originDID;
+          [originDID, originLoc] = this.pCardOrigin.split('_');
           if (+did) {
-            let originLoc, originDID;
-            [originDID, originLoc] = this.pCardOrigin.split('_');
             if (+did === +this.pCardDID) {
               if (this.auth.userType === 'doctor' && +this.auth.uid !== this.pCardPID) {
                 this.msg.warn('You cannot change queue of other doctors, only admin can do this.');
@@ -194,29 +199,43 @@ export class VisitService {
                     () => this.msg.message('New visit'),
                     err => console.warn('Error in creating new visit: ' + err)
                   );
-                } else if (+originLoc === 1) {// creating referral
-                  this.refer(this.pCardVID, +did).subscribe(
-                    () => this.msg.message('New referral'),
-                    err => console.warn('Error in creating new referral: ',err)
-                  );
-                } else {
+                } else { // Not permitted
                   this.msg.warn('You should first put the patient in the queue');
                   this.resetPCard();
                 }
               } else if (+loc === 2) {
                 this.msg.warn('You cannot move visit to past');
                 this.resetPCard();
-              } else if (+did) {
-                this.changeQueue(this.pCardVID, did).subscribe(
-                  () => this.msg.message('Changing queue'),
-                  err => console.warn('Error in changing queue: ', err)
-                );
               } else {
-                this.removeWaiting(this.pCardVID).subscribe(
-                  () => this.msg.message('Removing patient from queue'),
-                  err => console.warn('Error in removing patient from queue', err)
-                );
+                if (+originLoc === 0) {
+                  this.changeQueue(this.pCardVID, did).subscribe(
+                    () => this.msg.message('Changing queue'),
+                    err => console.warn('Error in changing queue: ', err)
+                  );
+                } else if (+originLoc === 1) { // Referral
+                  this.refer(this.pCardVID, +did).subscribe(
+                    () => this.msg.message('New referral'),
+                    err => console.warn('Error in creating new referral: ',err)
+                  );
+                }
               }
+            }
+          } else { // Dropping into admin, did ===0
+            if (+originLoc === 0) {
+              let patientData = this.visits[this.pCardVID];
+              delete patientData.vid;
+              delete patientData.did;
+              delete patientData.start_waiting;
+              this.removeWaiting(this.pCardVID).subscribe(
+                () => {
+                  this.msg.message('Removing patient from queue');
+                  this.ps.modifyTPList(patientData);
+                },
+                err => console.warn('Error in removing patient from queue', err)
+              );
+            } else {
+              this.msg.warn('You cannot remove a visit after it started');
+              this.resetPCard();
             }
           }
         }
@@ -224,7 +243,7 @@ export class VisitService {
         this.msg.message('No Change');
       }
     } else {
-      //this.msg.warn('Invalid drop: I do not remember origin of this card!');
+      // this.msg.warn('Invalid drop: I do not remember origin of this card!');
     }
   }
 

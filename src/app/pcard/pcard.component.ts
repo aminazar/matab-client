@@ -164,4 +164,8 @@ export class PcardComponent implements OnInit, OnDestroy {
       }
     );
   }
+
+  select() {
+    this.selected = !this.selected;
+  }
 }

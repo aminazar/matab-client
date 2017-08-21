@@ -13,7 +13,9 @@ import {LoggedInGuard} from './login/logged-in.guard';
 import {RouterModule} from '@angular/router';
 import {
   MdAutocompleteModule,
-  MdButtonModule, MdCardModule, MdCheckboxModule, MdDialogModule, MdIconModule, MdInputModule, MdSnackBarModule,
+  MdButtonModule, MdCardModule, MdCheckboxModule, MdDialogModule, MdIconModule, MdInputModule,
+  MdSelectModule,
+  MdSnackBarModule,
   MdTabsModule,
   MdToolbarModule
 } from '@angular/material';
@@ -77,6 +79,7 @@ import { AdminPanelComponent } from './admin-panel/admin-panel.component';
     MdCheckboxModule,
     MdAutocompleteModule,
     MdDialogModule,
+    MdSelectModule,
     FormsModule,
     HttpModule,
     FlexLayoutModule,

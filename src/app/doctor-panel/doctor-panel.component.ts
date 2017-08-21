@@ -1,7 +1,7 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {VisitService} from '../visit.service';
 import {PatientService} from '../patient.service';
-import {Subscription} from "rxjs/Subscription";
+import {Subscription} from 'rxjs/Subscription';
 
 @Component({
   selector: 'app-doctor-panel',

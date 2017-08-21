@@ -1,4 +1,4 @@
-import {Component, OnInit, isDevMode, EventEmitter,Input, Output} from '@angular/core';
+import {Component, OnInit, isDevMode, EventEmitter, Input, Output, ViewChild} from '@angular/core';
 import {RestService} from "../rest.service";
 import {MessageService} from "../message.service";
 import {PatientService} from "../patient.service";
@@ -12,11 +12,13 @@ import {MdDialog, MdDialogRef} from "@angular/material";
 export class PatientIndexComponent implements OnInit {
   @Output() newAddedPatient = new EventEmitter<any>();
   @Output() deletePatient = new EventEmitter<any>();
+  @ViewChild('viaSelect') viaSelect;
 
   addIsDisabledFlag = true;
   firstname = null;
   surname = null;
   id_number = null;
+  referral = null;
   cd = {
     familiar: {via: null, description: null},
     surgeon:null,

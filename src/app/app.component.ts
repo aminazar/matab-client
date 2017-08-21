@@ -11,35 +11,7 @@ import {PatientService} from "./patient.service";
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  title = 'app works!';
-  showError = false;
-  error: string;
-  d = {year:1396,day:2,month:2};
-
-  constructor(private messageService: MessageService, public snackBar: MdSnackBar) {       //add some code
-  }
-
   ngOnInit(): void {
-    this.messageService.err$.subscribe(
-      err => {
-        this.showError = true;
-        this.error = `${err.statusText}: ${err.text()}`;
-      }
-    );
-    this.messageService.msg$.subscribe(
-      msg => {
-        this.showError = false;
-        this.snackBar.open(msg, 'x', <MdSnackBarConfig>{duration: 3000, extraClasses: ['snackBar']}); //change some code
-      }
-    );
-    this.messageService.warn$.subscribe(
-      msg => {
-        this.snackBar.open(msg, 'x', <MdSnackBarConfig>{duration: 3000, extraClasses: ['warnBar']});  //change some code
-      }
-    )
   }
 
-  closeError() {
-    this.showError = false;
-  }
 }

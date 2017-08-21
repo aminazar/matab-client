@@ -12,7 +12,12 @@ export class AdminPanelComponent implements OnInit {
   constructor(private ps: PatientService, private vs: VisitService) { }
 
   ngOnInit() {
-    this.tpList = this.ps.getTPList().filter( p => {
+    this.calcTPList();
+    this.ps.tpListChange$.subscribe(() => this.calcTPList());
+  }
+
+  private calcTPList() {
+    this.tpList = this.ps.getTPList().filter(p => {
       for (let key in this.vs.visits) {
         if (+this.vs.visits[key].pid === +p.pid) {
           return false;

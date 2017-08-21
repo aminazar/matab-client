@@ -3,7 +3,7 @@
         <button *ngIf="activeVisit" md-raised-button (click)="endVisit()" [disabled]="endVisitDisabled"><md-icon fontSet="fa" fontIcon="fa-close"></md-icon></button>
     </md-card-title>
 
-    <md-card-content>
+    <md-card-content (click)="select()">
         <span *ngIf="!hasVisit">
             <md-input-container>
                 <input mdInput [(ngModel)]="pageNumber" placeholder="Page #" type="number">

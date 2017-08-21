@@ -12,7 +12,7 @@
       <input mdInput placeholder="ID Number" [(ngModel)]="id_number" (keyup)="isReadyToAddPatient()">
     </md-input-container>
       <label>Date of Birth:</label>
-      <app-jalali-date-input [(inDate)]="dob" [isInput]="true"></app-jalali-date-input>
+      <app-jalali-date-input [(inDate)]="dob" [isInput]="true" ngDefaultControl></app-jalali-date-input>
       <md-checkbox [(ngModel)]="cd.vip">VIP</md-checkbox>
     </fieldset>
     <fieldset>
@@ -25,7 +25,7 @@
       </md-input-container>
 
         <label>Surgery Date:</label>
-        <app-jalali-date-input [(inDate)]="cd.surgeryDate" [isInput]="true"></app-jalali-date-input>
+        <app-jalali-date-input [(inDate)]="cd.surgeryDate" [isInput]="true" ngDefaultControl></app-jalali-date-input>
 
     </fieldset>
     <fieldset>
@@ -35,17 +35,17 @@
       </md-input-container>
 
         <label>Angiography Date:</label>
-        <app-jalali-date-input [(inDate)]="cd.angioDate" [isInput]="true"></app-jalali-date-input>
+        <app-jalali-date-input [(inDate)]="cd.angioDate" [isInput]="true" ngDefaultControl></app-jalali-date-input>
 
     </fieldset>
     <fieldset>
-      <legend>Refferal</legend>
-      <md-select placeholder="How do you familiar with us?" [(ngModel)]="cd.familiar.via">
+      <legend>Referral</legend>
+      <md-select placeholder="How did you get to know us?" [(ngModel)]="cd.familiar.via">
         <md-option *ngFor="let op of familiarOptions" [value]="op">{{op}}</md-option>
       </md-select>
       &nbsp;
       <md-input-container>
-        <input mdInput placeholder="Description" [(ngModel)]="cd.familiar.description">
+        <input mdInput placeholder="Description" [(ngModel)]="cd.familiar.description" ngDefaultControl>
       </md-input-container>
     </fieldset>
   </md-card-content>

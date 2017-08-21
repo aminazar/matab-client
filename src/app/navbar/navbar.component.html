@@ -4,12 +4,12 @@
   <span *ngIf="!auth"><a  class="toolbar" [routerLink]="['login']"><span class="fa fa-sign-in"></span> Login</a></span>
   <span *ngIf="auth"><a  class="toolbar" (click)="logout()">{{display_name}} <i class="fa fa-sign-out"></i> Logout</a></span>
 </md-toolbar>
-<nav  md-tab-nav-bar>
-  <a md-tab-link *ngIf="isDoctor" [routerLink]="['doctorPortal']" routerLinkActive #doctorLink="routerLinkActive" [active]="doctorLink.isActive">Current Patient</a>
-  <a md-tab-link *ngIf="isDoctor" [routerLink]="['visits']" routerLinkActive #doctorVisitsLink="routerLinkActive" [active]="doctorVisitsLink.isActive">Visits</a>
-  <a md-tab-link *ngIf="!isDoctor" [routerLink]="['patient']" routerLinkActive #patientLink="routerLinkActive" [active]="patientLink.isActive">Patient<span *ngIf="!pid">s</span><span *ngIf="pid">: <i class="fa fa-user"></i> {{firstname}} {{surname}} - {{idNumber}}</span></a>
-  <a md-tab-link *ngIf="!isDoctor" [routerLink]="['scans']" routerLinkActive #scansLink="routerLinkActive" [active]="scansLink.isActive">Scans</a>
-  <a md-tab-link *ngIf="!isDoctor" [routerLink]="['visits']" routerLinkActive #visitLink="routerLinkActive" [active]="visitLink.isActive">Visits</a>
-
+<nav md-tab-nav-bar>
+  <a *ngFor="let tab of tabs" md-tab-link
+     [routerLink]="[tab.path]"
+     [active]="isActive([tab.path])">
+    {{ tab.label }}<span *ngIf="pid && tab.path==='patient'"><i class="fa fa-user"></i> {{firstname}} {{surname}}</span>
+  </a>
 </nav>
+<div *ngIf="showError" style="width:100%;background:darkred;color:white"><i class="fa fa-close" style="padding:5px" (click)="closeError()"></i> {{error}}</div>
 <router-outlet></router-outlet>
