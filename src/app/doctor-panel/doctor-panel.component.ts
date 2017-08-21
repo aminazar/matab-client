@@ -1,7 +1,7 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {VisitService} from '../visit.service';
 import {PatientService} from '../patient.service';
-import {Subscription} from "rxjs/Subscription";
+import {Subscription} from 'rxjs/Subscription';
 
 @Component({
   selector: 'app-doctor-panel',
@@ -24,18 +24,17 @@ export class DoctorPanelComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-
-      this.vs.visitsObservable.subscribe(visits =>{
-         this.visits = visits;
-          this.extractVisits();
-      });
+    this.vs.visits$.subscribe(visits => {
+      this.extractVisits();
+    });
 
     this.socketSub = this.vs.socketMsg$.subscribe(msg => {
       if (Object.keys(msg.msg) && Object.keys(msg.msg)[0]) {
         let vid = Object.keys(msg.msg)[0];
         let data = msg.msg[vid];
         if ((msg.cmd !== 'UPDATE' || data.end_time || data.start_time) || this.visits[vid] || +this.did === +data.did
-          || (msg.cmd === 'REFER' && this.currentPCard && +data.referee_visit === +this.currentPCard.vid)) {
+          || (msg.cmd === 'REFER'
+          && ((this.currentPCard && +data.referee_visit === +this.currentPCard.vid) || +this.did === +data.did) )) {
           this.extractVisits();
         }
       }
@@ -46,12 +45,12 @@ export class DoctorPanelComponent implements OnInit, OnDestroy {
     this.pastPCards = [];
     this.queuePCards = [];
     this.currentPCard = null;
-    this.visits = {};
-    Object.keys(this.visits).forEach(vid => {
-      let v = this.visits[vid];
+    let tempVisits = {};
+    Object.keys(this.vs.visits).forEach(vid => {
+      let v = this.vs.visits[vid];
       v.vid = vid;
-      this.visits[vid] = v;
       if (+v.did === +this.did) {
+        tempVisits[vid] = v;
         if (v.start_time) {
           if (v.end_time) {
             this.pastPCards.push(v);
@@ -63,6 +62,7 @@ export class DoctorPanelComponent implements OnInit, OnDestroy {
         }
       }
     });
+    this.visits = tempVisits;
   }
 
   ngOnDestroy() {

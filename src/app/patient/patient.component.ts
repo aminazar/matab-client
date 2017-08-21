@@ -11,12 +11,13 @@ import {Observable, Subscription} from "rxjs";
   styleUrls: ['./patient.component.css']
 })
 export class PatientComponent implements OnInit,OnDestroy {
+  patientData: any;
   patients:any[] = [];
   patientModelCtrl:FormControl = new FormControl();
   filteredNameCode:Observable<any>;
   patientsNameCode: Array<any> = [];
   filteredPatient: any;
-  isFiltered: boolean;
+  isFiltered = false;
   toUpdate = false;
   private pidSub: Subscription;
   constructor(private restService:RestService, private messageService:MessageService,private patientService:PatientService) { }
@@ -78,8 +79,10 @@ export class PatientComponent implements OnInit,OnDestroy {
       this.isFiltered = true;
     if(this.toUpdate) {
       this.isFiltered=false;
-      if(data!==true)
+      if(data!==true) {
         this.patientService.newPatient(data);
+        this.patientData = data;
+      }
     }
   }
 
@@ -104,10 +107,12 @@ export class PatientComponent implements OnInit,OnDestroy {
     this.refreshPatientsDropDown();
     this.isFiltered=false;
     this.patientService.newPatient(data);
+    this.patientData = data;
   }
 
   ngOnDestroy() {
-    this.pidSub.unsubscribe();
+    if (this.pidSub)
+      this.pidSub.unsubscribe();
   }
 
   deletePatient(patientData){
@@ -121,5 +126,6 @@ export class PatientComponent implements OnInit,OnDestroy {
 
     this.patientModelCtrl.setValue('');
     this.patientService.clearPatient();
+    this.patientData = {};
   }
 }

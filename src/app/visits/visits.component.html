@@ -1,9 +1,9 @@
-<p-panel header="Title" [toggleable]="true" (onAfterToggle)="change($event)">
+<p-panel header="All Visits" [toggleable]="true" (onAfterToggle)="change($event)" [collapsed]="collapsed">
     <div class="panels-container">
         <table class="table table-striped">
             <thead>
             <tr>
-                <th [ngStyle]="{position:collapsed?'relative':'absolute'}" [class.hiddenFirst]="auth.userType!=='admin'">Admin Panel</th>
+                <th [ngStyle]="{position:collapsed?'relative':'absolute'}" [class.hiddenFirst]="auth.userType!=='admin'">Admin</th>
                 <th *ngFor="let dr of doctors;let i=index" [class.noPaddingSecond]="!i && auth.userType!=='admin'" [class.paddingSecond]="!i && auth.userType==='admin'">{{dr.display_name}}</th>
             </tr>
             </thead>
@@ -19,5 +19,5 @@
             </tbody>
         </table>
     </div>
-
 </p-panel>
+<app-doctor-portal *ngIf="currentVisit" [data]="currentVisit"></app-doctor-portal>

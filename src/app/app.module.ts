@@ -13,7 +13,9 @@ import {LoggedInGuard} from './login/logged-in.guard';
 import {RouterModule} from '@angular/router';
 import {
   MdAutocompleteModule,
-  MdButtonModule, MdCardModule, MdCheckboxModule, MdDialogModule, MdIconModule, MdInputModule, MdSnackBarModule,
+  MdButtonModule, MdCardModule, MdCheckboxModule, MdDialogModule, MdIconModule, MdInputModule,
+  MdSelectModule,
+  MdSnackBarModule,
   MdTabsModule,
   MdToolbarModule
 } from '@angular/material';
@@ -25,11 +27,9 @@ import {DeletePatientDialog, PatientIndexComponent} from './patient/patient-inde
 import {UploaderComponent} from './uploader/uploader.component';
 import {PatientComponent} from './patient/patient.component';
 import {PatientService} from './patient.service';
-import { PatientViewComponent } from './patient/patient-view.component';
 import { DoctorPortalComponent } from './doctor-portal/doctor-portal.component';
 import {FileUploadModule} from 'ng2-file-upload';
 import { JalaliDateInputComponent } from './jalali-date-input/jalali-date-input.component';
-import { PatientInfoComponent } from './doctor-portal/patient-info.component';
 import {SocketService} from './socket.service';
 import { ModalDialogComponent } from './modal-dialog/modal-dialog.component';
 import { KeysPipe } from './keys.pipe';
@@ -40,6 +40,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { PcardComponent } from './pcard/pcard.component';
 import { DoctorPanelComponent } from './doctor-panel/doctor-panel.component';
 import { AdminPanelComponent } from './admin-panel/admin-panel.component';
+import {PatientInfoComponent} from "./doctor-portal/patient-info.component";
 
 @NgModule({
   declarations: [
@@ -49,12 +50,11 @@ import { AdminPanelComponent } from './admin-panel/admin-panel.component';
     HomeComponent,
     FocusDirective,
     PatientIndexComponent,
+    PatientInfoComponent,
     UploaderComponent,
     PatientComponent,
-    PatientViewComponent,
     DoctorPortalComponent,
     JalaliDateInputComponent,
-    PatientInfoComponent,
     ModalDialogComponent,
     DeletePatientDialog,
     KeysPipe,
@@ -77,6 +77,7 @@ import { AdminPanelComponent } from './admin-panel/admin-panel.component';
     MdCheckboxModule,
     MdAutocompleteModule,
     MdDialogModule,
+    MdSelectModule,
     FormsModule,
     HttpModule,
     FlexLayoutModule,

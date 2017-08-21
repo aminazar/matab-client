@@ -19,7 +19,7 @@
   </md-card>
   <md-card [class.hidden]="!isFiltered||toUpdate" class="innerCard">
     <md-card-title>Current Patient</md-card-title>
-    <app-patient-info (updateAsked)="toUpdateChange($event)"></app-patient-info>
+    <app-patient-info [value]="filteredPatient" (updateAsked)="toUpdateChange($event)"></app-patient-info>
   </md-card>
   <md-card class="innerCard">
     <md-card-title>New Patient</md-card-title>

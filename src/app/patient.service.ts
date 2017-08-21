@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
-import {Observable, ReplaySubject} from "rxjs";
+import {Observable, ReplaySubject} from 'rxjs';
 import * as moment from 'moment';
+import {Subject} from 'rxjs/Subject';
 
 
 @Injectable()
@@ -18,6 +19,8 @@ export class PatientService {
   pageNumber: number;
   notebookNumber: number;
   private _tpList = [];
+  private tpListStream = new Subject<any>();
+  tpListChange$ = this.tpListStream.asObservable();
 
   constructor() {
   }
@@ -47,12 +50,12 @@ export class PatientService {
     this.pageNumber = null;
     this.notebookNumber = null;
   }
-  
-  clearPatient(){
+
+  clearPatient() {
     this.pid = null;
     this.firstname = null;
     this.surname = null;
-    this.dob = {year: null, month: null, day: null,gd:null};
+    this.dob = {year: null, month: null, day: null, gd: null};
     this.id_number = null;
     this.contact_details = null;
     this.pidStream.next(this.pid);
@@ -60,8 +63,8 @@ export class PatientService {
     this.notebookNumber = null;
   }
 
-  visitCachePush(data:any, sharingInfo = {}) {
-    if(!this.visitCacheFind(data.vid)) {
+  visitCachePush(data: any, sharingInfo = {}) {
+    if (!this.visitCacheFind(data.vid)) {
       this.visitCache.push(data);
       data.sharingInfo = sharingInfo;
     }
@@ -77,10 +80,10 @@ export class PatientService {
         return {
           text: `${moment(r.started_at).format('HH:mm')} ${r.patient.firstname} ${r.patient.surname}`,
           sharingInfo: r.sharingInfo
-        }
+        };
       }),
       values: this.visitCache.map(r => r.vid),
-    }
+    };
   }
 
   initTPList() {
@@ -97,14 +100,15 @@ export class PatientService {
         this._tpList = tpList[currentDate];
       }
 
-      //Clear the previous dates if exist
+      // Clear the previous dates if exist
       for (let key of Object.keys(tpList)) {
-        if (key !== currentDate)
+        if (key !== currentDate) {
           delete tpList[key];
+        }
       }
-    }
-    else
+    } else {
       localStorage.setItem('tp_list', JSON.stringify({}));
+    }
   }
 
   getTPList() {
@@ -112,17 +116,19 @@ export class PatientService {
   }
 
 
-  modifyTPList(patientData: any, shouldDelete: boolean = false){
+  modifyTPList(patientData: any, shouldDelete = false) {
     let currentDate = moment().format('YYYY-MM-DD');
     let tpObject = JSON.parse(localStorage.getItem('tp_list'));
-    if(tpObject){
-      if(shouldDelete)
+    if (tpObject) {
+      if (shouldDelete) {
         this.deleteFromTPList(patientData.pid, tpObject, currentDate);
-      else if(tpObject[currentDate] && tpObject[currentDate].find(el => el.pid === patientData.pid))
+      } else if (tpObject[currentDate] && tpObject[currentDate].find(el => el.pid === patientData.pid)) {
         this.updateTPList(patientData, tpObject, currentDate);
-      else
+      } else {
         this.insertToTPList(patientData, tpObject, currentDate);
+      }
     }
+    this.tpListStream.next();
   }
 
   private insertToTPList(patientData: any, tpObject, date) {
@@ -148,8 +154,8 @@ export class PatientService {
     }
   }
 
-  private deleteFromTPList(patientId: number, tpObject, date){
-    if(tpObject){
+  private deleteFromTPList(patientId: number, tpObject, date) {
+    if (tpObject) {
       this._tpList = tpObject[date];
       this._tpList = this._tpList.filter(el => el.pid !== patientId);
       tpObject[date] = this._tpList;

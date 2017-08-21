@@ -42,11 +42,9 @@ export class AuthService {
   }
 
   logIn(username, password) {
-    this.restService.update('login', null, {username: username, password: password})
+    this.restService.update('login', undefined, {username: username, password: password})
       .subscribe(res => {
           this.afterLogin(res);
-          let url = this.originBeforeLogin;
-          this.router.navigate([url !== null ? url : '/']);
           this.messageService.message(`${this.user} logged in.`);
 
         },
@@ -71,7 +69,7 @@ export class AuthService {
     this.patientService.initTPList();
 
 
-    this.socketService.init();
+    this.socketService.init(this.userType, this.user);
 
 
     if (this.userType === 'doctor')

@@ -4,4 +4,5 @@
     text-align: center;
     display:inline-block;
     vertical-align: top;
+    min-height: 280px;
 }

@@ -2,7 +2,7 @@
   <md-card-title (click)="enableUpdate()" style="cursor: pointer;">{{firstname}} {{surname}} - {{age}}<span *ngIf="isVip" style="padding: 5px;background-color: darkred;color:white;text-weight:bold;border-radius: 5px;font-size:75%">VIP</span></md-card-title>
     <table class="table info">
       <tr>
-        <th colspan="2">Personal Info</th>
+        <th colspan="2">Identity</th>
       </tr>
       <tr>
         <td class="left-col">Birthday : </td>
@@ -43,4 +43,17 @@
         <td class="right-col">{{angiographer}}</td>
       </tr>
     </table>
+  <table class="table info">
+    <tr>
+      <th colspan="2">Referral</th>
+    </tr>
+    <tr>
+      <td class="left-col">Referred By :</td>
+      <td class="right-col">{{referredBy}}</td>
+    </tr>
+    <tr>
+      <td class="left-col">Description :</td>
+      <td class="right-col">{{referralDescription}}</td>
+    </tr>
+  </table>
   </md-card>
