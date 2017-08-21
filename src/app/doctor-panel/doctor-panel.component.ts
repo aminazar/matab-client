@@ -30,13 +30,7 @@ export class DoctorPanelComponent implements OnInit, OnDestroy {
 
     this.socketSub = this.vs.socketMsg$.subscribe(msg => {
       if (Object.keys(msg.msg) && Object.keys(msg.msg)[0]) {
-        let vid = Object.keys(msg.msg)[0];
-        let data = msg.msg[vid];
-        if ((msg.cmd !== 'UPDATE' || data.end_time || data.start_time) || this.visits[vid] || +this.did === +data.did
-          || (msg.cmd === 'REFER'
-          && ((this.currentPCard && +data.referee_visit === +this.currentPCard.vid) || +this.did === +data.did) )) {
-          this.extractVisits();
-        }
+        this.extractVisits();
       }
     });
   }

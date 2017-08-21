@@ -48,8 +48,7 @@ export class VisitService {
           this.visitsSubject.next(this.visits);
           let found = this.findMyVisit();
           if (found) {
-            this.currentVisit = found;
-            this.selectedVisitStream.next(found.vid);
+            this.selectVisit(found.vid);
           }
         },
         err => console.error('failed in initializing visits service. Could not get all visits', err)
@@ -217,15 +216,31 @@ export class VisitService {
                   () => this.msg.message('Undoing visit'),
                   err => console.warn('Error in undoing visit: ', err)
                 );
+              } else if (+originLoc === 2 && +loc === 0) {
+                let paperId = this.visits[this.pCardVID].paper_id;
+                let pageNumber = this.visits[this.pCardVID].page_number ? this.visits[this.pCardVID].page_number : Math.floor(paperId / 101) + 1;
+                let notebookNumber = this.visits[this.pCardVID].notebook_number ? this.visits[this.pCardVID].notebook_number : paperId % 101 + 1;
+                this.startWaiting(did, this.pCardPID, pageNumber, notebookNumber).subscribe(
+                  () => this.msg.message('New Waiting'),
+                  err => console.warn('Error in creating new visit: ' + err)
+                );
+              } else if (+originLoc === 2 && +loc === 1) {
+                let paperId = this.visits[this.pCardVID].paper_id;
+                let pageNumber = this.visits[this.pCardVID].page_number ? this.visits[this.pCardVID].page_number : Math.floor(paperId / 101) + 1;
+                let notebookNumber = this.visits[this.pCardVID].notebook_number ? this.visits[this.pCardVID].notebook_number : paperId % 101 + 1;
+                this.startImmediateVisit(did, this.pCardPID, pageNumber, notebookNumber).subscribe(
+                  () => this.msg.message('New Waiting'),
+                  err => console.warn('Error in creating new visit: ' + err)
+                );
               }
             } else {
               if (+loc === 1) {
                 if (+originLoc === 2) {// creating new visit from past
                   let paperId = this.visits[this.pCardVID].paper_id;
-                  let pageNumber = Math.floor(paperId / 101) + 1;
-                  let notebookNumber = paperId % 101 + 1;
+                  let pageNumber = this.visits[this.pCardVID].page_number ? this.visits[this.pCardVID].page_number : Math.floor(paperId / 101) + 1;
+                  let notebookNumber = this.visits[this.pCardVID].notebook_number ? this.visits[this.pCardVID].notebook_number : paperId % 101 + 1;
                   this.startImmediateVisit(did, this.pCardPID, pageNumber, notebookNumber).subscribe(
-                    () => this.msg.message('New visit'),
+                    () => this.msg.message('New Waiting'),
                     err => console.warn('Error in creating new visit: ' + err)
                   );
                 } else { // Not permitted
@@ -245,6 +260,14 @@ export class VisitService {
                   this.refer(this.pCardVID, +did).subscribe(
                     () => this.msg.message('New referral'),
                     err => console.warn('Error in creating new referral: ', err)
+                  );
+                } else if (+originLoc === 2) {
+                  let paperId = this.visits[this.pCardVID].paper_id;
+                  let pageNumber = this.visits[this.pCardVID].page_number ? this.visits[this.pCardVID].page_number : Math.floor(paperId / 101) + 1;
+                  let notebookNumber = this.visits[this.pCardVID].notebook_number ? this.visits[this.pCardVID].notebook_number : paperId % 101 + 1;
+                  this.startWaiting(did, this.pCardPID, pageNumber, notebookNumber).subscribe(
+                    () => this.msg.message('New Waiting'),
+                    err => console.warn('Error in creating new visit: ' + err)
                   );
                 }
               }
@@ -269,14 +292,13 @@ export class VisitService {
           }
         }
       } else {
-        this.msg.message('No Change');
+        this.msg.message('No Change')
       }
-    } else {
-      // this.msg.warn('Invalid drop: I do not remember origin of this card!');
     }
   }
 
-  private resetPCard() {
+  private
+  resetPCard() {
     this.pCardVID = this.pCardDID = this.pCardPID = this.pCardOrigin = null;
   }
 

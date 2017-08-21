@@ -9,6 +9,7 @@ import {AuthService} from "../auth.service";
   styleUrls: ['./visits.component.css']
 })
 export class VisitsComponent implements OnInit {
+  userType: any = '';
   currentVisit: any = null;
   collapsed = false;
 
@@ -28,6 +29,8 @@ export class VisitsComponent implements OnInit {
         this.collapsed = true;
       }
     });
+
+    this.auth.auth$.subscribe(() => this.userType = this.auth.userType);
 
     this.vs.doctors$.subscribe(doctors => {
       this.doctors = Array.from(doctors);

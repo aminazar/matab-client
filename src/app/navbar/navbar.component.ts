@@ -13,7 +13,7 @@ import {MdSnackBar, MdSnackBarConfig} from "@angular/material";
 export class NavbarComponent implements OnInit {
   auth = false;
   private user: string;
-  private isAdmin: boolean;
+  isAdmin: boolean;
   private isDoctor: boolean;
   private pid: number;
   private firstname: string;
