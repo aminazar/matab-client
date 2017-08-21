@@ -1,5 +1,4 @@
 import {Component, OnInit, Output, EventEmitter, Input} from '@angular/core';
-import {PatientService} from "../patient.service";
 import * as moment from 'moment';
 
 @Component({
@@ -46,19 +45,20 @@ export class PatientInfoComponent implements OnInit {
     return this._value;
   }
 
-  surgeon = "";
-  hospital = "";
-  surgeryDate = "";
-  angiographer = "";
-  angioDate = "";
-  referredBy = "";
+  surgeon = '';
+  hospital = '';
+  surgeryDate = '';
+  angiographer = '';
+  angioDate = '';
+  referredBy = '';
+  referralDescription = '';
   surname: string;
   firstname: string;
   isVip: boolean;
   age: any;
   @Output() updateAsked = new EventEmitter<any>();
 
-  constructor(private patientService: PatientService) {
+  constructor() {
   }
 
   ngOnInit() {
@@ -71,16 +71,17 @@ export class PatientInfoComponent implements OnInit {
       this.surgeryDate = this.contactDetails.surgeryDate && this.contactDetails.surgeryDate.year ? this.contactDetails.surgeryDate.year + '/' + this.contactDetails.surgeryDate.month + '/' + this.contactDetails.surgeryDate.day : '-';
       this.angiographer = this.contactDetails.angiographer ? this.contactDetails.angiographer : '-';
       this.angioDate = this.contactDetails.angioDate && this.contactDetails.angioDate.year ? this.contactDetails.angioDate.year + '/' + this.contactDetails.angioDate.month + '/' + this.contactDetails.angioDate.day : '-';
-      this.referredBy = this.contactDetails.referredBy ? this.contactDetails.referredBy : '-';
-      if (!this.dob) this.dob = "-";
+      this.referredBy = this.contactDetails.familiar ? this.contactDetails.familiar.via ? this.contactDetails.familiar.via : '-' : '-';
+      this.referralDescription = this.contactDetails.familiar ? this.contactDetails.familiar.description ? this.contactDetails.familiar.description : '-' : '-';
+      if (!this.dob) this.dob = '-';
     }
   }
 
-  private calcAge(gd: any, asTime: "years" | "months" | "weeks" | "days" = 'years') {
-    let arr: Array<"years" | "months" | "weeks" | "days"> = ['years', 'months', 'weeks', 'days'];
+  private calcAge(gd: any, asTime: 'years' | 'months' | 'weeks' | 'days' = 'years') {
+    let arr: Array<'years' | 'months' | 'weeks' | 'days'> = ['years', 'months', 'weeks', 'days'];
     let currAT = arr.findIndex(r => r === asTime);
     let diff = moment.duration(gd, currAT > 0 ? arr[currAT - 1] : null).as(asTime);
-    return `${Math.floor(diff) ? Math.floor(diff) + ' ' + asTime : ''} ${currAT + 1 < arr.length ? this.calcAge(diff - Math.floor(diff), arr[currAT + 1]) : ''}`
+    return `${Math.floor(diff) ? Math.floor(diff) + ' ' + asTime : ''} ${currAT + 1 < arr.length ? this.calcAge(diff - Math.floor(diff), arr[currAT + 1]) : ''}`;
   }
 
   enableUpdate() {

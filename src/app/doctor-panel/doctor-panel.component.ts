@@ -24,11 +24,9 @@ export class DoctorPanelComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-
-      this.vs.visitsObservable.subscribe(visits =>{
-         this.visits = visits;
-          this.extractVisits();
-      });
+    this.vs.visits$.subscribe(visits => {
+      this.extractVisits();
+    });
 
     this.socketSub = this.vs.socketMsg$.subscribe(msg => {
       if (Object.keys(msg.msg) && Object.keys(msg.msg)[0]) {
@@ -47,12 +45,12 @@ export class DoctorPanelComponent implements OnInit, OnDestroy {
     this.pastPCards = [];
     this.queuePCards = [];
     this.currentPCard = null;
-    this.visits = {};
-    Object.keys(this.visits).forEach(vid => {
-      let v = this.visits[vid];
+    let tempVisits = {};
+    Object.keys(this.vs.visits).forEach(vid => {
+      let v = this.vs.visits[vid];
       v.vid = vid;
-      this.visits[vid] = v;
       if (+v.did === +this.did) {
+        tempVisits[vid] = v;
         if (v.start_time) {
           if (v.end_time) {
             this.pastPCards.push(v);
@@ -64,6 +62,7 @@ export class DoctorPanelComponent implements OnInit, OnDestroy {
         }
       }
     });
+    this.visits = tempVisits;
   }
 
   ngOnDestroy() {

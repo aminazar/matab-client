@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import {PatientService} from "../patient.service";
-import {VisitService} from "../visit.service";
+import {PatientService} from '../patient.service';
+import {VisitService} from '../visit.service';
 
 @Component({
   selector: 'app-admin-panel',

@@ -8,7 +8,8 @@ import {ReplaySubject} from 'rxjs/ReplaySubject';
 
 @Injectable()
 export class VisitService {
-  currentVisit: any;pCardDID: any;
+  currentVisit: any;
+  pCardDID: any;
   pCardVID: any;
   pCardPID: any;
   pCardOrigin: any = '';
@@ -17,25 +18,27 @@ export class VisitService {
   doctors: any = [];
   private handleDiff: any;
   private socketMsgStream = new Subject<any>();
-  private selectedVisitStream = new ReplaySubject<any>();socketMsg$: Observable<any> = this.socketMsgStream.asObservable();selectedVisit$: Observable<any> = this.selectedVisitStream.asObservable();
+  private selectedVisitStream = new ReplaySubject<any>();
+  socketMsg$: Observable<any> = this.socketMsgStream.asObservable();
+  selectedVisit$: Observable<any> = this.selectedVisitStream.asObservable();
   auth: any = {};
 
-    private visitsSubject = new   ReplaySubject<any>();
-    private doctorsSubject = new ReplaySubject<any>();
-    visitsObservable: Observable<any>;
-    doctorsObservable: Observable<any>;
+  private visitsSubject = new ReplaySubject<any>();
+  private doctorsSubject = new ReplaySubject<any>();
+  visits$: Observable<any> = this.visitsSubject.asObservable();
+  doctors$: Observable<any> = this.doctorsSubject.asObservable();
 
-    constructor(private rest: RestService, private socket: SocketService, private msg: MessageService, private ps: PatientService) {
-        this.handleDiff = {
-            INSERT: data => this.addLocalVisit(data),
-            UPDATE: data => this.updateLocalVisit(data),
-            DELETE: data => this.deleteLocalVisit(data),
-            REFER: data => this.referLocalVisit(data),
-        };
-        this.visitsObservable = this.visitsSubject.asObservable();
-        this.doctorsObservable = this.doctorsSubject.asObservable();
+  constructor(private rest: RestService, private socket: SocketService, private msg: MessageService, private ps: PatientService) {
+    this.handleDiff = {
+      INSERT: data => this.addLocalVisit(data),
+      UPDATE: data => this.updateLocalVisit(data),
+      DELETE: data => this.deleteLocalVisit(data),
+      REFER: data => this.referLocalVisit(data),
+    };
+    this.visits$ = this.visitsSubject.asObservable();
+    this.doctors$ = this.doctorsSubject.asObservable();
 
-    }
+  }
 
   private getLocalVisits() {
     this.rest.get('visits')
@@ -57,7 +60,7 @@ export class VisitService {
           this.doctors = data;
           this.doctorsSubject.next(this.doctors);
         },
-        err  => console.error('failed in initializing visits service, could not get all doctors', err)
+        err => console.error('failed in initializing visits service, could not get all doctors', err)
       );
   }
 
@@ -83,7 +86,6 @@ export class VisitService {
       if (!this.visits[key]) {
         this.ps.modifyTPList(diff[key], true);
         this.visits[key] = diff[key];
-        this.visitsSubject.next(this.visits);
         console.log(`visit ${key} is added`);
       } else {
         console.error(`AddVisit error: vid=${key} is already added!`);
@@ -104,7 +106,6 @@ export class VisitService {
         }
       }
     }
-    this.visitsSubject.next(this.visits);
   }
 
   private deleteLocalVisit(diff) {
@@ -116,7 +117,6 @@ export class VisitService {
         console.log(`visit ${key} is deleted`);
       }
     }
-    this.visitsSubject.next(this.visits);
   }
 
   private referLocalVisit(diff) {
@@ -126,7 +126,7 @@ export class VisitService {
       } else {
         let oldVisit = diff[key].referee_visit;
         this.visits[key] = {};
-        for(let key2 in this.visits[oldVisit]) {
+        for (let key2 in this.visits[oldVisit]) {
           this.visits[key][key2] = this.visits[oldVisit][key2];
         }
         this.visits[key].start_waiting = new Date();
@@ -134,7 +134,6 @@ export class VisitService {
         this.visits[key].end_time = null;
         this.visits[key].did = diff[key].did;
         this.visits[oldVisit].end_time = new Date();
-        this.visitsSubject.next(this.visits);
         console.log(`Referral: visit ${oldVisit} is marked as ended, new referral visit ${key} is added`);
       }
     }
@@ -191,7 +190,7 @@ export class VisitService {
                   this.msg.message('New waiting');
                   this.ps.modifyTPList({pid: this.pCardPID}, true);
                 },
-                    err => console.warn('Error in creating new visit: ', err)
+                err => console.warn('Error in creating new visit: ', err)
               );
             }
           } else {
@@ -245,7 +244,7 @@ export class VisitService {
                 } else if (+originLoc === 1) { // Referral
                   this.refer(this.pCardVID, +did).subscribe(
                     () => this.msg.message('New referral'),
-                    err => console.warn('Error in creating new referral: ',err)
+                    err => console.warn('Error in creating new referral: ', err)
                   );
                 }
               }

@@ -29,7 +29,7 @@ export class VisitsComponent implements OnInit {
       }
     });
 
-    this.vs.doctorsObservable.subscribe( doctors =>{
+    this.vs.doctors$.subscribe(doctors => {
       this.doctors = Array.from(doctors);
     });
   }
