@@ -111,7 +111,8 @@ export class PatientComponent implements OnInit,OnDestroy {
   }
 
   ngOnDestroy() {
-    this.pidSub.unsubscribe();
+    if (this.pidSub)
+      this.pidSub.unsubscribe();
   }
 
   deletePatient(patientData){

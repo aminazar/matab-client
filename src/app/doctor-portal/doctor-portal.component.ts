@@ -26,7 +26,7 @@ export class DoctorPortalComponent implements OnInit, OnDestroy {
       this.paperId = data.paper_id;
       this.vid = data.vid;
       this.pid = data.pid;
-      this.documents = data.documents.map(doc => this.prepareDocsForDisplay(doc));
+      this.documents = (data.documents && data.documents.length) ? data.documents.map(doc => this.prepareDocsForDisplay(doc)) : [];
       this.patientData = this.vs.visits[data.vid];
     }
   }

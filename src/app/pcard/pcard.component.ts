@@ -54,7 +54,7 @@ export class PcardComponent implements OnInit, OnDestroy {
     this.nocardio = !!data.nocardio;
     this.startTime = data.start_time ? data.start_time : data.start_waiting;
     this.name = data.firstname + ' ' + data.surname;
-    this.referredBy = data.referred_visit ? this.vs.findDoctorDisplayNameByVID(data.referred_visit) : null;
+    this.referredBy = data.referee_visit ? this.vs.findDoctorDisplayNameByVID(data.referee_visit) : null;
     this.currentDropLocation = this.hasVisit ? this.activeVisit ? data.did + '_1' : data.end_time ? data.did + '_2' : data.did + '_0' : null;
     this.endTime = data.end_time ? moment(data.end_time).format('HH:mm') : '';
   }
@@ -88,9 +88,13 @@ export class PcardComponent implements OnInit, OnDestroy {
 
     this.vs.selectedVisit$.subscribe(
       sv => {
-        if (this.hasVisit && +sv !== +this.value.vid) {
-          this.selected = false;
+        if (this.hasVisit) {
+          if (+sv !== +this.value.vid) {
+            this.selected = false;
+          } else {
+            this.selected = true;
           }
+        }
       });
   }
 

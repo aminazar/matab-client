@@ -4,7 +4,7 @@
   <span *ngIf="!auth"><a  class="toolbar" [routerLink]="['login']"><span class="fa fa-sign-in"></span> Login</a></span>
   <span *ngIf="auth"><a  class="toolbar" (click)="logout()">{{display_name}} <i class="fa fa-sign-out"></i> Logout</a></span>
 </md-toolbar>
-<nav md-tab-nav-bar>
+<nav *ngIf="isAdmin && auth" md-tab-nav-bar>
   <a *ngFor="let tab of tabs" md-tab-link
      [routerLink]="[tab.path]"
      [active]="isActive([tab.path])">

@@ -52,6 +52,8 @@ export class NavbarComponent implements OnInit {
         this.isAdmin = auth && this.authService.userType === 'admin';
         this.isDoctor = auth && this.authService.userType === 'doctor';
         this.display_name = this.authService.display_name;
+        let url = this.authService.originBeforeLogin;
+        setTimeout(() => this.router.navigate([url !== null  && url !== '/' ? url : this.isAdmin ? 'patient' : 'visits']), 2000);
         this.calcTabs();
       }
 
@@ -95,7 +97,6 @@ export class NavbarComponent implements OnInit {
   calcTabs() {
     if (this.isDoctor) {
       this.tabs = [
-        {path: 'doctorPortal', label: 'Current Patient'},
         {path: 'visits', label: 'Visits'},
       ];
     } else {

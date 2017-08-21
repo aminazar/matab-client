@@ -9,9 +9,10 @@ import {AuthService} from "../auth.service";
   styleUrls: ['./visits.component.css']
 })
 export class VisitsComponent implements OnInit {
+  currentVisit: any = null;
   collapsed = false;
 
-  constructor(private vs: VisitService, private auth:AuthService) {
+  constructor(private vs: VisitService, private auth: AuthService) {
   }
 
   change(e) {
@@ -19,9 +20,12 @@ export class VisitsComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.vs.currentVisit) {
-      this.collapsed = true;
-    }
+    this.vs.selectedVisit$.subscribe(() => {
+      this.currentVisit = this.vs.currentVisit;
+      if (this.currentVisit) {
+        this.collapsed = true;
+      }
+    });
   }
 
 }

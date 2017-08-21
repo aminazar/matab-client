@@ -4,7 +4,7 @@ import {SocketService} from './socket.service';
 import {MessageService} from './message.service';
 import {Observable, Subject} from 'rxjs';
 import {PatientService} from './patient.service';
-import {AuthService} from './auth.service';
+import {ReplaySubject} from 'rxjs/ReplaySubject';
 
 @Injectable()
 export class VisitService {
@@ -18,7 +18,7 @@ export class VisitService {
   doctors: any = {};
   private handleDiff: any;
   private socketMsgStream = new Subject<any>();
-  private selectedVisitStream = new Subject<any>();
+  private selectedVisitStream = new ReplaySubject<any>();
   socketMsg$: Observable<any> = this.socketMsgStream.asObservable();
   selectedVisit$: Observable<any> = this.selectedVisitStream.asObservable();
   auth: any = {};
@@ -40,6 +40,7 @@ export class VisitService {
           let found = this.findMyVisit();
           if (found) {
             this.currentVisit = found;
+            this.selectedVisitStream.next(found.vid);
           }
         },
         err => console.error('failed in initializing visits service. Could not get all visits', err)
@@ -112,7 +113,14 @@ export class VisitService {
         console.error(`ReferVisit error: vid=${key} is already in data!`);
       } else {
         let oldVisit = diff[key].referee_visit;
-        this.visits[key] = diff[key];
+        this.visits[key] = {};
+        for(let key2 in this.visits[oldVisit]) {
+          this.visits[key][key2] = this.visits[oldVisit][key2];
+        }
+        this.visits[key].start_waiting = new Date();
+        this.visits[key].start_time = null;
+        this.visits[key].end_time = null;
+        this.visits[key].did = diff[key].did;
         this.visits[oldVisit].end_time = new Date();
         console.log(`Referral: visit ${oldVisit} is marked as ended, new referral visit ${key} is added`);
       }
@@ -181,7 +189,7 @@ export class VisitService {
           [originDID, originLoc] = this.pCardOrigin.split('_');
           if (+did) {
             if (+did === +this.pCardDID) {
-              if (this.auth.userType === 'doctor' && +this.auth.uid !== this.pCardDID) {
+              if (this.auth.userType === 'doctor' && +this.auth.uid !== +this.pCardDID) {
                 this.msg.warn('You cannot change queue of other doctors, only admin can do this.');
                 this.resetPCard();
               } else if (+loc === 2) {
@@ -326,12 +334,14 @@ export class VisitService {
 
   unselectVist() {
     this.currentVisit = null;
-    if (this.auth.is_doctor) {
+    if (this.auth.userType === 'doctor') {
       let found = this.findMyVisit();
       if (found) {
         this.currentVisit = found;
+        this.selectedVisitStream.next(found.vid);
       }
     }
+    this.selectedVisitStream.next(null);
   }
 
   private findMyVisit() {
