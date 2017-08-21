@@ -1,3 +1,3 @@
-<md-card pDroppable="p-cards" (onDrop)="drop($event)" class="innerCard">
+<md-card pDroppable="p-cards" (onDrop)="drop($event)" class="innerCard" pDroppable="p-cards" (onDrop)="drop('0_0')">
   <app-pcard *ngFor="let pc of tpList;let i=index" [value]="pc"></app-pcard>
 </md-card>
