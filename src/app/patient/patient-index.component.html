@@ -13,12 +13,7 @@
     </md-input-container>
       <label>Date of Birth:</label>
       <app-jalali-date-input [(inDate)]="dob" [isInput]="true"></app-jalali-date-input>
-      <md-input-container>
-        <input mdInput placeholder="Referred By" [(ngModel)]="cd.referredBy" ngDefaultControl>
-      </md-input-container>
-
-        <md-checkbox [(ngModel)]="cd.vip">VIP</md-checkbox>
-
+      <md-checkbox [(ngModel)]="cd.vip">VIP</md-checkbox>
     </fieldset>
     <fieldset>
       <legend>Surgery</legend>
@@ -43,7 +38,19 @@
         <app-jalali-date-input [(inDate)]="cd.angioDate" [isInput]="true"></app-jalali-date-input>
 
     </fieldset>
+    <fieldset>
+      <legend>Refferal</legend>
+      <md-select placeholder="How do you familiar with us?" [(ngModel)]="cd.familiar.via">
+        <md-option *ngFor="let op of familiarOptions" [value]="op">{{op}}</md-option>
+      </md-select>
+      &nbsp;
+      <md-input-container>
+        <input mdInput placeholder="Description" [(ngModel)]="cd.familiar.description">
+      </md-input-container>
+    </fieldset>
   </md-card-content>
+
     <button md-raised-button color="primary" (click)="addNewPatientIndex()" [(disabled)]="addIsDisabledFlag&&!pid">{{pid?'Update':'Add'}}</button>
+    <button *ngIf="pid" md-raised-button color="primary" (click)="deletePatientIndex()">Delete</button>
     <button *ngIf="pid" md-raised-button (click)="cancelUpdate()">Cancel</button>
 </md-card>

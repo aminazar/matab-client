@@ -21,7 +21,7 @@ import 'hammerjs';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {FocusDirective} from './focus.directive';
 import {MessageService} from './message.service';
-import {PatientIndexComponent} from './patient/patient-index.component';
+import {DeletePatientDialog, PatientIndexComponent} from './patient/patient-index.component';
 import {UploaderComponent} from './uploader/uploader.component';
 import {PatientComponent} from './patient/patient.component';
 import {PatientService} from './patient.service';
@@ -56,6 +56,7 @@ import { AdminPanelComponent } from './admin-panel/admin-panel.component';
     JalaliDateInputComponent,
     PatientInfoComponent,
     ModalDialogComponent,
+    DeletePatientDialog,
     KeysPipe,
     VisitsComponent,
     PcardComponent,
@@ -93,7 +94,7 @@ import { AdminPanelComponent } from './admin-panel/admin-panel.component';
   ],
   providers: [AuthService, RestService, LoggedInGuard, MessageService,PatientService, SocketService, VisitService],
   bootstrap: [AppComponent],
-  entryComponents: [ModalDialogComponent],
+  entryComponents: [ModalDialogComponent, DeletePatientDialog],
 })
 export class AppModule {
 }
