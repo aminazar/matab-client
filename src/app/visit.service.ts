@@ -8,35 +8,41 @@ import {ReplaySubject} from 'rxjs/ReplaySubject';
 
 @Injectable()
 export class VisitService {
-  currentVisit: any;
-  pCardDID: any;
+  currentVisit: any;pCardDID: any;
   pCardVID: any;
   pCardPID: any;
   pCardOrigin: any = '';
   socketSub: any;
   visits: any = {};
-  doctors: any = {};
+  doctors: any = [];
   private handleDiff: any;
   private socketMsgStream = new Subject<any>();
-  private selectedVisitStream = new ReplaySubject<any>();
-  socketMsg$: Observable<any> = this.socketMsgStream.asObservable();
-  selectedVisit$: Observable<any> = this.selectedVisitStream.asObservable();
+  private selectedVisitStream = new ReplaySubject<any>();socketMsg$: Observable<any> = this.socketMsgStream.asObservable();selectedVisit$: Observable<any> = this.selectedVisitStream.asObservable();
   auth: any = {};
 
-  constructor(private rest: RestService, private socket: SocketService, private msg: MessageService, private ps: PatientService) {
-    this.handleDiff = {
-      INSERT: data => this.addLocalVisit(data),
-      UPDATE: data => this.updateLocalVisit(data),
-      DELETE: data => this.deleteLocalVisit(data),
-      REFER: data => this.referLocalVisit(data),
-    };
-  }
+    private visitsSubject = new   ReplaySubject<any>();
+    private doctorsSubject = new ReplaySubject<any>();
+    visitsObservable: Observable<any>;
+    doctorsObservable: Observable<any>;
+
+    constructor(private rest: RestService, private socket: SocketService, private msg: MessageService, private ps: PatientService) {
+        this.handleDiff = {
+            INSERT: data => this.addLocalVisit(data),
+            UPDATE: data => this.updateLocalVisit(data),
+            DELETE: data => this.deleteLocalVisit(data),
+            REFER: data => this.referLocalVisit(data),
+        };
+        this.visitsObservable = this.visitsSubject.asObservable();
+        this.doctorsObservable = this.doctorsSubject.asObservable();
+
+    }
 
   private getLocalVisits() {
     this.rest.get('visits')
       .subscribe(
         data => {
           this.visits = data;
+          this.visitsSubject.next(this.visits);
           let found = this.findMyVisit();
           if (found) {
             this.currentVisit = found;
@@ -47,7 +53,10 @@ export class VisitService {
       );
     this.rest.get('doctors')
       .subscribe(
-        data => this.doctors = data,
+        data => {
+          this.doctors = data;
+          this.doctorsSubject.next(this.doctors);
+        },
         err  => console.error('failed in initializing visits service, could not get all doctors', err)
       );
   }
@@ -74,6 +83,7 @@ export class VisitService {
       if (!this.visits[key]) {
         this.ps.modifyTPList(diff[key], true);
         this.visits[key] = diff[key];
+        this.visitsSubject.next(this.visits);
         console.log(`visit ${key} is added`);
       } else {
         console.error(`AddVisit error: vid=${key} is already added!`);
@@ -94,6 +104,7 @@ export class VisitService {
         }
       }
     }
+    this.visitsSubject.next(this.visits);
   }
 
   private deleteLocalVisit(diff) {
@@ -105,6 +116,7 @@ export class VisitService {
         console.log(`visit ${key} is deleted`);
       }
     }
+    this.visitsSubject.next(this.visits);
   }
 
   private referLocalVisit(diff) {
@@ -122,6 +134,7 @@ export class VisitService {
         this.visits[key].end_time = null;
         this.visits[key].did = diff[key].did;
         this.visits[oldVisit].end_time = new Date();
+        this.visitsSubject.next(this.visits);
         console.log(`Referral: visit ${oldVisit} is marked as ended, new referral visit ${key} is added`);
       }
     }

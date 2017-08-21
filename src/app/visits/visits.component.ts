@@ -12,8 +12,10 @@ export class VisitsComponent implements OnInit {
   currentVisit: any = null;
   collapsed = false;
 
-  constructor(private vs: VisitService, private auth: AuthService) {
-  }
+    doctors: any[] = [];
+
+    constructor(private vs: VisitService, private auth: AuthService) {
+    }
 
   change(e) {
     this.collapsed = e.collapsed;
@@ -25,6 +27,10 @@ export class VisitsComponent implements OnInit {
       if (this.currentVisit) {
         this.collapsed = true;
       }
+    });
+
+    this.vs.doctorsObservable.subscribe( doctors =>{
+      this.doctors = Array.from(doctors);
     });
   }
 

@@ -4,7 +4,7 @@
             <thead>
             <tr>
                 <th [ngStyle]="{position:collapsed?'relative':'absolute'}" [class.hiddenFirst]="auth.userType!=='admin'">Admin</th>
-                <th *ngFor="let dr of vs.doctors;let i=index" [class.noPaddingSecond]="!i && auth.userType!=='admin'" [class.paddingSecond]="!i && auth.userType==='admin'">{{dr.display_name}}</th>
+                <th *ngFor="let dr of doctors;let i=index" [class.noPaddingSecond]="!i && auth.userType!=='admin'" [class.paddingSecond]="!i && auth.userType==='admin'">{{dr.display_name}}</th>
             </tr>
             </thead>
             <tbody>
@@ -12,7 +12,7 @@
                 <td [ngStyle]="{position:collapsed?'relative':'absolute'}" [class.hiddenFirst]="auth.userType!=='admin'">
                     <app-admin-panel></app-admin-panel>
                 </td>
-                <td *ngFor="let dr of vs.doctors;let i=index" [class.noPaddingSecond]="!i && auth.userType!=='admin'" [class.paddingSecond]="!i && auth.userType==='admin'">
+                <td *ngFor="let dr of doctors;let i=index" [class.noPaddingSecond]="!i && auth.userType!=='admin'" [class.paddingSecond]="!i && auth.userType==='admin'">
                     <app-doctor-panel [did]="dr.uid"></app-doctor-panel>
                 </td>
             </tr>
