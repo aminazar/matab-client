@@ -132,6 +132,7 @@ export class VisitService {
         this.visits[key].start_time = null;
         this.visits[key].end_time = null;
         this.visits[key].did = diff[key].did;
+        this.visits[key].referee_visit = oldVisit;
         this.visits[oldVisit].end_time = new Date();
         console.log(`Referral: visit ${oldVisit} is marked as ended, new referral visit ${key} is added`);
       }
@@ -176,21 +177,31 @@ export class VisitService {
               this.msg.warn('Cannot move visit to past visits');
               this.resetPCard();
             } else if (+loc === 1) { // Dropped as the current visit
-              this.startImmediateVisit(did, this.pCardPID, +pageNumber, +notebookNumber).subscribe(
-                () => {
-                  this.msg.message('New visit');
-                  this.ps.modifyTPList({pid: this.pCardPID}, true);
-                },
-                err => console.warn('Error in creating new visit: ', err)
-              );
+              if (this.noRepeatedPaperID(+did, +this.pCardPID, +pageNumber, +notebookNumber)) {
+                this.startImmediateVisit(did, this.pCardPID, +pageNumber, +notebookNumber).subscribe(
+                  () => {
+                    this.msg.message('New visit');
+                    this.ps.modifyTPList({pid: this.pCardPID}, true);
+                  },
+                  err => console.warn('Error in creating new visit: ', err)
+                );
+              } else {
+                this.msg.warn(`Page ${pageNumber} of notebook ${notebookNumber} is already sent to ${this.findDoctorDisplayNameByDID(+did)} today.`);
+                this.resetPCard();
+              }
             } else if (+loc === 0) { // Dropped in the queue
-              this.startWaiting(did, this.pCardPID, +pageNumber, +notebookNumber).subscribe(
-                () => {
-                  this.msg.message('New waiting');
-                  this.ps.modifyTPList({pid: this.pCardPID}, true);
-                },
-                err => console.warn('Error in creating new visit: ', err)
-              );
+              if (this.noRepeatedPaperID(+did, +this.pCardPID, +pageNumber, +notebookNumber)) {
+                this.startWaiting(did, this.pCardPID, +pageNumber, +notebookNumber).subscribe(
+                  () => {
+                    this.msg.message('New waiting');
+                    this.ps.modifyTPList({pid: this.pCardPID}, true);
+                  },
+                  err => console.warn('Error in creating new visit: ', err)
+                );
+              } else {
+                this.msg.warn(`Page ${pageNumber} of notebook ${notebookNumber} is already sent to ${this.findDoctorDisplayNameByDID(+did)} today.`);
+                this.resetPCard();
+              }
             }
           } else {
             this.msg.warn('Cannot find destination doctor');
@@ -380,5 +391,13 @@ export class VisitService {
 
   private findMyVisit() {
     return Object.keys(this.visits).map(r => this.visits[r]).find(r => r.did === this.auth.uid && r.start_time && !r.end_time);
+  }
+
+  private noRepeatedPaperID(did, pid, pageNumber, notebookNumber) {
+    return Object.keys(this.visits)
+        .map(r => this.visits[r])
+        .filter(r => +r.did === did)
+        .filter(r => (+r.page_number === pageNumber && +r.notebook_number === notebookNumber && +r.pid !== pid) || (r.paper_id + '' === ((notebookNumber - 1) * 101 + pageNumber - 1) + ''))
+        .length === 0;
   }
 }

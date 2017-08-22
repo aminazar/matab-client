@@ -78,7 +78,9 @@ export class PatientService {
     } else {
       let found = this.tpList.findIndex( r => r.pid === patientData.pid);
       if (found !== -1) {
-        this.tpList[found] = patientData;
+        let temp = this.tpList;
+        temp[found] = patientData;
+        this.tpList = temp;
       } else {
         let temp = this.tpList;
         temp.push(patientData);
@@ -91,8 +93,10 @@ export class PatientService {
   updateTPListPageNumber(pid, pageNumber, notebookNumber) {
     let found = this.tpList.findIndex(el => el.pid === pid);
     if (found !== -1) {
-      this.tpList[found].pageNumber = pageNumber;
-      this.tpList[found].notebookNumber = notebookNumber;
+      let temp = this.tpList;
+      temp[found].page_number = pageNumber;
+      temp[found].notebook_number = notebookNumber;
+      this.tpList = temp;
     }
   }
 }
