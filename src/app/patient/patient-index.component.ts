@@ -26,8 +26,8 @@ export class PatientIndexComponent implements OnInit {
     surgeryDate:{year:null,month:null,day:null},
     angiographer:null,
     angioDate:{year:null,month:null,day:null},
-    vip: false,
   };
+  vip=false;
   dob={year:null,month:null,day:null};
   pid: number;
   familiarOptions: any = ['Doctor', 'Friend', 'TV', 'Website', 'Radio', 'Newspaper', 'Other'];
@@ -39,6 +39,7 @@ export class PatientIndexComponent implements OnInit {
       this.surname = data.surname;
       this.id_number = data.id_number;
       this.dob = data.dob;
+      this.vip = data.vip;
       if (data.contact_details)
         for (let key in data.contact_details)
           this.cd[key] = data.contact_details[key];
@@ -51,6 +52,7 @@ export class PatientIndexComponent implements OnInit {
       surname: this.surname,
       id_number: this.id_number,
       dob: this.dob,
+      vip: this.vip,
       contact_details: this.cd,
     }
   }
@@ -117,7 +119,6 @@ export class PatientIndexComponent implements OnInit {
       surgeryDate: {year: null, month: null, day: null},
       angiographer: null,
       angioDate: {year: null, month: null, day: null},
-      vip: false,
     };
     this.dob = {year: null, month: null, day: null};
     this.addIsDisabledFlag = true;
