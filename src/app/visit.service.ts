@@ -289,6 +289,11 @@ export class VisitService {
               delete patientData.vid;
               delete patientData.did;
               delete patientData.start_waiting;
+              if (patientData.paper_id !== undefined) {
+                patientData.notebook_number = Math.floor(patientData.paper_id / 101) + 1;
+                patientData.page_number = patientData.paper_id % 101 + 1;
+                delete patientData.paper_id;
+              }
               this.removeWaiting(this.pCardVID).subscribe(
                 () => {
                   this.msg.message('Removing patient from queue');
@@ -308,8 +313,7 @@ export class VisitService {
     }
   }
 
-  private
-  resetPCard() {
+  private resetPCard() {
     this.pCardVID = this.pCardDID = this.pCardPID = this.pCardOrigin = null;
   }
 

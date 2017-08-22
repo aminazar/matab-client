@@ -16,6 +16,7 @@ export class DoctorPortalComponent implements OnInit, OnDestroy {
   private connection;
   private _data: any = {};
   header = 'Personal Information';
+
   @Input()
   set data(data) {
     this._data = data;
@@ -42,13 +43,17 @@ export class DoctorPortalComponent implements OnInit, OnDestroy {
   startTime: any;
   vid: any;
   pid: number;
-  selectedIndex: number;
 
   constructor(private sanitizer: DomSanitizer, private socket: SocketService, private authService: AuthService, private messageService: MessageService, private vs: VisitService) {
   }
 
   ngOnInit() {
-    this.connection = this.socket.getPrivateMessages().subscribe( (msg: any) => {
+    this.connection = this.socket.getPrivateMessages().subscribe((msg: any) => {
+      try {
+        msg = JSON.parse(msg.msg);
+      } catch (e) {
+        console.warn('could not parse JSON of private socket');
+      }
       if (msg.msgType === 'Comments saved') {
         msg.sd.description = moment().format('HH:mm ddd DDMMMYY');
         msg.sd.display_name = this.authService.display_name;
