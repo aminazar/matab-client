@@ -320,14 +320,14 @@ export class VisitService {
   startImmediateVisit(did, pid, pageNumber, notebookNumber): Observable<any> {
     return this.rest.insert(`immediate-visit/${did}/${pid}`, {
       page_number: pageNumber,
-      notebook_number: notebookNumber
+      notebook_number: Math.abs(notebookNumber) // Added to give a way of cheating unique paper id restriction
     });
   }
 
   startWaiting(did, pid, pageNumber, notebookNumber): Observable<any> {
     return this.rest.insert(`waiting/${did}/${pid}`, {
       page_number: pageNumber,
-      notebook_number: notebookNumber
+      notebook_number: Math.abs(notebookNumber) // Added to give a way of cheating unique paper id restriction
     });
   }
 
