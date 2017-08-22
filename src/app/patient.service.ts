@@ -6,7 +6,6 @@ import {Subject} from 'rxjs/Subject';
 
 @Injectable()
 export class PatientService {
-  _selectedPid: any;
   public pid: number;
   public firstname: string;
   public surname: string;
@@ -15,26 +14,36 @@ export class PatientService {
   private pidStream = new ReplaySubject<number>(1);
   public pid$: Observable<number> = this.pidStream.asObservable();
   public dob = {year: null, month: null, day: null, gd: null};
-  private visitCache = [];
   pageNumber: number;
   notebookNumber: number;
-  private _tpList = [];
   private tpListStream = new Subject<any>();
   tpListChange$ = this.tpListStream.asObservable();
 
   constructor() {
-  }
-
-  get selectedCard() {
-    return this._selectedPid;
-  }
-
-  set selectedCard(pid) {
-    if (pid === this._selectedPid) {
-      this._selectedPid = null;
-    } else {
-      this._selectedPid = pid;
+    if (!this.tpList.length) {
+      this.tpList = [];
     }
+  }
+
+  get tpList(): any[]{
+    let currentDate = moment().format('YYYY-MM-DD');
+    try {
+      let data = JSON.parse(localStorage.getItem('tp_list'));
+      return data[currentDate] ? data[currentDate] : {};
+    } catch (e) {
+      console.warn('Failed to get/parse tp_list:', e);
+      let saved = {};
+      saved[currentDate] = [];
+      localStorage.setItem('tp_list', JSON.stringify(saved));
+      return [];
+    }
+  }
+
+  set tpList(data: any[]){
+    let currentDate = moment().format('YYYY-MM-DD');
+    let saved = {};
+    saved[currentDate] = data;
+    localStorage.setItem('tp_list', JSON.stringify(saved));
   }
 
   newPatient(data: any) {
@@ -63,103 +72,27 @@ export class PatientService {
     this.notebookNumber = null;
   }
 
-  visitCachePush(data: any, sharingInfo = {}) {
-    if (!this.visitCacheFind(data.vid)) {
-      this.visitCache.push(data);
-      data.sharingInfo = sharingInfo;
-    }
-  }
-
-  visitCacheFind(vid) {
-    return this.visitCache.find(r => r.vid === vid);
-  }
-
-  visitCacheSelectorData() {
-    return {
-      display: this.visitCache.map(r => {
-        return {
-          text: `${moment(r.started_at).format('HH:mm')} ${r.patient.firstname} ${r.patient.surname}`,
-          sharingInfo: r.sharingInfo
-        };
-      }),
-      values: this.visitCache.map(r => r.vid),
-    };
-  }
-
-  initTPList() {
-    let tpList = JSON.parse(localStorage.getItem('tp_list'));
-    let currentDate = moment().format('YYYY-MM-DD');
-
-    if (tpList !== null && tpList !== undefined) {
-      if (!(currentDate in tpList)) {
-        let object = {};
-        object[currentDate] = [];
-        localStorage.setItem('tp_list', JSON.stringify(object));
-        this._tpList = [];
-      } else {
-        this._tpList = tpList[currentDate];
-      }
-
-      // Clear the previous dates if exist
-      for (let key of Object.keys(tpList)) {
-        if (key !== currentDate) {
-          delete tpList[key];
-        }
-      }
-    } else {
-      localStorage.setItem('tp_list', JSON.stringify({}));
-    }
-  }
-
-  getTPList() {
-    return this._tpList;
-  }
-
-
   modifyTPList(patientData: any, shouldDelete = false) {
-    let currentDate = moment().format('YYYY-MM-DD');
-    let tpObject = JSON.parse(localStorage.getItem('tp_list'));
-    if (tpObject) {
-      if (shouldDelete) {
-        this.deleteFromTPList(patientData.pid, tpObject, currentDate);
-      } else if (tpObject[currentDate] && tpObject[currentDate].find(el => el.pid === patientData.pid)) {
-        this.updateTPList(patientData, tpObject, currentDate);
+    if (shouldDelete) {
+      this.tpList = this.tpList.filter( r => r.pid !== patientData.pid);
+    } else {
+      let found = this.tpList.findIndex( r => r.pid === patientData.pid);
+      if (found !== -1) {
+        this.tpList[found] = patientData;
       } else {
-        this.insertToTPList(patientData, tpObject, currentDate);
+        let temp = this.tpList;
+        temp.push(patientData);
+        this.tpList = temp;
       }
     }
     this.tpListStream.next();
   }
 
-  private insertToTPList(patientData: any, tpObject, date) {
-    if (tpObject) {
-      this._tpList = tpObject[date];
-      this._tpList.push(patientData);
-      localStorage.setItem('tp_list', JSON.stringify(tpObject));
-    }
-  }
-
-  private updateTPList(patientData: any, tpObject, date) {
-    if (tpObject) {
-      this._tpList = tpObject[date];
-      let targetPatient = this._tpList.find(el => el.pid === patientData.pid);
-      targetPatient.firstname = patientData.firstname;
-      targetPatient.surname = patientData.surname;
-      targetPatient.dob = patientData.dob;
-      targetPatient.id_number = patientData.id_number;
-      targetPatient.contact_details = patientData.contact_details;
-      targetPatient.pageNumber = null;
-      targetPatient.notebookNumber = null;
-      localStorage.setItem('tp_list', JSON.stringify(tpObject));
-    }
-  }
-
-  private deleteFromTPList(patientId: number, tpObject, date) {
-    if (tpObject) {
-      this._tpList = tpObject[date];
-      this._tpList = this._tpList.filter(el => el.pid !== patientId);
-      tpObject[date] = this._tpList;
-      localStorage.setItem('tp_list', JSON.stringify(tpObject));
+  updateTPListPageNumber(pid, pageNumber, notebookNumber) {
+    let found = this.tpList.findIndex(el => el.pid === pid);
+    if (found !== -1) {
+      this.tpList[found].pageNumber = pageNumber;
+      this.tpList[found].notebookNumber = notebookNumber;
     }
   }
 }

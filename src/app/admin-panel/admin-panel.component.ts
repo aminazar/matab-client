@@ -17,7 +17,7 @@ export class AdminPanelComponent implements OnInit {
   }
 
   private calcTPList() {
-    this.tpList = this.ps.getTPList().filter(p => {
+    this.tpList = this.ps.tpList.filter(p => {
       for (let key in this.vs.visits) {
         if (+this.vs.visits[key].pid === +p.pid) {
           return false;

@@ -65,12 +65,7 @@ export class AuthService {
     this.authStream.next(true);
     this.visitService.auth = data;
 
-    // Initialize tp list for patient list of necessary
-    this.patientService.initTPList();
-
-
     this.socketService.init(this.userType, this.user);
-
 
     if (this.userType === 'doctor')
       this.socketService.sendUserMessage({
