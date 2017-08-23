@@ -13,7 +13,7 @@ import {LoggedInGuard} from './login/logged-in.guard';
 import {RouterModule} from '@angular/router';
 import {
   MdAutocompleteModule,
-  MdButtonModule, MdCardModule, MdCheckboxModule, MdDialogModule, MdIconModule, MdInputModule,
+  MdButtonModule, MdCardModule, MdCheckboxModule, MdChipsModule, MdDialogModule, MdIconModule, MdInputModule,
   MdSelectModule,
   MdSnackBarModule,
   MdTabsModule,
@@ -34,13 +34,17 @@ import {SocketService} from './socket.service';
 import { ModalDialogComponent } from './modal-dialog/modal-dialog.component';
 import { KeysPipe } from './keys.pipe';
 import {VisitService} from './visit.service';
-import {DragDropModule, PanelModule} from 'primeng/primeng';
+import {
+  ButtonModule, DragDropModule, InputMaskModule, InputTextModule, PanelModule,
+  TabViewModule
+} from 'primeng/primeng';
 import { VisitsComponent } from './visits/visits.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { PcardComponent } from './pcard/pcard.component';
 import { DoctorPanelComponent } from './doctor-panel/doctor-panel.component';
 import { AdminPanelComponent } from './admin-panel/admin-panel.component';
 import {PatientInfoComponent} from "./doctor-portal/patient-info.component";
+import { NotifierComponent } from './notifier/notifier.component';
 
 @NgModule({
   declarations: [
@@ -62,6 +66,7 @@ import {PatientInfoComponent} from "./doctor-portal/patient-info.component";
     PcardComponent,
     DoctorPanelComponent,
     AdminPanelComponent,
+    NotifierComponent,
   ],
   imports: [
     FileUploadModule,
@@ -78,12 +83,16 @@ import {PatientInfoComponent} from "./doctor-portal/patient-info.component";
     MdAutocompleteModule,
     MdDialogModule,
     MdSelectModule,
+    MdChipsModule,
     FormsModule,
     HttpModule,
     FlexLayoutModule,
     ReactiveFormsModule,
     PanelModule,
     DragDropModule,
+    TabViewModule,
+    InputTextModule,
+    ButtonModule,
     RouterModule.forRoot([
       {path: '', component: HomeComponent, pathMatch: 'full', canActivate: [LoggedInGuard] },
       {path: 'login', component: LoginComponent},
