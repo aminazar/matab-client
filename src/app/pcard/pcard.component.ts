@@ -87,6 +87,8 @@ export class PcardComponent implements OnInit, OnDestroy {
           this.value = data;
         } else if (msg.cmd === 'REFER' && +this.value.vid === +vid && data.referee_visit) {
           this.referredBy = this.vs.findDoctorDisplayNameByVID(data.referee_visit);
+        } else if (msg.cmd === 'DELETE' && +this.value.vid === +vid && +this.vs.currentVisit.vid === +vid) {
+          this.vs.unselectVist();
         }
       }
     });
