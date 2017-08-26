@@ -1,6 +1,6 @@
 <div *ngIf="enabled" class="chatPanel" [class.collapsed]="collapsed" [class.open]="!collapsed">
     <p-panel [toggleable]="true" collapsed="collapsed" header="Notifier" (onAfterToggle)="toggle($event)">
-        <p-tabView orientation="left">
+        <p-tabView orientation="left" (onChange)="changeTab($event)">
             <p-tabPanel *ngFor="let user of users;" header="{{user.display_name}}">
                 <div *ngFor="let chat of user.chats" class="chatLine" [class.youSent]="chat.sender===auth.user" [ngClass]="chat.fa?chat.fa:null">
                     <span *ngIf="user.display_name ==='SYSTEM'">{{chat.sender}} - </span>
@@ -17,9 +17,9 @@
 
         <div class="ui-g ui-fluid" [class.chatInputOpen]="!collapsed" [class.chatInputCollapsed]="collapsed">
             <div class="ui-inputgroup">
-                <button pButton type="button" icon="fa-bell-o" class="ui-button-warning"></button>
-                <input type="text" pInputText placeholder="Type to chat">
-                <button pButton type="button" icon="fa-paper-plane-o" class="ui-button-success"></button>
+                <button pButton type="button" icon="fa-bell-o" class="ui-button-warning" (click)="sendBell()"></button>
+                <input type="text" pInputText placeholder="Type to chat" [(ngModel)]="text" (keyup.enter)="sendText()">
+                <button pButton type="button" icon="fa-paper-plane-o" class="ui-button-success" (click)="sendText()" [disabled]="!text"></button>
             </div>
         </div>
     </p-panel>
