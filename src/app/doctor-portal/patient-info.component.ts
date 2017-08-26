@@ -34,8 +34,8 @@ export class PatientInfoComponent implements OnInit {
       }
       if (data.contact_details) {
         this.referredBy = data.contact_details.referredBy ? data.contact_details.referredBy : '-';
-        this.isVip = data.contact_details.vip;
       }
+      this.isVip = data.vip;
       this.refreshDetails();
     }
     this._value = data;

@@ -5,6 +5,7 @@ import {MessageService} from "../message.service";
 import {Subscription} from "rxjs/Subscription";
 import {isUndefined} from "util";
 import {AuthService} from "../auth.service";
+import {PatientService} from "../patient.service";
 
 const padZero = (num, pad = 2) => {
   let ret = Array(pad);
@@ -57,9 +58,11 @@ export class PcardComponent implements OnInit, OnDestroy {
     this.referredBy = data.referee_visit ? this.vs.findDoctorDisplayNameByVID(data.referee_visit) : null;
     this.currentDropLocation = this.hasVisit ? this.activeVisit ? data.did + '_1' : data.end_time ? data.did + '_2' : data.did + '_0' : null;
     this.endTime = data.end_time ? moment(data.end_time).format('HH:mm') : '';
+    this.pageNumber = data.page_number;
+    this.notebookNumber = data.notebook_number;
   }
 
-  constructor(private vs: VisitService, private msg: MessageService, private auth: AuthService) {
+  constructor(private vs: VisitService, private msg: MessageService, private auth: AuthService, private ps: PatientService) {
   }
 
   ngOnInit() {
@@ -82,6 +85,10 @@ export class PcardComponent implements OnInit, OnDestroy {
             }
           }
           this.value = data;
+        } else if (msg.cmd === 'REFER' && +this.value.vid === +vid && data.referee_visit) {
+          this.referredBy = this.vs.findDoctorDisplayNameByVID(data.referee_visit);
+        } else if (msg.cmd === 'DELETE' && +this.value.vid === +vid && +this.vs.currentVisit.vid === +vid) {
+          this.vs.unselectVist();
         }
       }
     });
@@ -140,6 +147,14 @@ export class PcardComponent implements OnInit, OnDestroy {
       } else {
         this.msg.warn('You cannot end visits of other doctors.');
       }
+    }
+  }
+
+  modelChange() {
+    this.ps.updateTPListPageNumber(this.value.pid, this.pageNumber, this.notebookNumber);
+    if (this.hasVisit) {
+      this.vs.visits[this.value.vid].notebook_number = this.notebookNumber;
+      this.vs.visits[this.value.vid].page_number = this.pageNumber;
     }
   }
 

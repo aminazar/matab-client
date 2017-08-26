@@ -6,10 +6,10 @@
     <md-card-content (click)="select()">
         <span *ngIf="!hasVisit">
             <md-input-container>
-                <input mdInput [(ngModel)]="pageNumber" placeholder="Page #" type="number">
+                <input mdInput [(ngModel)]="pageNumber" min="1" max="25" placeholder="Page #" type="number" (ngModelChange)="modelChange()">
             </md-input-container>
             <md-input-container>
-                <input mdInput [(ngModel)]="notebookNumber" placeholder="NB #" type="number">
+                <input mdInput [(ngModel)]="notebookNumber" min="1" max="4" placeholder="NB #" type="number" (ngModelChange)="modelChange()">
             </md-input-container>
         </span>
         <span *ngIf="hasVisit">

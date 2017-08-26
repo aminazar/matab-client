@@ -1,0 +1,39 @@
+div.chatPanel{
+    position:fixed;border:0px;bottom:0px;right:0px;width:400px;border-radius:5px;z-index:10;
+}
+.open {
+    height:247px;
+}
+.collapsed {
+    height:20px;
+}
+.chatInputOpen{
+    position:absolute;
+    bottom:0px;
+    right:0px;
+    width:300px;
+}
+.chatInputCollapsed{
+    position:relative;
+}
+div.chatLine {
+    color: darkred;
+    background-color: #fff;
+    padding: 2px !important;
+    border-radius: 4px;
+    margin: 1px 5px 0px 0px !important;
+}
+span.text{
+    color: black;
+}
+
+div.youSent{
+    background: #9cff9c;
+    margin: 1px 0px 0px 5px !important;
+}
+.bell {
+    background: yellow !important;
+}
+.fa {
+    font-size:200%;
+}
