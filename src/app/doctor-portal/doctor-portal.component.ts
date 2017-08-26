@@ -12,6 +12,7 @@ import {VisitService} from "../visit.service";
   styleUrls: ['./doctor-portal.component.css']
 })
 export class DoctorPortalComponent implements OnInit, OnDestroy {
+  collapsed = false;
   patientData: any = {};
   private connection;
   private _data: any = {};
@@ -29,6 +30,7 @@ export class DoctorPortalComponent implements OnInit, OnDestroy {
       this.pid = data.pid;
       this.documents = (data.documents && data.documents.length) ? data.documents.map(doc => this.prepareDocsForDisplay(doc)) : [];
       this.patientData = this.vs.visits[data.vid];
+      this.header = this.collapsed ? `${this.firstname} ${this.surname}` : 'Personal Information';
     }
   }
 
@@ -76,5 +78,6 @@ export class DoctorPortalComponent implements OnInit, OnDestroy {
 
   toggle(e) {
     this.header = e.collapsed ? `${this.firstname} ${this.surname}` : 'Personal Information';
+    this.collapsed = e.collapsed;
   }
 }
