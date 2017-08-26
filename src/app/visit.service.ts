@@ -103,6 +103,9 @@ export class VisitService {
             console.log(`${vkey} updated in visit ${key} to ${diff[key][vkey]}`);
           }
         }
+        if ( this.currentVisit && +this.currentVisit.vid === +key) {
+          this.selectVisit(+key);
+        }
       }
     }
   }
