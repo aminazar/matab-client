@@ -255,11 +255,8 @@ export class VisitService {
                     err => console.warn('Error in creating new visit: ' + err)
                   );
                 }
-                else if (+originLoc === 1) {
-                  this.msg.warn('You cannot remove a visit after it started');
-                  this.resetPCard();
-                } else { // Not permitted
-                  this.msg.warn('You should first put the patient in the queue');
+                else {
+                  this.msg.warn('Not permitted');
                   this.resetPCard();
                 }
               } else if (+loc === 2) {
