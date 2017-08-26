@@ -183,7 +183,11 @@ export class VisitService {
                     this.msg.message('New visit');
                     this.ps.modifyTPList({pid: this.pCardPID}, true);
                   },
-                  err => console.warn('Error in creating new visit: ', err)
+                  err => {
+                    if (err._body) {
+                      this.msg.warn(`Error in creating new visit: ${err._body}`);
+                    }
+                  }
                 );
               } else {
                 this.msg.warn(`Page ${pageNumber} of notebook ${notebookNumber} is already sent to ${this.findDoctorDisplayNameByDID(+did)} today.`);
@@ -196,7 +200,11 @@ export class VisitService {
                     this.msg.message('New waiting');
                     this.ps.modifyTPList({pid: this.pCardPID}, true);
                   },
-                  err => console.warn('Error in creating new visit: ', err)
+                  err => {
+                    if (err._body) {
+                      this.msg.warn(`Error in creating new visit: ${err._body}`);
+                    }
+                  }
                 );
               } else {
                 this.msg.warn(`Page ${pageNumber} of notebook ${notebookNumber} is already sent to ${this.findDoctorDisplayNameByDID(+did)} today.`);
@@ -220,12 +228,20 @@ export class VisitService {
               } else if (+originLoc === 0 && +loc === 1) {
                 this.startVisit(this.pCardVID).subscribe(
                   () => this.msg.message('New visit'),
-                  err => console.warn('Error in creating new visit: ', err)
+                  err => {
+                    if (err._body) {
+                      this.msg.warn(`Error in creating new visit: ${err._body}`);
+                    }
+                  }
                 );
               } else if (+originLoc === 1 && +loc === 0) {
                 this.undoVisit(this.pCardVID).subscribe(
                   () => this.msg.message('Undoing visit'),
-                  err => console.warn('Error in undoing visit: ', err)
+                  err => {
+                    if (err._body) {
+                      this.msg.warn(`Error in undoing visit: ${err._body}`)
+                    }
+                  }
                 );
               } else if (+originLoc === 2 && +loc === 0) {
                 let paperId = this.visits[this.pCardVID].paper_id;
@@ -233,7 +249,11 @@ export class VisitService {
                 let notebookNumber = this.visits[this.pCardVID].notebook_number ? this.visits[this.pCardVID].notebook_number : paperId % 101 + 1;
                 this.startWaiting(did, this.pCardPID, pageNumber, notebookNumber).subscribe(
                   () => this.msg.message('New Waiting'),
-                  err => console.warn('Error in creating new visit: ' + err)
+                  err => {
+                    if (err._body) {
+                      this.msg.warn(`Error in creating new waiting: ${err._body}`);
+                    }
+                  }
                 );
               } else if (+originLoc === 2 && +loc === 1) {
                 let paperId = this.visits[this.pCardVID].paper_id;
@@ -241,7 +261,11 @@ export class VisitService {
                 let notebookNumber = this.visits[this.pCardVID].notebook_number ? this.visits[this.pCardVID].notebook_number : paperId % 101 + 1;
                 this.startImmediateVisit(did, this.pCardPID, pageNumber, notebookNumber).subscribe(
                   () => this.msg.message('New Waiting'),
-                  err => console.warn('Error in creating new visit: ' + err)
+                  err => {
+                    if (err._body) {
+                      this.msg.warn(`Error in creating new visit: ${err._body}`);
+                    }
+                  }
                 );
               }
             } else {
@@ -252,7 +276,11 @@ export class VisitService {
                   let notebookNumber = this.visits[this.pCardVID].notebook_number ? this.visits[this.pCardVID].notebook_number : paperId % 101 + 1;
                   this.startImmediateVisit(did, this.pCardPID, pageNumber, notebookNumber).subscribe(
                     () => this.msg.message('New Waiting'),
-                    err => console.warn('Error in creating new visit: ' + err)
+                    err => {
+                      if (err._body) {
+                        this.msg.warn(`Error in creating new visit: ${err._body}`);
+                      }
+                    }
                   );
                 }
                 else {
@@ -266,12 +294,20 @@ export class VisitService {
                 if (+originLoc === 0) {
                   this.changeQueue(this.pCardVID, did).subscribe(
                     () => this.msg.message('Changing queue'),
-                    err => console.warn('Error in changing queue: ', err)
+                    err => {
+                      if (err._body) {
+                        this.msg.warn(`Error in changing queue: ${err._body}`);
+                      }
+                    }
                   );
                 } else if (+originLoc === 1) { // Referral
                   this.refer(this.pCardVID, +did).subscribe(
                     () => this.msg.message('New referral'),
-                    err => console.warn('Error in creating new referral: ', err)
+                    err => {
+                      if (err._body) {
+                        this.msg.warn(`Error in creating new referral: ${err._body}`);
+                      }
+                    }
                   );
                 } else if (+originLoc === 2) {
                   let paperId = this.visits[this.pCardVID].paper_id;
@@ -279,7 +315,11 @@ export class VisitService {
                   let notebookNumber = this.visits[this.pCardVID].notebook_number ? this.visits[this.pCardVID].notebook_number : paperId % 101 + 1;
                   this.startWaiting(did, this.pCardPID, pageNumber, notebookNumber).subscribe(
                     () => this.msg.message('New Waiting'),
-                    err => console.warn('Error in creating new visit: ' + err)
+                    err => {
+                      if (err._body) {
+                        this.msg.warn(`Error in creating new visit: ${err._body}`);
+                      }
+                    }
                   );
                 }
               }
@@ -300,7 +340,11 @@ export class VisitService {
                   this.msg.message('Removing patient from queue');
                   this.ps.modifyTPList(patientData);
                 },
-                err => console.warn('Error in removing patient from queue', err)
+                err => {
+                  if (err._body) {
+                    this.msg.warn(`Error in removing patient from the queue: ${err._body}`);
+                  }
+                }
               );
             } else {
               this.msg.warn('You cannot remove a visit after it started');
@@ -309,7 +353,7 @@ export class VisitService {
           }
         }
       } else {
-        this.msg.message('No Change')
+        this.msg.message('No Change');
       }
     }
   }
