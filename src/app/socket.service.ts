@@ -12,7 +12,7 @@ export class SocketService {
   public static readonly NEW_VISIT_CMD: string = 'newVisit';
   public static readonly REFER_VISIT_CMD: string = 'referLocalVisit';
 
-  private url = 'http://localhost:3000';
+  private url = window.location.origin;
   private socketConfig = {
     transports: ['websocket']
   };
