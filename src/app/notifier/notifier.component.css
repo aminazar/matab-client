@@ -21,7 +21,7 @@ div.chatLine {
     background-color: #fff;
     padding: 2px !important;
     border-radius: 4px;
-    margin: 1px 5px 0px 0px !important;
+    margin: 1px 30px 10px 0px !important;
 }
 span.text{
     color: black;
@@ -29,7 +29,7 @@ span.text{
 
 div.youSent{
     background: #9cff9c;
-    margin: 1px 0px 0px 5px !important;
+    margin: 1px 0px 10px 30px !important;
 }
 .bell {
     background: yellow !important;

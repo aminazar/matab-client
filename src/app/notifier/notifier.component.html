@@ -1,16 +1,19 @@
 <div *ngIf="enabled" class="chatPanel" [class.collapsed]="collapsed" [class.open]="!collapsed">
-    <p-panel [toggleable]="true" collapsed="collapsed" header="Notifier" (onAfterToggle)="toggle($event)">
-        <p-tabView orientation="left" (onChange)="changeTab($event)">
+    <p-panel [toggleable]="true" [collapsed]="collapsed" header="Notifier" (onAfterToggle)="toggle($event)">
+        <p-tabView orientation="left" (onChange)="changeTab($event)" [activeIndex]="selectedIndex">
             <p-tabPanel *ngFor="let user of users;" header="{{user.display_name}}">
-                <div *ngFor="let chat of user.chats" class="chatLine" [class.youSent]="chat.sender===auth.user" [ngClass]="chat.fa?chat.fa:null">
-                    <span *ngIf="user.display_name ==='SYSTEM'">{{chat.sender}} - </span>
-                    {{chat.time}}|
-                    <span class="text">
+                <div #pane style="overflow:scroll;width:100%;height:100%">
+                    <div *ngFor="let chat of user.chats" class="chatLine" [class.youSent]="chat.sender===auth.userId"
+                         [ngClass]="chat.fa?chat.fa:null">
+                        <span *ngIf="user.display_name ==='Matab'">{{chat.display_name}} - </span>
+                        {{chat.time}}|
+                        <span class="text">
                         <span *ngIf="chat.fa">
                             <i class="fa" [ngClass]="'fa-' + chat.fa"></i>
                         </span>
-                        <span *ngIf="chat.text!=='PING'">{{chat.text}}</span>
+                        <span>{{chat.text}}</span>
                     </span>
+                    </div>
                 </div>
             </p-tabPanel>
         </p-tabView>
@@ -19,7 +22,8 @@
             <div class="ui-inputgroup">
                 <button pButton type="button" icon="fa-bell-o" class="ui-button-warning" (click)="sendBell()"></button>
                 <input type="text" pInputText placeholder="Type to chat" [(ngModel)]="text" (keyup.enter)="sendText()">
-                <button pButton type="button" icon="fa-paper-plane-o" class="ui-button-success" (click)="sendText()" [disabled]="!text"></button>
+                <button pButton type="button" icon="fa-paper-plane-o" class="ui-button-success" (click)="sendText()"
+                        [disabled]="!text"></button>
             </div>
         </div>
     </p-panel>

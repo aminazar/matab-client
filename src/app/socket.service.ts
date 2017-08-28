@@ -12,7 +12,7 @@ export class SocketService {
   public static readonly NEW_VISIT_CMD: string = 'newVisit';
   public static readonly REFER_VISIT_CMD: string = 'referLocalVisit';
 
-  private url = 'http://localhost:3000';
+  private url = window.location.origin.replace('4200', '3000');
   private socketConfig = {
     transports: ['websocket']
   };
@@ -21,25 +21,9 @@ export class SocketService {
   private patientSocket;
   private privateSocket;
 
-  private userObservable = new Observable(observer => {
-    this.userSocket.on('ans', (data) => {
-      observer.next(data);
-    });
-
-  });
-
-  private patientObservable = new Observable(observer => {
-    this.patientSocket.on('ans', (data) => {
-      observer.next(data);
-    });
-
-  });
-
-  private privateObservable = new Observable(observer => {
-    this.privateSocket.on('ans', data => {
-      observer.next(data);
-    });
-  });
+  private userObservable: Observable<any>;
+  private patientObservable: Observable<any>;
+  private privateObservable: Observable<any>;
 
   constructor() {
 
@@ -49,8 +33,26 @@ export class SocketService {
   public init(userType, userName) {
 
     this.userSocket = io(this.url + '/user', this.socketConfig);
+    this.userObservable = new Observable(observer => {
+      this.userSocket.on('ans', (data) => {
+        observer.next(data);
+      });
+
+    });
+
     this.patientSocket = io(this.url + '/patient', this.socketConfig);
+    this.patientObservable = new Observable(observer => {
+      this.patientSocket.on('ans', (data) => {
+        observer.next(data);
+      });
+    });
+
     this.privateSocket = io(`${this.url}/${userType}/${userName}`);
+    this.privateObservable = new Observable(observer => {
+      this.privateSocket.on('ans', data => {
+        observer.next(data);
+      });
+    });
   }
 
   sendUserMessage(message) {

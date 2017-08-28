@@ -62,7 +62,7 @@ export class AuthService {
     this.userType = data.userType;
     this.display_name = data.display_name;
     this.userId = data.uid;
-    this.authStream.next(true);
+    setTimeout(() => this.authStream.next(true), 2000);
     this.visitService.auth = data;
 
     this.socketService.init(this.userType, this.user);
