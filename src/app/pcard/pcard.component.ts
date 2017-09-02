@@ -147,7 +147,9 @@ export class PcardComponent implements OnInit, OnDestroy {
       } else {
         this.msg.warn('You cannot end visits of other doctors.');
       }
-    }
+    } else if (!this.hasVisit) {
+      this.ps.modifyTPList({pid: +this.value.pid}, true);
+    } // Removing from Admin panel
   }
 
   modelChange() {

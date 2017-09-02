@@ -35,7 +35,7 @@ export class NotifierComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.auth.auth$.subscribe(auth => {
       if (auth) {
-        this.enabled = auth;
+        this.enabled = true;
         this.vs.doctors$.subscribe(doctors => {
           this.allUsers = doctors.concat([{display_name: 'Matab', name: 'all', is_doctor: false}, {
             display_name: 'Admin',
@@ -52,6 +52,7 @@ export class NotifierComponent implements OnInit, OnDestroy {
         this.connection = this.socket.getPrivateMessages().subscribe((msg: any) => this.receiveMessage(msg));
       } else {
         this.ngOnDestroy();
+        this.enabled = false;
       }
     });
   }
