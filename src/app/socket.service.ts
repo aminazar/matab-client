@@ -16,7 +16,6 @@ export class SocketService {
   private url = window.location.origin.replace('4200', '3000');
   private socketConfig = {
     transports: ['websocket'],
-    forceNew: true,
     reconnection: true,
     reconnectionDelay: 1000,
     reconnectionDelayMax: 5000,
