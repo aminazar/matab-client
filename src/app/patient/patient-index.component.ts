@@ -18,7 +18,7 @@ export class PatientIndexComponent implements OnInit {
   firstname = null;
   surname = null;
   id_number = null;
-  referral = null;
+
   cd = {
     familiar: {via: null, description: null},
     surgeon:null,
@@ -26,6 +26,7 @@ export class PatientIndexComponent implements OnInit {
     surgeryDate:{year:null,month:null,day:null},
     angiographer:null,
     angioDate:{year:null,month:null,day:null},
+    profession:null,
   };
   vip=false;
   dob={year:null,month:null,day:null};
@@ -54,7 +55,7 @@ export class PatientIndexComponent implements OnInit {
       dob: this.dob,
       vip: this.vip,
       contact_details: this.cd,
-    }
+    };
   }
   constructor(private restService: RestService, private messageService : MessageService,
               private patientService:PatientService, private dialog: MdDialog) { }
@@ -67,7 +68,7 @@ export class PatientIndexComponent implements OnInit {
     if(this.pid)
       this.updatePatient();
     else
-      this.restService.insert('patient',this.patientData).subscribe(
+      this.restService.insert('patient', this.patientData).subscribe(
           (data) => {
             //Adding new patient to patient table
             this.pid = data;
@@ -119,6 +120,7 @@ export class PatientIndexComponent implements OnInit {
       surgeryDate: {year: null, month: null, day: null},
       angiographer: null,
       angioDate: {year: null, month: null, day: null},
+      profession: null,
     };
     this.dob = {year: null, month: null, day: null};
     this.addIsDisabledFlag = true;

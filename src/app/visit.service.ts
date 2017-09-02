@@ -86,6 +86,7 @@ export class VisitService {
         this.ps.modifyTPList(diff[key], true);
         this.visits[key] = diff[key];
         console.log(`visit ${key} is added`);
+        this.conditionalSelectAfterUpdate(diff, key);
       } else {
         console.error(`AddVisit error: vid=${key} is already added!`);
       }
@@ -103,10 +104,14 @@ export class VisitService {
             console.log(`${vkey} updated in visit ${key} to ${diff[key][vkey]}`);
           }
         }
-        if ( this.currentVisit && +this.currentVisit.vid === +key) {
-          this.selectVisit(+key);
-        }
+        this.conditionalSelectAfterUpdate(diff, key);
       }
+    }
+  }
+
+  private conditionalSelectAfterUpdate(diff, key) {
+    if (this.auth.userType === 'doctor' && diff[key].start_time && !diff[key].end_time) {
+      this.selectVisit(+key);
     }
   }
 
@@ -429,9 +434,9 @@ export class VisitService {
     );
   }
 
-  unselectVist() {
+  unselectVist(all = false) {
     this.currentVisit = null;
-    if (this.auth.userType === 'doctor') {
+    if (this.auth.userType === 'doctor' && !all) {
       let found = this.findMyVisit();
       if (found) {
         this.currentVisit = found;

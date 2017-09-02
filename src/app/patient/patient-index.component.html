@@ -1,56 +1,62 @@
 <md-card>
-  <md-card-content>
-    <fieldset>
-      <legend>Identity</legend>
-    <md-input-container>
-      <input mdInput focus placeholder="First Name" [(ngModel)]="firstname" (keyup)="isReadyToAddPatient()">
-    </md-input-container>
-    <md-input-container>
-      <input mdInput placeholder="Surname" [(ngModel)]="surname" (keyup)="isReadyToAddPatient()">
-    </md-input-container>
-    <md-input-container>
-      <input mdInput placeholder="ID Number" [(ngModel)]="id_number" (keyup)="isReadyToAddPatient()">
-    </md-input-container>
-      <label>Date of Birth:</label>
-      <app-jalali-date-input [(inDate)]="dob" [isInput]="true" ngDefaultControl></app-jalali-date-input>
-      <md-checkbox [(ngModel)]="vip">VIP</md-checkbox>
-    </fieldset>
-    <fieldset>
-      <legend>Surgery</legend>
-      <md-input-container>
-        <input mdInput placeholder="Surgeon" [(ngModel)]="cd.surgeon">
-      </md-input-container>
-      <md-input-container>
-        <input mdInput placeholder="Hospital" [(ngModel)]="cd.surgeryHospital">
-      </md-input-container>
+    <md-card-content>
+        <fieldset>
+            <legend>Identity</legend>
+            <md-input-container>
+                <input mdInput focus placeholder="First Name" [(ngModel)]="firstname" (keyup)="isReadyToAddPatient()">
+            </md-input-container>
+            <md-input-container>
+                <input mdInput placeholder="Surname" [(ngModel)]="surname" (keyup)="isReadyToAddPatient()">
+            </md-input-container>
+            <md-input-container>
+                <input mdInput placeholder="ID Number" [(ngModel)]="id_number" (keyup)="isReadyToAddPatient()">
+            </md-input-container>
+            <md-input-container>
+                <input mdInput placeholder="Profession" [(ngModel)]="cd.profession">
+            </md-input-container>
+            <label>Date of Birth:</label>
+            <app-jalali-date-input [(inDate)]="dob" [isInput]="true" ngDefaultControl></app-jalali-date-input>
+            <md-checkbox [(ngModel)]="vip">VIP</md-checkbox>
+        </fieldset>
+        <fieldset>
+            <legend>Surgery</legend>
+            <md-input-container>
+                <input mdInput placeholder="Surgeon" [(ngModel)]="cd.surgeon">
+            </md-input-container>
+            <md-input-container>
+                <input mdInput placeholder="Hospital" [(ngModel)]="cd.surgeryHospital">
+            </md-input-container>
 
-        <label>Surgery Date:</label>
-        <app-jalali-date-input [(inDate)]="cd.surgeryDate" [isInput]="true" ngDefaultControl></app-jalali-date-input>
+            <label>Surgery Date:</label>
+            <app-jalali-date-input [(inDate)]="cd.surgeryDate" [isInput]="true"
+                                   ngDefaultControl></app-jalali-date-input>
 
-    </fieldset>
-    <fieldset>
-      <legend>Angiography</legend>
-      <md-input-container>
-        <input mdInput placeholder="Angiographer" [(ngModel)]="cd.angiographer">
-      </md-input-container>
+        </fieldset>
+        <fieldset>
+            <legend>Angiography</legend>
+            <md-input-container>
+                <input mdInput placeholder="Angiographer" [(ngModel)]="cd.angiographer">
+            </md-input-container>
 
-        <label>Angiography Date:</label>
-        <app-jalali-date-input [(inDate)]="cd.angioDate" [isInput]="true" ngDefaultControl></app-jalali-date-input>
+            <label>Angiography Date:</label>
+            <app-jalali-date-input [(inDate)]="cd.angioDate" [isInput]="true" ngDefaultControl></app-jalali-date-input>
 
-    </fieldset>
-    <fieldset>
-      <legend>Referral</legend>
-      <md-select placeholder="How did you get to know us?" [(ngModel)]="cd.familiar.via">
-        <md-option *ngFor="let op of familiarOptions" [value]="op">{{op}}</md-option>
-      </md-select>
-      &nbsp;
-      <md-input-container>
-        <input mdInput placeholder="Description" [(ngModel)]="cd.familiar.description" ngDefaultControl>
-      </md-input-container>
-    </fieldset>
-  </md-card-content>
+        </fieldset>
+        <fieldset>
+            <legend>Referral</legend>
+            <md-select placeholder="How did you get to know us?" [(ngModel)]="cd.familiar.via">
+                <md-option *ngFor="let op of familiarOptions" [value]="op">{{op}}</md-option>
+            </md-select>
+            &nbsp;
+            <md-input-container>
+                <input mdInput placeholder="Description" [(ngModel)]="cd.familiar.description" ngDefaultControl>
+            </md-input-container>
+        </fieldset>
+    </md-card-content>
 
-    <button md-raised-button color="primary" (click)="addNewPatientIndex()" [(disabled)]="addIsDisabledFlag&&!pid">{{pid?'Update':'Add'}}</button>
+    <button md-raised-button color="primary" (click)="addNewPatientIndex()" [(disabled)]="addIsDisabledFlag&&!pid">
+        {{pid?'Update':'Add'}}
+    </button>
     <button *ngIf="pid" md-raised-button color="primary" (click)="deletePatientIndex()">Delete</button>
     <button *ngIf="pid" md-raised-button (click)="cancelUpdate()">Cancel</button>
 </md-card>

@@ -20,7 +20,7 @@ export class PatientComponent implements OnInit,OnDestroy {
   isFiltered = false;
   toUpdate = false;
   private pidSub: Subscription;
-  constructor(private restService:RestService, private messageService:MessageService,private patientService:PatientService) { }
+  constructor(private restService:RestService, private patientService:PatientService) { }
 
   ngOnInit() {
     this.filteredNameCode = this.patientModelCtrl.valueChanges

@@ -141,6 +141,7 @@ export class PcardComponent implements OnInit, OnDestroy {
             clearInterval(this.timerInterval);
             this.calcTimer(new Date());
             this.endTime = moment().format('HH:mm');
+            this.vs.unselectVist(true);
           },
           err => console.error('Failed to end visit:', this.value.vid, err)
         );

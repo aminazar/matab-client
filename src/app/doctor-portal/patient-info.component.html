@@ -1,55 +1,62 @@
 <md-card>
-  <md-card-title (click)="enableUpdate()" style="cursor: pointer;">{{firstname}} {{surname}} - {{age}}<span *ngIf="isVip" style="padding: 5px;background-color: darkred;color:white;text-weight:bold;border-radius: 5px;font-size:75%">VIP</span></md-card-title>
+    <md-card-title (click)="enableUpdate()" style="cursor: pointer;">{{firstname}} {{surname}} - {{age}}<span
+            *ngIf="isVip"
+            style="padding: 5px;background-color: darkred;color:white;text-weight:bold;border-radius: 5px;font-size:75%">VIP</span>
+    </md-card-title>
     <table class="table info">
-      <tr>
-        <th colspan="2">Identity</th>
-      </tr>
-      <tr>
-        <td class="left-col">Birthday : </td>
-        <td class="right-col">{{dob}}</td>
-      </tr>
+        <tr>
+            <th colspan="2">Identity</th>
+        </tr>
+        <tr>
+            <td>Birthday :</td>
+            <td>{{dob}}</td>
+        </tr>
+        <tr>
+            <td>Profession :</td>
+            <td>{{profession}}</td>
+        </tr>
     </table>
     <table class="table info">
-      <tr>
-        <th colspan="2">Surgery</th>
-      </tr>
-      <tr>
-        <td class="left-col">Surgery Date : </td>
-        <td class="right-col">{{surgeryDate}}</td>
-      </tr>
-      <tr>
-        <td class="left-col">Surgeon :</td>
-        <td class="right-col">{{surgeon}}</td>
-      </tr>
-      <tr>
-        <td class="left-col">Hospital :</td>
-        <td class="right-col">{{hospital}}</td>
-      </tr>
+        <tr>
+            <th colspan="2">Surgery</th>
+        </tr>
+        <tr>
+            <td>Surgery Date :</td>
+            <td>{{surgeryDate}}</td>
+        </tr>
+        <tr>
+            <td>Surgeon :</td>
+            <td>{{surgeon}}</td>
+        </tr>
+        <tr>
+            <td>Hospital :</td>
+            <td>{{hospital}}</td>
+        </tr>
     </table>
     <table class="table info">
-      <tr>
-        <th colspan="2">Angiography</th>
-      </tr>
-      <tr>
-        <td class="left-col">Angiography Date :</td>
-        <td class="right-col">{{angioDate}}</td>
-      </tr>
-      <tr>
-        <td class="left-col">Angiographer :</td>
-        <td class="right-col">{{angiographer}}</td>
-      </tr>
+        <tr>
+            <th colspan="2">Angiography</th>
+        </tr>
+        <tr>
+            <td>Angiography Date :</td>
+            <td>{{angioDate}}</td>
+        </tr>
+        <tr>
+            <td>Angiographer :</td>
+            <td>{{angiographer}}</td>
+        </tr>
     </table>
-  <table class="table info">
-    <tr>
-      <th colspan="2">Referral</th>
-    </tr>
-    <tr>
-      <td class="left-col">Referred By :</td>
-      <td class="right-col">{{referredBy}}</td>
-    </tr>
-    <tr>
-      <td class="left-col">Description :</td>
-      <td class="right-col">{{referralDescription}}</td>
-    </tr>
-  </table>
-  </md-card>
+    <table class="table info">
+        <tr>
+            <th colspan="2">Referral</th>
+        </tr>
+        <tr>
+            <td>Referred By :</td>
+            <td>{{referredBy}}</td>
+        </tr>
+        <tr>
+            <td>Description :</td>
+            <td>{{referralDescription}}</td>
+        </tr>
+    </table>
+</md-card>

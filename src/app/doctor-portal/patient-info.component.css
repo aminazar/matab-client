@@ -1,9 +1,8 @@
-.left-col{
+table > tbody > tr > td:first-child{
     text-align: right;
     font-weight:bold;
 }
-
-.right-col{
+table > tbody > tr > td:nth-child(2){
     text-align: left;
 }
 
@@ -18,3 +17,5 @@ table.info{
 .info td{
     background-color: ghostwhite;
 }
+
+

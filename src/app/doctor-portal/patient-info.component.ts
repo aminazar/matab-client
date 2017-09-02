@@ -11,6 +11,7 @@ export class PatientInfoComponent implements OnInit {
 
   private _cd: any;
   private _value: any = {};
+  profession: string;
 
   @Input()
   set contactDetails(data) {
@@ -73,6 +74,7 @@ export class PatientInfoComponent implements OnInit {
       this.angioDate = this.contactDetails.angioDate && this.contactDetails.angioDate.year ? this.contactDetails.angioDate.year + '/' + this.contactDetails.angioDate.month + '/' + this.contactDetails.angioDate.day : '-';
       this.referredBy = this.contactDetails.familiar ? this.contactDetails.familiar.via ? this.contactDetails.familiar.via : '-' : '-';
       this.referralDescription = this.contactDetails.familiar ? this.contactDetails.familiar.description ? this.contactDetails.familiar.description : '-' : '-';
+      this.profession = this.contactDetails.profession ? this.contactDetails.profession : '-';
       if (!this.dob) this.dob = '-';
     }
   }
