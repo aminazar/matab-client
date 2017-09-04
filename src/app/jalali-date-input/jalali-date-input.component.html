@@ -12,6 +12,9 @@
     <md-hint *ngIf="date">{{date.format('YYYY')}}</md-hint>
 </md-input-container>
 </span>
-<span *ngIf="!isInput">
-    {{inDate.year}}/{{inDate.month}}/{{inDate.day}}
+<span *ngIf="!isInput&&date">
+    <div><span class="dHeader">Day</span><br/>{{inDate.day}} /<br/><span class="small">{{date.format('ddd D')}}</span></div>
+    <div><span class="dHeader">Month</span><br/>{{inDate.month}} /<br/><span class="small">{{date.format('MMM')}}</span></div>
+    <div><span class="dHeader">Year</span><br/>{{inDate.year}}<br/><span class="small">{{date.format('YYYY')}}</span></div>
 </span>
+<span *ngIf="!isInput&&!date"> - </span>

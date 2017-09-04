@@ -1,3 +1,16 @@
 input{
     width: 50px;
 }
+div {
+    display: inline-block;
+    padding:0px 0px 0px 4px;
+}
+
+.dHeader {
+    font-size: 75%;
+    margin-bottom: 5px;
+    color: gray;
+}
+.small {
+    font-size: 80%
+}

@@ -30,7 +30,7 @@ export class PatientInfoComponent implements OnInit {
       this.surname = data.surname;
       this.contactDetails = data.contact_details;
       if (data.dob) {
-        this.dob = [data.dob.year, data.dob.month, data.dob.day].join('/');
+        this.dob = data.dob;
         this.age = data.dob.gd ? this.calcAge(moment().diff(moment(data.dob.gd))) : null;
       }
       if (data.contact_details) {
@@ -69,9 +69,9 @@ export class PatientInfoComponent implements OnInit {
     if (this.contactDetails) {
       this.surgeon = this.contactDetails.surgeon ? this.contactDetails.surgeon : '-';
       this.hospital = this.contactDetails.surgeryHospital ? this.contactDetails.surgeryHospital : '-';
-      this.surgeryDate = this.contactDetails.surgeryDate && this.contactDetails.surgeryDate.year ? this.contactDetails.surgeryDate.year + '/' + this.contactDetails.surgeryDate.month + '/' + this.contactDetails.surgeryDate.day : '-';
+      this.surgeryDate = this.contactDetails.surgeryDate && this.contactDetails.surgeryDate.year ? this.contactDetails.surgeryDate : '-';
       this.angiographer = this.contactDetails.angiographer ? this.contactDetails.angiographer : '-';
-      this.angioDate = this.contactDetails.angioDate && this.contactDetails.angioDate.year ? this.contactDetails.angioDate.year + '/' + this.contactDetails.angioDate.month + '/' + this.contactDetails.angioDate.day : '-';
+      this.angioDate = this.contactDetails.angioDate && this.contactDetails.angioDate.year ? this.contactDetails.angioDate : '-';
       this.referredBy = this.contactDetails.familiar ? this.contactDetails.familiar.via ? this.contactDetails.familiar.via : '-' : '-';
       this.referralDescription = this.contactDetails.familiar ? this.contactDetails.familiar.description ? this.contactDetails.familiar.description : '-' : '-';
       this.profession = this.contactDetails.profession ? this.contactDetails.profession : '-';

@@ -1,13 +1,14 @@
 table > tbody > tr > td:first-child{
     text-align: right;
     font-weight:bold;
+    vertical-align: middle;
 }
 table > tbody > tr > td:nth-child(2){
     text-align: left;
 }
 
 table.info{
-    width: 250px;
+    width: 260px;
     display:inline-table;
 }
 
